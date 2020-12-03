@@ -18,21 +18,86 @@
 #
 version: "3.5"
 services:
-  # Orion LD is the context broker
+  # Orion is the context broker
   orion:
-    image: fiware/orion-ld
+    image: fiware/orion-ld:${ORION_LD_VERSION}
     hostname: orion
-    container_name: fiware-orion-ld
+    container_name: fiware-orion
     depends_on:
       - mongo-db
     networks:
-      - default
+      default:
+        ipv4_address: 182.18.1.9
+
     ports:
       - "${ORION_LD_PORT}:${ORION_LD_PORT}" # localhost:1026
-    command: -dbhost mongo-db -logLevel DEBUG -t 255
+    command: -dbhost mongo-db -logLevel DEBUG
     healthcheck:
       test: curl --fail -s http://orion:${ORION_LD_PORT}/version || exit 1
 
+  # Keyrock is an Identity Management Front-End
+  keyrock:
+    image: fiware/idm:${KEYROCK_VERSION}
+    container_name: fiware-keyrock
+    hostname: keyrock
+    networks:
+      default:
+        ipv4_address: 182.18.1.5
+    depends_on:
+      - mysql-db
+    ports:
+      - "${KEYROCK_PORT}:${KEYROCK_PORT}" # localhost:3005
+    environment:
+      - DEBUG=idm:*
+      - IDM_DB_HOST=mysql-db
+      - IDM_DB_PASS_FILE=/run/secrets/my_secret_data
+      - IDM_DB_USER=root
+      - IDM_HOST=http://localhost:${KEYROCK_PORT}
+      - IDM_PORT=${KEYROCK_PORT}
+      - IDM_HTTPS_ENABLED=${IDM_HTTPS_ENABLED}
+      - IDM_HTTPS_PORT=${KEYROCK_HTTPS_PORT}
+      - IDM_ADMIN_USER=alice
+      - IDM_ADMIN_EMAIL=alice-the-admin@test.com
+      - IDM_ADMIN_PASS=test
+    secrets:
+      - my_secret_data
+    healthcheck:
+      test: curl --fail -s http://localhost:${KEYROCK_PORT}/version || exit 1
+
+  # PEP Proxy for Orion
+  orion-proxy:
+    image: fiware/pep-proxy:${WILMA_VERSION}
+    container_name: fiware-orion-proxy
+    hostname: orion-proxy
+    networks:
+      default:
+        ipv4_address: 182.18.1.10
+    depends_on:
+      - keyrock
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "${ORION_PROXY_PORT}:${ORION_PROXY_PORT}" # localhost:1027
+    expose:
+      - "${ORION_PROXY_PORT}"
+    environment:
+      - PEP_PROXY_APP_HOST=orion
+      - PEP_PROXY_APP_PORT=${ORION_LD_PORT}
+      - PEP_PROXY_PORT=${ORION_PROXY_PORT}
+      - PEP_PROXY_IDM_HOST=keyrock
+      - PEP_PROXY_HTTPS_ENABLED=false
+      - PEP_PROXY_AUTH_ENABLED=false
+      - PEP_PROXY_IDM_SSL_ENABLED=false
+      - PEP_PROXY_IDM_PORT=${KEYROCK_PORT}
+      - PEP_PROXY_APP_ID=tutorial-dckr-site-0000-xpresswebapp
+      - PEP_PROXY_USERNAME=pep_proxy_00000000-0000-0000-0000-000000000000
+      - PEP_PASSWORD=test
+      - PEP_PROXY_PDP=idm
+      - PEP_PROXY_MAGIC_KEY=1234
+      - PEP_PROXY_PUBLIC_PATHS=/version
+    healthcheck:
+      test: curl --fail -s http://orion-proxy:${ORION_PROXY_PORT}/version || exit 1
 
   # Databases
   mongo-db:
@@ -45,7 +110,7 @@ services:
       - "${MONGO_DB_PORT}:${MONGO_DB_PORT}" # localhost:27017
     networks:
       - default
-    command: --nojournal
+    command: --bind_ip_all --smallfiles
     volumes:
       - mongo-db:/data
     healthcheck:
@@ -53,10 +118,38 @@ services:
         host=`hostname --ip-address || echo '127.0.0.1'`;
         mongo --quiet $host/test --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' && echo 0 || echo 1
 
+  mysql-db:
+    restart: always
+    image: mysql:${MYSQL_DB_VERSION}
+    hostname: mysql-db
+    container_name: db-mysql
+    expose:
+      - "${MYSQL_DB_PORT}"
+    ports:
+      - "${MYSQL_DB_PORT}:${MYSQL_DB_PORT}" # localhost:3306
+    networks:
+      default:
+        ipv4_address: 182.18.1.6
+    environment:
+      - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/my_secret_data"
+      - "MYSQL_ROOT_HOST=182.18.1.5" # Allow Keyrock to access this database
+    volumes:
+      - mysql-db:/var/lib/mysql
+      - ./mysql-data:/docker-entrypoint-initdb.d/:ro
+    secrets:
+      - my_secret_data
 
-
+# Need to check the IP address to select one not used locally in docker engine
 networks:
-  default: ~
+  default:
+    ipam:
+      config:
+        - subnet: 182.18.1.0/24
 
 volumes:
+  mysql-db: ~
   mongo-db: ~
+
+secrets:
+  my_secret_data:
+    file: secrets.txt
