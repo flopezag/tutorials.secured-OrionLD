@@ -1,0 +1,7 @@
+- Check Orion-LD vs OrionLD
+- For this example, the PEP Proxy is checking for Level 1 - _Authentication Access_ not Level 2 - _Basic Authorization_ or
+Level 3 - _Advanced Authorization_.
+- All of the `tutorial` container settings have been described in previous tutorials.
+-   -H 'Authorization: Basic dHV0b3JpYWwtZGNrci1zaXRlLTAwMDAteHByZXNzd2ViYXBwOnR1dG9yaWFsLWRja3Itc2l0ZS0wMDAwLWNsaWVudHNlY3JldA==' \
+    how to calculate Basic ...
+- Swagger for NGSI-LD?

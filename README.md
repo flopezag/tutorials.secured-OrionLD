@@ -9,7 +9,7 @@
 
 
 This tutorial uses the FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy combined with **Keyrock** to secure
-access to Orion-LDendpoints exposed by FIWARE generic enablers. Users (or other actors) must log-in and use a token 
+access to Orion-LD endpoints exposed by FIWARE generic enablers. Users (or other actors) must log-in and use a token 
 to gain access to services. The application code created in the
 [previous tutorial](https://github.com/FIWARE/tutorials.Securing-Access) is expanded to authenticate users throughout a
 distributed system. The design of FIWARE Wilma - a PEP Proxy is discussed, and the parts of the Keyrock GUI and REST API
@@ -167,16 +167,15 @@ instances around the services created in previous tutorials and uses data pre-po
 by **Keyrock**. It will make use of four FIWARE components - the
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/), the
 [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Generic enabler and adds one or two instances
-[Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured. Usage of the
-Orion Context Broker is sufficient for an application to qualify as _“Powered by FIWARE”_.
+[Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured.
 
-The Orion Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence 
+The Orion-LD Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence 
 of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql.com/) database.
 
 Therefore the overall architecture will consist of the following elements:
 
 -   The FIWARE [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-    [NGSI-v2](https://fiware.github.io/specifications/OpenAPI/ngsiv2)
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json)
 -   FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
     including:
     -   An OAuth2 authentication system for Applications and Users
@@ -184,7 +183,7 @@ Therefore the overall architecture will consist of the following elements:
     -   An equivalent REST API for Identity Management via HTTP requests
 -   FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** microservice.
 -   The underlying [MongoDB](https://www.mongodb.com/) database :
-    -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
+    -   Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions and
         registrations
     -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
 -   A [MySQL](https://www.mysql.com/) database :
@@ -387,14 +386,14 @@ The response will return the details of the associated user
 ```
 
 
-# Securing the Orion Context Broker
+# Securing the OrionLD Context Broker
 
 ![](https://fiware.github.io/tutorials.PEP-Proxy/img/pep-proxy-orion.png)
 
-## Securing Orion - PEP Proxy Configuration
+## Securing Orion-LD - PEP Proxy Configuration
 
 The `orion-proxy` container is an instance of FIWARE **Wilma** listening on port `1027`, it is configured to forward
-traffic to `orion` on port `1026`, which is the default port that the Orion Context Broker is listening to for NGSI
+traffic to `orion` on port `1026`, which is the default port that the Orion-LD Context Broker is listening to for NGSI
 Requests.
 
 ```yaml
@@ -455,10 +454,10 @@ The `orion-proxy` container is listening on a single port:
 For this example, the PEP Proxy is checking for Level 1 - _Authentication Access_ not Level 2 - _Basic Authorization_ or
 Level 3 - _Advanced Authorization_.
 
-## Securing Orion - Application Configuration
+## Securing Orion-LD - Application Configuration
 
 The tutorial application has already been registered in **Keyrock**, programmatically the tutorial application will be
-making requests to the **Wilma** PEP Proxy in front of the **Orion Context Broker**. Every request must now include an
+making requests to the **Wilma** PEP Proxy in front of the **Orion-LD Context Broker**. Every request must now include an
 additional `access_token` header.
 
 ```yaml
@@ -508,7 +507,7 @@ below:
 | KEYROCK_CLIENT_SECRET | `tutorial-dckr-site-0000-clientsecret` | The Client Secret defined by Keyrock for this application                                      |
 | CALLBACK_URL          | `http://localhost:3000/login`          | The callback URL used by Keyrock when a challenge has succeeded.                               |
 
-## Securing Orion - Start up
+## Securing Orion-LD - Start up
 
 To start the system with a PEP Proxy protecting access to **Orion**, run the following command:
 
@@ -524,7 +523,7 @@ Click on the image above to see a video about securing a REST API using the Wilm
 
 ## User Logs In to the Application using the REST API
 
-### PEP Proxy - No Access to Orion without an Access Token
+### PEP Proxy - No Access to Orion-LD without an Access Token
 
 Secured Access can be ensured by requiring all requests to the secured service are made indirectly via a PEP Proxy (in
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
@@ -535,8 +534,9 @@ present a valid token results in a denial of access.
 If a request to the PEP Proxy is made without any access token as shown:
 
 ```console
-curl -X GET \
-  http://localhost:1027/v2/entities/urn:ngsi-ld:Store:001?options=keyValues
+curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
+  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Content-Type: application/json'
 ```
 
 #### Response:
@@ -547,12 +547,19 @@ The response is a **401 Unauthorized** error code, with the following explanatio
 Auth-token not found in request header
 ```
 
-### Keyrock - User Obtains an Access Token
+### Keyrock - User obtains an Access Token
 
 #### :one::three: Request:
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
 endpoint with the `grant_type=password`. For example to log-in as Alice the Admin:
+
+Client ID
+tutorial-dckr-site-0000-xpresswebapp
+
+Client Secret
+tutorial-dckr-site-0000-clientsecret
+
 
 ```console
 curl -iX POST \
@@ -572,31 +579,62 @@ The response returns an access code to identify the user:
     "access_token": "a7e22dfe2bd7d883c8621b9eb50797a7f126eeab",
     "token_type": "Bearer",
     "expires_in": 3599,
-    "refresh_token": "05e386edd9f95ed0e599c5004db8573e86dff874"
+    "refresh_token": "05e386edd9f95ed0e599c5004db8573e86dff874",
+    "scope":["bearer"]
 }
 ```
 
 This can also be done by entering the Tutorial Application on http:/localhost and logging in using any of the OAuth2
 grants on the page. A successful log-in will return an access token.
 
-### PEP Proxy - Accessing Orion with an Access Token
+### PEP Proxy - Accessing Orion-LD with an Access Token
 
-If a request to the PEP Proxy is made including a valid access token in the `X-Auth-Token` header as shown, the request
-is permitted and the service behind the PEP Proxy (in this case the Orion Context Broker) will return the data as
-expected.
+If a request to the PEP Proxy is made including a valid access token in the `X-Auth-Token` header with the value 
+obtained in the `access_token` key in the previous response, the request is permitted and the service behind the 
+PEP Proxy (in this case the Orion-LD Context Broker) will return the data as expected.
 
 #### :one::four: Request:
 
 ```console
-curl -X GET \
-  http://localhost:1027/v2/entities/urn:ngsi-ld:Store:001?options=keyValues \
-  -H 'X-Auth-Token: {{X-Access-token}}'
+curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
+  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-Token: {{access_token}}'
 ```
 
-### PEP Proxy - Accessing Orion with an Authorization: Bearer
+#### Response:
+
+The response returns the information regarding the Farm001:
+
+```console
+{
+  "@context": "https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld",
+  "id": "urn:ngsi-ld:Building:farm001",
+  "type": "Building",
+  "category": "farm",
+  "address": {
+    "streetAddress": "Großer Stern 1",
+    "addressRegion": "Berlin",
+    "addressLocality": "Tiergarten",
+    "postalCode": "10557"
+  },
+  "location": {
+    "type": "Point",
+    "coordinates": [
+      13.3505,
+      52.5144
+    ]
+  },
+  "name": "Victory Farm",
+  "owner": "urn:ngsi-ld:Person:person001"
+}
+```
+
+
+### PEP Proxy - Accessing Orion-LD with an Authorization: Bearer
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
-is permitted and the service behind the PEP Proxy (in this case the Orion Context Broker) will return the data as
+is permitted and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
 expected.
 
 #### :one::five: Request:
@@ -605,29 +643,40 @@ expected.
 curl -X GET \
   http://localhost:1027/v2/entities/urn:ngsi-ld:Store:001?options=keyValues \
   -H 'Authorization: Bearer {{X-Access-token}}'
+
+curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002?options=keyValues' \
+  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {{access_token}}'
 ```
 
 #### Response:
 
 ```json
 {
-    "id": "urn:ngsi-ld:Store:001",
-    "type": "Store",
-    "address": {
-        "streetAddress": "Bornholmer Straße 65",
-        "addressRegion": "Berlin",
-        "addressLocality": "Prenzlauer Berg",
-        "postalCode": "10439"
-    },
-    "location": {
-        "type": "Point",
-        "coordinates": [13.3986, 52.5547]
-    },
-    "name": "Bösebrücke Einkauf"
+  "@context": "https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld",
+  "id": "urn:ngsi-ld:Building:barn002",
+  "type": "Building",
+  "category": "barn",
+  "address": {
+    "streetAddress": "Straße des 17. Juni",
+    "addressRegion": "Berlin",
+    "addressLocality": "Tiergarten",
+    "postalCode": "10557"
+  },
+  "location": {
+    "type": "Point",
+    "coordinates": [
+      13.3698,
+      52.5163
+    ]
+  },
+  "name": "Big Red Barn",
+  "owner": "urn:ngsi-ld:Person:person001"
 }
 ```
 
-## Securing Orion - Sample Code
+## Securing Orion-LD - Sample Code
 
 When a User logs in to the application using the User Credentials Grant, an `access_token` is obtained which identifies
 the User. The `access_token` is stored in session:
