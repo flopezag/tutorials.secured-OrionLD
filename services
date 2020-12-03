@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+#  Command Line Interface to start all services associated with the Getting-Started Tutorial
+#
+#  For this tutorial the commands are merely a convenience script to run docker-compose
+#
+
+set -e
+
+if (( $# != 1 )); then
+    echo "Illegal number of parameters"
+    echo "usage: services [help|create|start|stop]"
+    exit 1
+fi
+
+waitForOrion () {
+	echo -e "\n⏳ Waiting for \033[1;34mOrion-LD\033[0m to be available\n"
+	while [ `docker run --network fiware_default --rm curlimages/curl -s -o /dev/null -w %{http_code} 'http://orion:1026/version'` -eq 000 ]
+	do
+	  echo -e "Context Broker HTTP state: " `curl -s -o /dev/null -w %{http_code} 'http://localhost:1026/version'` " (waiting for 200)"
+	  sleep 1
+	done
+}
+
+loadData () {
+	echo ""
+	docker run --rm -v $(pwd)/import-data:/import-data \
+		--network fiware_default \
+		-e CONTEXT_BROKER=${CONTEXT_BROKER} \
+		-e TUTORIAL_DATA_MODELS_CONTEXT="https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld" \
+		--entrypoint /bin/ash curlimages/curl import-data
+	echo ""
+}
+
+addDatabaseIndex () {
+	printf "Adding appropriate \033[1mMongoDB\033[0m indexes for \033[1;34mOrion-LD\033[0m  ..."
+	docker exec  db-mongo mongo --eval '
+	conn = new Mongo();db.createCollection("orion");
+	db = conn.getDB("orion");
+	db.createCollection("entities");
+	db.entities.createIndex({"_id.servicePath": 1, "_id.id": 1, "_id.type": 1}, {unique: true});
+	db.entities.createIndex({"_id.type": 1});
+	db.entities.createIndex({"_id.id": 1});' > /dev/null
+
+	docker exec  db-mongo mongo --eval '
+	conn = new Mongo();db.createCollection("orion-openiot");
+	db = conn.getDB("orion-openiot");
+	db.createCollection("entities");
+	db.entities.createIndex({"_id.servicePath": 1, "_id.id": 1, "_id.type": 1}, {unique: true});
+	db.entities.createIndex({"_id.type": 1});
+	db.entities.createIndex({"_id.id": 1});' > /dev/null
+	echo -e " \033[1;32mdone\033[0m"
+}
+
+stoppingContainers () {
+	echo "Stopping containers"
+	docker-compose --log-level ERROR -p fiware down -v --remove-orphans
+}
+
+displayServices () {
+	echo ""
+	docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" --filter name=$1-*
+	echo ""
+}
+
+command="$1"
+case "${command}" in
+	"help")
+        echo "usage: services [create|orion|scorpio|stellio|stop]"
+        ;;
+    "start")
+		stoppingContainers
+		echo -e "Starting three containers \033[1;34mOrion-LD\033[0m, \033[1mTutorial\033[0m and a \033[1mMongoDB\033[0m database."
+		echo -e "- \033[1;34mOrion-LD\033[0m is an \033[1mNGSI-LD\033[0m context broker servicing the Supermarket"
+		echo -e "- \033[1mTutorial\033[0m displays a web app to manipulate the \033[1mNGSI-LD\033[0m context directly"
+		echo ""
+		docker-compose --log-level ERROR -p fiware up -d --remove-orphans
+		addDatabaseIndex
+		displayServices fiware
+		waitForOrion
+		export CONTEXT_BROKER=orion:1026
+		loadData
+		displayServices
+
+		;;
+	"stop")
+		stoppingContainers
+		;;
+	"create")
+		echo "Pulling Docker images"
+		docker-compose --log-level ERROR -f docker-compose/scorpio-aaio.yml pull
+		docker-compose --log-level ERROR -f docker-compose/orion-ld.yml pull
+		docker-compose --log-level ERROR -f docker-compose/stellio.yml
+		;;
+	*)
+		echo "Command not Found."
+		echo "usage: services [help|create|start|stop]"
+		exit 127;
+		;;
+esac
+
+
