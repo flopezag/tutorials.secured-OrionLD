@@ -19,78 +19,74 @@ curl -s -o /dev/null -X POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/entityOper
 -H 'Accept: application/ld+json' \
 --data-raw '[
   {
-    "id": "urn:ngsi-ld:Building:farm001",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["farm"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "Großer Stern 1", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10557"},
-        "verified": { "type": "Property", "value": true}
-    },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3505, 52.5144]}
-    },
-    "name": {"type": "Property","value": "Victory Farm"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person001"}
-  },
-  {
-    "id": "urn:ngsi-ld:Building:barn002",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["barn"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "Straße des 17. Juni", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10557"},
-        "verified": { "type": "Property", "value": true}
-    },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3698, 52.5163]}
-    },
-    "name": {"type": "Property","value": "Big Red Barn"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person001"}
-  },
-  {
-    "id": "urn:ngsi-ld:Building:tower003",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["water_tower"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "John-Foster-Dulles-Allee", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10557"},
-        "verified": { "type": "Property", "value": true}
-    },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3598, 52.5165]}
-    },
-    "name": {"type": "Property","value": "Triton Tower"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person001"}
-  },
-  {
-    "id": "urn:ngsi-ld:Building:farm002",
-    "type": "Building",
-    "category": {"type": "Property", "value": ["farm"]},
-    "address": {
-        "type": "Property",
-        "value": { "streetAddress": "Hardenbergplatz 8", "addressRegion": "Berlin", "addressLocality": "Tiergarten", "postalCode": "10787"},
-        "verified": { "type": "Property", "value": true}
-    },
-    "location": {
-        "type": "GeoProperty",
-        "value": { "type": "Point", "coordinates": [13.3127, 52.4893]}
-    },
-    "name": {"type": "Property","value": "Animal Farm"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:person002"}
-  },
-  {
-    "id": "urn:ngsi-ld:Person:person001",
+    "id": "urn:ngsi-ld:Person:Ole",
     "type": "Person",
-    "name": {"type": "Property","value": "Old MacDonald"}
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "14199",
+      "streetAddress": "Detmolder Str. 10"
+    },
+    "telephone": { "type": "Property", "value": "0049 1522 99999999"},
+    "email": {"type": "Property", "value": "ole-lahm@xyz.foo"},
+    "name": {"type": "Property", "value": "Ole Lahm"}
   },
   {
-    "id": "urn:ngsi-ld:Person:person002",
+    "id": "urn:ngsi-ld:Person:Torsten",
     "type": "Person",
-    "name": {"type": "Property","value": "Napoleon the Pig"}
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "10997",
+      "streetAddress": "Eisenbahnstraße 42/43"
+    },
+    "telephone": { "type": "Property", "value": "0049 1533 8888888"},
+    "email": {"type": "Property", "value": "torsten-kühl@xyz.foo"},
+    "name": {"type": "Property", "value": "Torsten Kühl"}
+  },
+  {
+    "id": "urn:ngsi-ld:Person:Frank",
+    "type": "Person",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "10178",
+      "streetAddress": "Panoramastraße 1A"
+    },
+    "telephone": { "type": "Property", "value": "0049 1544 7777777"},
+    "email": {"type": "Property", "value": "frank-regio@xyz.foo"},
+    "name": {"type": "Property", "value": "Frank Regio"}
+  },
+  {
+    "id": "urn:ngsi-ld:Person:Lothar",
+    "type": "Person",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "10117",
+      "streetAddress": "Pariser Platz"
+    },
+    "telephone": { "type": "Property", "value": "0049 1555 6666666"},
+    "email": {"type": "Property", "value": "mailto:lothar-lammich@xyz.foo"},
+    "name": {"type": "Property", "value": "Lothar Lammich"}
+  },
+  {
+    "id": "urn:ngsi-ld:Person:Lothar",
+    "type": "Person",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "10117",
+      "streetAddress": "Pariser Platz"
+    },
+    "telephone": { "type": "Property", "value": "0049 1555 6666666"},
+    "email": {"type": "Property", "value": "mailto:lothar-lammich@xyz.foo"},
+    "name": {"type": "Property", "value": "Lothar Lammich"}
   }
 ]'
 

@@ -19,10 +19,10 @@
 version: "3.5"
 services:
   # Orion is the context broker
-  orion:
+  orionld:
     image: fiware/orion-ld:${ORION_LD_VERSION}
-    hostname: orion
-    container_name: fiware-orion
+    container_name: fiware-orionld
+    hostname: orionld
     depends_on:
       - mongo-db
     networks:
@@ -36,10 +36,10 @@ services:
       test: curl --fail -s http://orion:${ORION_LD_PORT}/version || exit 1
 
   # Keyrock is an Identity Management Front-End
-  keyrock:
+  idm:
     image: fiware/idm:${KEYROCK_VERSION}
-    container_name: fiware-keyrock
-    hostname: keyrock
+    container_name: fiware-idm
+    hostname: idm
     networks:
       default:
         ipv4_address: 182.18.1.5
@@ -65,15 +65,15 @@ services:
       test: curl --fail -s http://localhost:${KEYROCK_PORT}/version || exit 1
 
   # PEP Proxy for Orion
-  orion-proxy:
+  orion-pep-proxy:
     image: fiware/pep-proxy:${WILMA_VERSION}
-    container_name: fiware-orion-proxy
-    hostname: orion-proxy
+    container_name: fiware-orion-pep-proxy
+    hostname: orion-pep-proxy
     networks:
       default:
         ipv4_address: 182.18.1.10
     depends_on:
-      - keyrock
+      - idm
     deploy:
       restart_policy:
         condition: on-failure
@@ -82,10 +82,10 @@ services:
     expose:
       - "${ORION_PROXY_PORT}"
     environment:
-      - PEP_PROXY_APP_HOST=orion
+      - PEP_PROXY_APP_HOST=orionld
       - PEP_PROXY_APP_PORT=${ORION_LD_PORT}
       - PEP_PROXY_PORT=${ORION_PROXY_PORT}
-      - PEP_PROXY_IDM_HOST=keyrock
+      - PEP_PROXY_IDM_HOST=idm
       - PEP_PROXY_HTTPS_ENABLED=false
       - PEP_PROXY_AUTH_ENABLED=false
       - PEP_PROXY_IDM_SSL_ENABLED=false
@@ -97,13 +97,13 @@ services:
       - PEP_PROXY_MAGIC_KEY=1234
       - PEP_PROXY_PUBLIC_PATHS=/version
     healthcheck:
-      test: curl --fail -s http://orion-proxy:${ORION_PROXY_PORT}/version || exit 1
+      test: curl --fail -s http://orion-pepproxy:${ORION_PROXY_PORT}/version || exit 1
 
   # Databases
   mongo-db:
     image: mongo:${MONGO_DB_VERSION}
+    container_name: mongo-db
     hostname: mongo-db
-    container_name: db-mongo
     expose:
       - "${MONGO_DB_PORT}"
     ports:
@@ -122,7 +122,7 @@ services:
     restart: always
     image: mysql:${MYSQL_DB_VERSION}
     hostname: mysql-db
-    container_name: db-mysql
+    container_name: mysql-db
     expose:
       - "${MYSQL_DB_PORT}"
     ports:
