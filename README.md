@@ -37,45 +37,16 @@ relevant to authenticating other services are described in detail.
     -   [Logging In to Keyrock using the REST API](#logging-in-to-keyrock-using-the-rest-api)
         -   [Create Token with Password](#create-token-with-password)
         -   [Get Token Info](#get-token-info)
--   [Managing PEP Proxies and IoT Agents](#managing-pep-proxies-and-iot-agents)
-    -   [:arrow_forward: Video : Wilma PEP Proxy Configuration](#arrow_forward-video--wilma-pep-proxy-configuration)
-    -   [Managing PEP Proxies and IoT Agents - Start Up](#managing-pep-proxies-and-iot-agents---start-up)
-    -   [PEP Proxy CRUD Actions](#pep-proxy-crud-actions)
-        -   [Create a PEP Proxy](#create-a-pep-proxy)
-        -   [Read PEP Proxy details](#read-pep-proxy-details)
-        -   [Reset Password of a PEP Proxy](#reset-password-of-a-pep-proxy)
-        -   [Delete a PEP Proxy](#delete-a-pep-proxy)
-    -   [IoT Agent CRUD Actions](#iot-agent-crud-actions)
-        -   [Create an IoT Agent](#create-an-iot-agent)
-        -   [Read IoT Agent details](#read-iot-agent-details)
-        -   [List IoT Agents](#list-iot-agents)
-        -   [Reset Password of an IoT Agent](#reset-password-of-an-iot-agent)
-        -   [Delete an IoT Agent](#delete-an-iot-agent)
 -   [Securing the Orion Context Broker](#securing-the-orion-context-broker)
     -   [Securing Orion - PEP Proxy Configuration](#securing-orion---pep-proxy-configuration)
-    -   [Securing Orion - Application Configuration](#securing-orion---application-configuration)
     -   [Securing Orion - Start up](#securing-orion---start-up)
         -   [:arrow_forward: Video : Securing A REST API](#arrow_forward-video--securing-a-rest-api)
     -   [User Logs In to the Application using the REST API](#user-logs-in-to-the-application-using-the-rest-api)
-        -   [PEP Proxy - No Access to Orion without an Access Token](#pep-proxy---no-access-to-orion-without-an-access-token)
+        -   [PEP Proxy - No Access to Orion-LD without an Access Token](#pep-proxy---no-access-to-orion-without-an-access-token)
         -   [Keyrock - User Obtains an Access Token](#keyrock---user-obtains-an-access-token)
-        -   [PEP Proxy - Accessing Orion with an Access Token](#pep-proxy---accessing-orion-with-an-access-token)
-        -   [PEP Proxy - Accessing Orion with an Authorization: Bearer](pep-proxy---accessing-orion-awith-an-authorization-bearer)
-    -   [Securing Orion - Sample Code](#securing-orion---sample-code)
--   [Securing an IoT Agent South Port](#securing-an-iot-agent-south-port)
-    -   [Securing an IoT Agent South Port - PEP Proxy Configuration](#securing-an-iot-agent-south-port---pep-proxy-configuration)
-    -   [Securing an IoT Agent South Port - Application Configuration](#securing-an-iot-agent-south-port---application-configuration)
-    -   [Securing South Port Traffic - Start up](#securing-south-port-traffic---start-up)
-    -   [IoT Sensor Logs In to the Application using the REST API](#iot-sensor-logs-in-to-the-application-using-the-rest-api)
-        -   [Keyrock - IoT Sensor Obtains an Access Token](#keyrock---iot-sensor-obtains-an-access-token)
-        -   [PEP Proxy - Accessing IoT Agent with an Access Token](#pep-proxy---accessing-iot-agent-with-an-access-token)
-    -   [Securing South Port Traffic - Sample Code](#securing-south-port-traffic---sample-code)
--   [Securing an IoT Agent North Port](#securing-an-iot-agent-north-port)
-    -   [Securing an IoT Agent North Port - IoT Agent Configuration](#securing-an-iot-agent-north-port---iot-agent-configuration)
-    -   [Securing an IoT Agent North Port - Start up](#securing-an-iot-agent-north-port---start-up)
-        -   [Keyrock - Obtaining a permanent token](#keyrock---obtaining-a-permanent-token)
-        -   [IoT Agent - provisioning a trusted service group](#iot-agent---provisioning-a-trusted-service-group)
-        -   [IoT Agent - provisioning a sensor](#iot-agent---provisioning-a-sensor)
+        -   [PEP Proxy - Accessing Orion-LD with an Access Token](#pep-proxy---accessing-orion-with-an-access-token)
+        -   [PEP Proxy - Accessing Orion-LD with an Authorization: Bearer](pep-proxy---accessing-orion-awith-an-authorization-bearer)
+    -   [Securing Orion-LD - Sample Code](#securing-orion---sample-code)
 
 </details>
 
@@ -209,14 +180,14 @@ git checkout NGSI-v2
 > **Note** The initial creation of Docker images can take up to three minutes
 
 Thereafter, all services can be initialized from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.PEP-PRoxy/blob/NGSI-v2/services) Bash script provided within the
-repository:
+[services](https://github.com/flopezag/tutorials.secured-OrionLD/blob/main/services) 
+Bash script provided within the repository:
 
 ```console
 ./services <command>
 ```
 
-Where `<command>` will vary depending upon the exercise we wish to activate.
+Where `<command>` will be help, start, stop or create.
 
 > :information_source: **Note:** If you want to clean up and start over again you can do so with the following command:
 >
@@ -228,7 +199,7 @@ Where `<command>` will vary depending upon the exercise we wish to activate.
 
 The following people at `test.com` legitimately have accounts within the Application
 
--   Alice, she will be the Administrator of the **Keyrock** Application
+-   Ole, she will be the Administrator of the **Identity Management** Application.
 -   Bob, the Regional Manager of the supermarket chain - he has several store managers under him:
     -   Manager1
     -   Manager2
@@ -247,25 +218,25 @@ The following people at `example.com` have signed up for accounts, but have no r
    For more details <b>(Click to expand)</b>
   </summary>
 
-| Name       | eMail                       | Password |
-| ---------- | --------------------------- | -------- |
-| alice      | `alice-the-admin@test.com`  | `test`   |
-| bob        | `bob-the-manager@test.com`  | `test`   |
-| charlie    | `charlie-security@test.com` | `test`   |
-| manager1   | `manager1@test.com`         | `test`   |
-| manager2   | `manager2@test.com`         | `test`   |
-| detective1 | `detective1@test.com`       | `test`   |
-| detective2 | `detective2@test.com`       | `test`   |
+   | Name       | eMail                       | Password |
+   | ---------- | --------------------------- | -------- |
+   | alice      | `alice-the-admin@test.com`  | `test`   |
+   | bob        | `bob-the-manager@test.com`  | `test`   |
+   | charlie    | `charlie-security@test.com` | `test`   |
+   | manager1   | `manager1@test.com`         | `test`   |
+   | manager2   | `manager2@test.com`         | `test`   |
+   | detective1 | `detective1@test.com`       | `test`   |
+   | detective2 | `detective2@test.com`       | `test`   |
 
-| Name    | eMail                 | Password |
-| ------- | --------------------- | -------- |
-| eve     | `eve@example.com`     | `test`   |
-| mallory | `mallory@example.com` | `test`   |
-| rob     | `rob@example.com`     | `test`   |
+   | Name    | eMail                 | Password |
+   | ------- | --------------------- | -------- |
+   | eve     | `eve@example.com`     | `test`   |
+   | mallory | `mallory@example.com` | `test`   |
+   | rob     | `rob@example.com`     | `test`   |
 
 </details>
 
-Two organizations have also been set up by Alice:
+Two organizations have also been set up by Ole:
 
 | Name       | Description                         | UUID                                   |
 | ---------- | ----------------------------------- | -------------------------------------- |
@@ -325,24 +296,39 @@ required in all subsequent requests to gain access
 
 ```
 HTTP/1.1 201 Created
-X-Subject-Token: d848eb12-889f-433b-9811-6a4fbf0b86ca
+Content-Security-Policy: default-src 'self' img-src 'self' data:;script-src 'self' 'unsafe-inline';style-src 'self' https: 'unsafe-inline'
+X-DNS-Prefetch-Control: off
+Expect-CT: max-age=0
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=15552000; includeSubDomains
+X-Download-Options: noopen
+X-Content-Type-Options: nosniff
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: no-referrer
+X-XSS-Protection: 0
+Cache-Control: no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0
+X-Subject-Token: 730ba40f-8787-490e-aea8-9f1d98cc87e6
 Content-Type: application/json; charset=utf-8
 Content-Length: 138
-ETag: W/"8a-TVwlWNKBsa7cskJw55uE/wZl6L8"
-Date: Mon, 30 Jul 2018 12:07:54 GMT
+ETag: W/"8a-hYrW1bqaSy3GVQI34aexyHgPYmg"
+Set-Cookie: session=eyJyZWRpciI6Ii8ifQ==; path=/; expires=Thu, 03 Dec 2020 16:46:08 GMT; httponly
+Set-Cookie: session.sig=vwpRi_eyA0W2C0YYa-6mzMBHBIk; path=/; expires=Thu, 03 Dec 2020 16:46:08 GMT; httponly
+Date: Thu, 03 Dec 2020 15:46:08 GMT
 Connection: keep-alive
 ```
 
 ```json
 {
-    "token": {
-        "methods": ["password"],
-        "expires_at": "2018-07-30T13:02:37.116Z"
-    },
-    "idm_authorization_config": {
-        "level": "basic",
-        "authzforce": false
-    }
+  "token": {
+    "methods": [
+      "password"
+    ],
+    "expires_at": "2020-12-03T16:47:28.462Z"
+  },
+  "idm_authorization_config": {
+    "level": "basic",
+    "authzforce": false
+  }
 }
 ```
 
@@ -375,6 +361,7 @@ The response will return the details of the associated user
     "expires": "2036-07-30T12:04:45.000Z",
     "valid": true,
     "User": {
+        "scope": [],
         "id": "aaaaaaaa-good-0000-0000-000000000000",
         "username": "alice",
         "email": "alice-the-admin@test.com",
@@ -400,7 +387,7 @@ Requests.
 orion-proxy:
     image: fiware/pep-proxy
     container_name: fiware-orion-proxy
-    hostname: orion-proxy
+    hostname: orion-pepproxy
     networks:
         default:
             ipv4_address: 172.18.1.10
@@ -411,7 +398,7 @@ orion-proxy:
     expose:
         - "1027"
     environment:
-        - PEP_PROXY_APP_HOST=orion
+        - PEP_PROXY_APP_HOST=orionld
         - PEP_PROXY_APP_PORT=1026
         - PEP_PROXY_PORT=1027
         - PEP_PROXY_IDM_HOST=keyrock
@@ -430,14 +417,14 @@ The `PEP_PROXY_APP_ID` and `PEP_PROXY_USERNAME` would usually be obtained by add
 **Keyrock**, however, in this tutorial, they have been predefined by populating the **MySQL** database with data on
 start-up.
 
-The `orion-proxy` container is listening on a single port:
+The `orion-pepproxy` container is listening on a single port:
 
 -   The PEP Proxy Port - `1027` is exposed purely for tutorial access - so that cUrl or Postman can requests directly to
     the **Wilma** instance without being part of the same network.
 
 | Key                       | Value                                            | Description                                            |
 | ------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
-| PEP_PROXY_APP_HOST        | `orion`                                          | The hostname of the service behind the PEP Proxy       |
+| PEP_PROXY_APP_HOST        | `orionld`                                        | The hostname of the service behind the PEP Proxy       |
 | PEP_PROXY_APP_PORT        | `1026`                                           | The port of the service behind the PEP Proxy           |
 | PEP_PROXY_PORT            | `1027`                                           | The port that the PEP Proxy is listening on            |
 | PEP_PROXY_IDM_HOST        | `keyrock`                                        | The hostname for the Identity Manager                  |
@@ -454,66 +441,7 @@ The `orion-proxy` container is listening on a single port:
 For this example, the PEP Proxy is checking for Level 1 - _Authentication Access_ not Level 2 - _Basic Authorization_ or
 Level 3 - _Advanced Authorization_.
 
-## Securing Orion-LD - Application Configuration
-
-The tutorial application has already been registered in **Keyrock**, programmatically the tutorial application will be
-making requests to the **Wilma** PEP Proxy in front of the **Orion-LD Context Broker**. Every request must now include an
-additional `access_token` header.
-
-```yaml
-tutorial-app:
-    image: fiware/tutorials.context-provider
-    hostname: tutorial-app
-    container_name: tutorial-app
-    depends_on:
-        - orion-proxy
-        - iot-agent
-        - keyrock
-    networks:
-        default:
-            ipv4_address: 172.18.1.7
-            aliases:
-                - iot-sensors
-    expose:
-        - "3000"
-        - "3001"
-    ports:
-        - "3000:3000"
-        - "3001:3001"
-    environment:
-        - "WEB_APP_PORT=3000"
-        - "SECURE_ENDPOINTS=true"
-        - "CONTEXT_BROKER=http://orion-proxy:1027/v2"
-        - "KEYROCK_URL=http://localhost"
-        - "KEYROCK_IP_ADDRESS=http://172.18.1.5"
-        - "KEYROCK_PORT=3005"
-        - "KEYROCK_CLIENT_ID=tutorial-dckr-site-0000-xpresswebapp"
-        - "KEYROCK_CLIENT_SECRET=tutorial-dckr-site-0000-clientsecret"
-        - "CALLBACK_URL=http://localhost:3000/login"
-```
-
-All of the `tutorial` container settings have been described in previous tutorials. One important change is necessary
-however, rather than accessing **Orion** directly on the default port `1026` as shown in all previous tutorials, all
-context broker traffic is now sent to `orion-proxy` on port `1027`. As a reminder, the relevant settings are detailed
-below:
-
-| Key                   | Value                                  | Description                                                                                    |
-| --------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| WEB_APP_PORT          | `3000`                                 | Port used by web-app which displays the login screen & etc.                                    |
-| KEYROCK_URL           | `http://localhost`                     | This is URL of the **Keyrock** Web frontend itself, used for redirection when forwarding users |
-| KEYROCK_IP_ADDRESS    | `http://172.18.1.5`                    | This is URL of the **Keyrock** OAuth Communications                                            |
-| KEYROCK_PORT          | `3005`                                 | This is the port that **Keyrock** is listening on.                                             |
-| KEYROCK_CLIENT_ID     | `tutorial-dckr-site-0000-xpresswebapp` | The Client ID defined by Keyrock for this application                                          |
-| KEYROCK_CLIENT_SECRET | `tutorial-dckr-site-0000-clientsecret` | The Client Secret defined by Keyrock for this application                                      |
-| CALLBACK_URL          | `http://localhost:3000/login`          | The callback URL used by Keyrock when a challenge has succeeded.                               |
-
-## Securing Orion-LD - Start up
-
-To start the system with a PEP Proxy protecting access to **Orion**, run the following command:
-
-```console
-./services orion
-```
+## Securing Orion-LD 
 
 ### :arrow_forward: Video : Securing A REST API
 
@@ -537,6 +465,9 @@ If a request to the PEP Proxy is made without any access token as shown:
 curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
   -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Content-Type: application/json'
+curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:Ole?options=keyValues' \ 
+  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Content-Type: application/json'
 ```
 
 #### Response:
@@ -552,14 +483,20 @@ Auth-token not found in request header
 #### :one::three: Request:
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
-endpoint with the `grant_type=password`. For example to log-in as Alice the Admin:
+endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follow:
 
-Client ID
-tutorial-dckr-site-0000-xpresswebapp
+For example to log-in as Alice the Admin:
+* The Client ID and Client Secret created in the IDM for your application are combined with a single colon (:). 
+  This means that the Client ID itself cannot contain a colon.
+* The resulting string is encoded using a variant of Base64. For your convenience you can use the following 
+  command line instruction:
+  
+  ```console
+  #! echo -n "<Client ID>:<Client Secret>" | base64
+  ```
+* The authorization method and a space (e.g. "Basic ") is then prepended to the encoded string.
 
-Client Secret
-tutorial-dckr-site-0000-clientsecret
-
+For example to log-in as Alice the Admin:
 
 ```console
 curl -iX POST \
@@ -590,7 +527,7 @@ grants on the page. A successful log-in will return an access token.
 ### PEP Proxy - Accessing Orion-LD with an Access Token
 
 If a request to the PEP Proxy is made including a valid access token in the `X-Auth-Token` header with the value 
-obtained in the `access_token` key in the previous response, the request is permitted and the service behind the 
+obtained in the `X-Auth-token` key in the previous response, the request is authorized and the service behind the 
 PEP Proxy (in this case the Orion-LD Context Broker) will return the data as expected.
 
 #### :one::four: Request:
@@ -599,7 +536,7 @@ PEP Proxy (in this case the Orion-LD Context Broker) will return the data as exp
 curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
   -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-Token: {{access_token}}'
+  -H 'X-Auth-Token: ${TOKEN}'
 ```
 
 #### Response:
@@ -640,14 +577,10 @@ expected.
 #### :one::five: Request:
 
 ```console
-curl -X GET \
-  http://localhost:1027/v2/entities/urn:ngsi-ld:Store:001?options=keyValues \
-  -H 'Authorization: Bearer {{X-Access-token}}'
-
 curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002?options=keyValues' \
   -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer {{access_token}}'
+  -H 'Authorization: Bearer {{X-Auth-token}}'
 ```
 
 #### Response:
