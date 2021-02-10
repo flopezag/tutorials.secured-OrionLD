@@ -11,7 +11,7 @@ echo -e "    - all entity data models are defined referencing the"
 echo -e "      \033[1m"${TUTORIAL_DATA_MODELS_CONTEXT}"\033[0m JSON-LD context"
 
 #
-# Create four Farm Entities in various locations across Berlin
+# Create five Person Entities in various locations across Berlin
 #
 curl -s -o /dev/null -X POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Content-Type: application/json' \
@@ -61,7 +61,7 @@ curl -s -o /dev/null -X POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/entityOper
   },
   "email": {
     "type": "Property",
-    "value": "torsten-kühl@xyz.foo"
+    "value": "torsten-kuehl@xyz.foo"
   },
   "name": {
     "type": "Property",
@@ -86,11 +86,11 @@ curl -s -o /dev/null -X POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/entityOper
   },
   "email": {
     "type": "Property",
-    "value": "frank-regio@xyz.foo"
+    "value": "frank-king@xyz.foo"
   },
   "name": {
     "type": "Property",
-    "value": "Frank Regio"
+    "value": "Frank King"
   }
 },
 {
@@ -117,31 +117,7 @@ curl -s -o /dev/null -X POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/entityOper
     "type": "Property",
     "value": "Lothar Lammich"
   }
-},
-{
-  "id": "urn:ngsi-ld:Person:person005",
-  "type": "Person",
-  "address": {
-    "type": "Property",
-    "value": {
-      "addressLocality": "Berlin",
-      "addressRegion": "Berlin",
-      "postalCode": "10117",
-      "streetAddress": "Pariser Platz"
-    }
-  },
-  "telephone": {
-    "type": "Property",
-    "value": "0049 1555 6666666"
-  },
-  "email": {
-    "type": "Property",
-    "value": "mailto:lothar-lammich@xyz.foo"
-  },
-  "name": {
-    "type": "Property",
-    "value": "Lothar Lammich"
-  }
-}]'
+}
+]'
 
 echo -e " \033[1;32mdone\033[0m"

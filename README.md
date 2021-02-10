@@ -15,7 +15,7 @@ to gain access to services. The application code created in the
 distributed system. The design of FIWARE Wilma - a PEP Proxy is discussed, and the parts of the Keyrock GUI and REST API
 relevant to authenticating other services are described in detail.
 
-[cUrl](https://ec.haxx.se/) commands are used throughout to access the **Keyrock** and **Wilma** REST APIs -
+[http](https://httpie.io) commands are used throughout to access the **Keyrock** and **Wilma** REST APIs -
 [Postman documentation](https://fiware.github.io/tutorials.PEP-Proxy/) for these calls is also available.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/6b143a6b3ad8bcba69cf)
@@ -34,6 +34,9 @@ relevant to authenticating other services are described in detail.
 -   [Architecture](#architecture)
 -   [Start Up](#start-up)
     -   [Dramatis Personae](#dramatis-personae)
+        -   [Introduction](...)
+        -   [Administrating Users](...)
+        -   [Creating Roles and Permissions](...)
     -   [Logging In to Keyrock using the REST API](#logging-in-to-keyrock-using-the-rest-api)
         -   [Create Token with Password](#create-token-with-password)
         -   [Get Token Info](#get-token-info)
@@ -44,9 +47,8 @@ relevant to authenticating other services are described in detail.
     -   [User Logs In to the Application using the REST API](#user-logs-in-to-the-application-using-the-rest-api)
         -   [PEP Proxy - No Access to Orion-LD without an Access Token](#pep-proxy---no-access-to-orion-without-an-access-token)
         -   [Keyrock - User Obtains an Access Token](#keyrock---user-obtains-an-access-token)
-        -   [PEP Proxy - Accessing Orion-LD with an Access Token](#pep-proxy---accessing-orion-with-an-access-token)
-        -   [PEP Proxy - Accessing Orion-LD with an Authorization: Bearer](pep-proxy---accessing-orion-awith-an-authorization-bearer)
-    -   [Securing Orion-LD - Sample Code](#securing-orion---sample-code)
+        -   [PEP Proxy - Accessing Orion-LD with an Authorization](pep-proxy---accessing-orion-awith-an-authorization)
+-   [Integration with eIDAS](...)
 
 </details>
 
@@ -197,51 +199,61 @@ Where `<command>` will be help, start, stop or create.
 
 ## Dramatis Personae
 
+### Introduction
+
 The following people at `test.com` legitimately have accounts within the Application
 
--   Ole, she will be the Administrator of the **Identity Management** Application.
--   Bob, the Regional Manager of the supermarket chain - he has several store managers under him:
-    -   Manager1
-    -   Manager2
--   Charlie, the Head of Security of the supermarket chain - he has several store detectives under him:
-    -   Detective1
-    -   Detective2
+-   Alice, she will be the Administrator of the **Identity Management** Application. The account is created in the 
+    initialization process of the Identity Management.
+-   Bob, administrator of the application, he has access to read and write the Personal Data store in the application.
+-   Charlie, he is an application's user. He needs to read the Personal Data of the users but cannot modify them.
 
 The following people at `example.com` have signed up for accounts, but have no reason to be granted access
+to the data
 
 -   Eve - Eve the Eavesdropper
 -   Mallory - Mallory the malicious attacker
--   Rob - Rob the Robber
+
+The following people at `xyz.foo` have signed up for accounts and can access to their Personal Data for reading 
+and writing only:
+-   Ole
+-   Torsten
+-   Frank
+-   Lothar
 
 <details>
   <summary>
    For more details <b>(Click to expand)</b>
   </summary>
 
-   | Name       | eMail                       | Password |
-   | ---------- | --------------------------- | -------- |
-   | alice      | `alice-the-admin@test.com`  | `test`   |
-   | bob        | `bob-the-manager@test.com`  | `test`   |
-   | charlie    | `charlie-security@test.com` | `test`   |
-   | manager1   | `manager1@test.com`         | `test`   |
-   | manager2   | `manager2@test.com`         | `test`   |
-   | detective1 | `detective1@test.com`       | `test`   |
-   | detective2 | `detective2@test.com`       | `test`   |
+   | Name       | eMail                          | Password |
+   | ---------- | ------------------------------ | -------- |
+   | Alice      | `alice-the-admin@test.com`     | `test`   |
+   | Bob        | `bob-the-appmanager@test.com`  | `test`   |
+   | Charlie    | `charlie-the-appuser@test.com` | `test`   |
 
    | Name    | eMail                 | Password |
    | ------- | --------------------- | -------- |
-   | eve     | `eve@example.com`     | `test`   |
-   | mallory | `mallory@example.com` | `test`   |
-   | rob     | `rob@example.com`     | `test`   |
+   | Eve     | `eve@example.com`     | `test`   |
+   | Mallory | `mallory@example.com` | `test`   |
+
+   | Name    | eMail                     | Password |
+   | ------- | ------------------------- | -------- |
+   | Ole     | `ole-lahm@xyz.foo`        | `test`   |
+   | Torsten | `torsten-kuehl@xyz.foo`   | `test`   |
+   | Frank   | `frank-king@xyz.foo`      | `test`   |
+   | Lothar  | `lothar-lammich@xyz.foo`  | `test`   |
 
 </details>
 
-Two organizations have also been set up by Ole:
+Three organizations have also been set up by Alice:
 
 | Name       | Description                         | UUID                                   |
 | ---------- | ----------------------------------- | -------------------------------------- |
 | Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
 | Management | Management Group for Store Managers | `managers-team-0000-0000-000000000000` |
+| Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
+| Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
 
 One application, with appropriate roles and permissions has also been created:
 
@@ -251,6 +263,516 @@ One application, with appropriate roles and permissions has also been created:
 | Client Secret | `tutorial-dckr-site-0000-clientsecret` |
 | URL           | `http://localhost:3000`                |
 | RedirectURL   | `http://localhost:3000/login`          |
+
+### Logging In to Keyrock using the REST API
+
+Enter a username and password to enter the application. The default user has the values `alice-the-admin@test.com`
+and `test`.
+
+#### Create Token with Password
+
+The following example logs in using the Admin User, if you want to obtain the corresponding tokens for the other users
+after their creation just change the proper name and password data in this request:
+
+##### :one: Request:
+
+```console
+http POST http://localhost:3005/v1/auth/tokens \
+  name=alice-the-admin@test.com \
+  password=test
+```
+
+##### Response:
+
+The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
+required in all subsequent requests to gain access
+
+```yaml
+HTTP/1.1 201 Created
+Cache-Control: no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0
+Connection: keep-alive
+Content-Length: 138
+Content-Security-Policy: default-src 'self' img-src 'self' data:;script-src 'self' 'unsafe-inline';style-src 'self' https: 'unsafe-inline'
+Content-Type: application/json; charset=utf-8
+Date: Wed, 10 Feb 2021 08:31:27 GMT
+ETag: W/"8a-SCtuhPlCxvhqNChN4qFnlyzMINs"
+Expect-CT: max-age=0
+Referrer-Policy: no-referrer
+Set-Cookie: session=eyJyZWRpciI6Ii8ifQ==; path=/; expires=Wed, 10 Feb 2021 09:31:27 GMT; httponly
+Set-Cookie: session.sig=80Qc1EoFnglVR7H5hG9_Rad6txc; path=/; expires=Wed, 10 Feb 2021 09:31:27 GMT; httponly
+Strict-Transport-Security: max-age=15552000; includeSubDomains
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Permitted-Cross-Domain-Policies: none
+X-Subject-Token: f66fe9ee-1910-4d3c-9710-79795ca37ac3
+X-XSS-Protection: 0
+```
+
+```json
+{
+    "idm_authorization_config": {
+        "authzforce": false,
+        "level": "basic"
+    },
+    "token": {
+        "expires_at": "2021-02-10T09:31:27.065Z",
+        "methods": [
+            "password"
+        ]
+    }
+}
+```
+
+### Creating Users
+
+In this section, we explain how to create the corresponding users, making use of the corresponding 
+[Identity Management API](https://keyrock.docs.apiary.io).
+
+> **Note** - an eMail server must be configured to send out invites properly, otherwise the invitation may be deleted as
+> spam. For testing purposes, it is easier to update the users table directly: `update user set enabled = 1;`
+
+All the CRUD actions for Users require an `X-Auth-token` header from a previously logged in administrative user to be
+able to read or modify other user accounts. The standard CRUD actions are assigned to the appropriate HTTP verbs (POST,
+GET, PATCH and DELETE) under the `/v1/users` endpoint.
+
+To create a new user, send a POST request to the `/v1/users` endpoint containing the `username`, `email` and `password`
+along with the `X-Auth-Token` header from a previously logged in administrative user (see previous section). Additional
+users can be added by making repeated POST requests with the proper information following the previous table. 
+For example to create additional accounts for Bob, the Application Manager we should execute the following request
+
+#### 5 Request:
+
+```bash
+echo '{
+  "user": {
+    "username": "Bob",
+    "email": "bob-the-appmanager@test.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' \
+ X-Auth-Token:"$TOKEN"
+```
+
+#### Response:
+
+The response contains details about the creation of this account:
+
+```json
+{
+    "user": {
+        "admin": false,
+        "date_password": "2021-02-10T14:45:47.950Z",
+        "eidas_id": null,
+        "email": "bob-the-appmanager@test.com",
+        "enabled": true,
+        "gravatar": false,
+        "id": "9943e0bd-1596-4d9d-a438-cdea1b7ec7bb",
+        "image": "default",
+        "salt": "9b5c3d5bbcf649d2",
+        "starters_tour_ended": false,
+        "username": "Bob"
+    }
+}
+```
+
+### List all Users
+
+Obtaining a complete list of all users is a super-admin permission requiring the `X-Auth-token` - most users will only
+be permitted to return users within their own organization. Listing users can be done by making a GET request to the
+`/v1/users` endpoint
+
+#### 6 Request:
+
+```bash
+http GET 'http://localhost:3005/v1/users' \
+ X-Auth-Token:"$TOKEN"
+```
+
+#### Response:
+
+The response contains basic details of all accounts:
+
+```json
+{
+    "users": [
+        {
+            "date_password": "2021-02-10T15:16:51.000Z",
+            "description": null,
+            "email": "eve@example.com",
+            "enabled": true,
+            "gravatar": false,
+            "id": "24ab4550-cb7c-45ce-97ea-870051181745",
+            "scope": [],
+            "username": "Eve",
+            "website": null
+        },
+        {
+            "date_password": "2021-02-10T15:16:52.000Z",
+            "description": null,
+            "email": "torsten-kuehl@xyz.foo",
+            "enabled": true,
+            "gravatar": false,
+            "id": "2548f3a8-aa5c-4dac-90d5-2442d23cd744",
+            "scope": [],
+            "username": "Torsten",
+            "website": null
+        },
+      
+      etc...
+      
+    ]
+}
+```
+
+---
+
+# Grouping User Accounts under Organizations
+
+For any identity management system of a reasonable size, it is useful to be able to assign roles to groups of users,
+rather than setting them up individually. Since user administration is a time consuming business, it is also necessary
+to be able to delegate the responsibility of managing these group of users down to other accounts with a lower level of
+access.
+
+Consider our supermarket chain for example, there could be a group of users (Managers) who can change the prices of
+products within the store, and another group of users (Store Detectives) who can lock and unlock door after closing
+time. Rather than give access to each individual account, it would be easier to assign the rights to an organization and
+then add users to the groups.
+
+Furthermore, Alice, the **Keyrock** administrator does not need to explicitly add additional user accounts to each
+organization herself - she could delegate that right to an owner within each organization. For example Bob the Regional
+Manager would be made the owner of the _management_ organization and could add and remove addition manager accounts
+(such as `manager1` and `manager2`) to that organization whereas Charlie the Head of Security could be handed an
+ownership role in the _security_ organization and add additional store detectives to that organization.
+
+Note that Bob does not have the rights to alter the membership list of the _security_ organization and Charlie does not
+have the rights to alter the membership list of the _management_ organization. Furthermore neither Bob nor Charlie would
+be able to alter the permissions of the application themselves, merely add and remove existing user accounts to the
+organization they control.
+
+Creating an application and setting-up the permissions is not covered here as it is the subject of the next tutorial.
+
+## Organization CRUD Actions
+
+#### GUI
+
+Once signed-in, users are able to create and update organizations for themselves.
+
+![](https://fiware.github.io/tutorials.Identity-Management/img/create-org.png)
+
+#### REST API
+
+Alternatively, the standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
+the `/v1/organizations` endpoint.
+
+### Create an Organization
+
+To create a new organization, send a POST request to the `/v1/organizations` endpoint containing the `name` and
+`description` along with the `X-Auth-token` header from a previously logged in user.
+
+#### 9 Request:
+
+```bash
+curl -iX POST \
+  'http://localhost:3005/v1/organizations' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}' \
+  -d '{
+  "organization": {
+    "name": "Security",
+    "description": "This group is for the store detectives"
+  }
+}'
+```
+
+#### Response:
+
+The Organization is created and the user who created it is automatically assigned as a user. The response returns UUID
+to identify the new organization.
+
+```json
+{
+    "organization": {
+        "id": "18deea43-e12a-4018-a45a-664c3158780d",
+        "image": "default",
+        "name": "Security",
+        "description": "This group is for the store detectives"
+    }
+}
+```
+
+### Read Organization Details
+
+Making a GET request to a resource under the `/v1/organizations/{{organization-id}}` endpoint will return the
+organization listed under that ID. The `X-Auth-token` must be supplied in the headers as only permitted organizations
+will be shown.
+
+#### 10 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/organizations/{{organization-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns the details of the organization.
+
+```json
+{
+    "organization": {
+        "id": "18deea43-e12a-4018-a45a-664c3158780d",
+        "name": "Security",
+        "description": "This group is for the store detectives",
+        "website": null,
+        "image": "default"
+    }
+}
+```
+
+### List all Organizations
+
+Obtaining a complete list of all organizations is a super-admin permission requiring the `X-Auth-token` - most users
+will only be permitted to return users within their own organization. Listing users can be done by making a GET request
+to the `/v1/organizations` endpoint
+
+#### 11 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/organizations' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns the details of the visible organizations.
+
+```json
+{
+    "organizations": [
+        {
+            "role": "owner",
+            "Organization": {
+                "id": "18deea43-e12a-4018-a45a-664c3158780d",
+                "name": "Security",
+                "description": "This group is for the store detectives",
+                "image": "default",
+                "website": null
+            }
+        },
+        {
+            "role": "owner",
+            "Organization": {
+                "id": "a45f9b5a-dd23-4d0f-a0d4-e97e2d7431a3",
+                "name": "Management",
+                "description": "This group is for the store manangers",
+                "image": "default",
+                "website": null
+            }
+        }
+    ]
+}
+```
+
+### Update an Organization
+
+To amend the details of an existing organization, a PATCH request is send to the `/v1/organizations/{{organization-id}}`
+endpoint.
+
+#### 12 Request:
+
+```bash
+curl -iX PATCH \
+  'http://localhost:3005/v1/organizations/{{organization-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}' \
+  -d '{
+    "organization": {
+        "name": "FIWARE Security",
+        "description": "The FIWARE Foundation is the legal independent body promoting, augmenting open-source FIWARE technologies",
+        "website": "https://fiware.org"
+    }
+}'
+```
+
+#### Response:
+
+The response contains a list of the fields which have been amended.
+
+```json
+{
+    "values_updated": {
+        "name": "FIWARE Security",
+        "description": "The FIWARE Foundation is the legal independent body promoting, augmenting open-source FIWARE technologies",
+        "website": "https://fiware.org"
+    }
+}
+```
+
+### Delete an Organization
+
+#### 13 Request:
+
+```bash
+curl -iX DELETE \
+  'http://localhost:3005/v1/organizations/{{organization-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+## Administrating Users within an Organization
+
+Users within an Organization are assigned to one of types - `owner` or `member`. The members of an organization inherit
+all of the roles and permissions assigned to the organization itself. In addition, owners of an organization are able to
+add an remove other members and owners.
+
+### Add a User as a Member of an Organization
+
+To add a user to an organization using the GUI, first click on the existing organization, then click on the **Manage**
+button:
+
+![](https://fiware.github.io/tutorials.Identity-Management/img/add-user-to-org.png)
+
+To add a user as a member of an organization, an owner must make a PUT request as shown, including the
+`<organization-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+
+#### 14 Request:
+
+```bash
+curl -iX PUT \
+  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/member' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response lists the user's current role within the organization (i.e. `member`)
+
+```json
+{
+    "user_organization_assignments": {
+        "role": "member",
+        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
+        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea"
+    }
+}
+```
+
+### Add a User as an Owner of an Organization
+
+An owner can also create new owners by making a PUT request as shown, including the `<organization-id>` and `<user-id>`
+in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+
+#### 15 Request:
+
+```bash
+curl -iX PUT \
+  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/owner' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response lists the user's current role within the organization (i.e. `owner`)
+
+```json
+{
+    "user_organization_assignments": {
+        "role": "owner",
+        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
+        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d"
+    }
+}
+```
+
+### List Users within an Organization
+
+To list the users of an organization using the GUI, just click on the existing organization:
+
+![](https://fiware.github.io/tutorials.Identity-Management/img/org-with-users.png)
+
+Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing users
+can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
+
+#### 16 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/organizations/{{organization-id}}/users' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response contains the users list.
+
+```json
+{
+    "organization_users": [
+        {
+            "user_id": "admin",
+            "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
+            "role": "owner"
+        },
+        {
+            "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
+            "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
+            "role": "member"
+        }
+    ]
+}
+```
+
+### Read User Roles within an Organization
+
+To find the role of a user within an organization, send a GET request to the
+`/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles` endpoint.
+
+#### 17 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns the role of the given `<user-id>`
+
+```json
+{
+    "organization_user": {
+        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
+        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
+        "role": "member"
+    }
+}
+```
+
+### Remove a User from an Organization
+
+Owners and Super-Admins can remove a user from and organization by making a delete request.
+
+#### 18 Request:
+
+```bash
+curl -X DELETE \
+  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/member' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+### Creating Roles and Permissions
 
 To save time, the data creating users and organizations from the
 [previous tutorial](https://github.com/FIWARE/tutorials.Roles-Permissions) has been downloaded and is automatically
@@ -268,109 +790,6 @@ To refresh your memory about how to create users and organizations and applicati
 
 and look around.
 
-## Logging In to Keyrock using the REST API
-
-Enter a username and password to enter the application. The default super-user has the values `alice-the-admin@test.com`
-and `test`. The URL `https://localhost:3443/v1/auth/tokens` should also work in a secure system.
-
-### Create Token with Password
-
-The following example logs in using the Admin Super-User:
-
-#### :one: Request:
-
-```console
-curl -iX POST \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "name": "alice-the-admin@test.com",
-  "password": "test"
-}'
-```
-
-#### Response:
-
-The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
-required in all subsequent requests to gain access
-
-```
-HTTP/1.1 201 Created
-Content-Security-Policy: default-src 'self' img-src 'self' data:;script-src 'self' 'unsafe-inline';style-src 'self' https: 'unsafe-inline'
-X-DNS-Prefetch-Control: off
-Expect-CT: max-age=0
-X-Frame-Options: SAMEORIGIN
-Strict-Transport-Security: max-age=15552000; includeSubDomains
-X-Download-Options: noopen
-X-Content-Type-Options: nosniff
-X-Permitted-Cross-Domain-Policies: none
-Referrer-Policy: no-referrer
-X-XSS-Protection: 0
-Cache-Control: no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0
-X-Subject-Token: 730ba40f-8787-490e-aea8-9f1d98cc87e6
-Content-Type: application/json; charset=utf-8
-Content-Length: 138
-ETag: W/"8a-hYrW1bqaSy3GVQI34aexyHgPYmg"
-Set-Cookie: session=eyJyZWRpciI6Ii8ifQ==; path=/; expires=Thu, 03 Dec 2020 16:46:08 GMT; httponly
-Set-Cookie: session.sig=vwpRi_eyA0W2C0YYa-6mzMBHBIk; path=/; expires=Thu, 03 Dec 2020 16:46:08 GMT; httponly
-Date: Thu, 03 Dec 2020 15:46:08 GMT
-Connection: keep-alive
-```
-
-```json
-{
-  "token": {
-    "methods": [
-      "password"
-    ],
-    "expires_at": "2020-12-03T16:47:28.462Z"
-  },
-  "idm_authorization_config": {
-    "level": "basic",
-    "authzforce": false
-  }
-}
-```
-
-### Get Token Info
-
-Once a user has logged in, the presence of a (time-limited) token is sufficient to find out more information about the
-user.
-
-You can use the long-lasting `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa` to pretend to be Alice throughout this
-tutorial. Both `{{X-Auth-token}}` and `{{X-Subject-token}}` can be set to the same value in the case that Alice is
-making an enquiry about herself.
-
-#### :two: Request:
-
-```console
-curl -X GET \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -H 'X-Subject-token: {{X-Subject-token}}'
-```
-
-#### Response:
-
-The response will return the details of the associated user
-
-```json
-{
-    "access_token": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    "expires": "2036-07-30T12:04:45.000Z",
-    "valid": true,
-    "User": {
-        "scope": [],
-        "id": "aaaaaaaa-good-0000-0000-000000000000",
-        "username": "alice",
-        "email": "alice-the-admin@test.com",
-        "date_password": "2018-07-30T11:41:14.000Z",
-        "enabled": true,
-        "admin": true
-    }
-}
-```
 
 
 # Securing the OrionLD Context Broker
@@ -462,12 +881,8 @@ present a valid token results in a denial of access.
 If a request to the PEP Proxy is made without any access token as shown:
 
 ```console
-curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
-  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -H 'Content-Type: application/json'
-curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:Ole?options=keyValues' \ 
-  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -H 'Content-Type: application/json'
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:001?options=keyValues \           
+Link:'<https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'  
 ```
 
 #### Response:
@@ -499,12 +914,12 @@ For example to log-in as Alice the Admin:
 For example to log-in as Alice the Admin:
 
 ```console
-curl -iX POST \
-  'http://localhost:3005/oauth2/token' \
-  -H 'Accept: application/json' \
-  -H 'Authorization: Basic dHV0b3JpYWwtZGNrci1zaXRlLTAwMDAteHByZXNzd2ViYXBwOnR1dG9yaWFsLWRja3Itc2l0ZS0wMDAwLWNsaWVudHNlY3JldA==' \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data "username=alice-the-admin@test.com&password=test&grant_type=password"
+http --form POST 'http://localhost:3005/oauth2/token' \
+ username=alice-the-admin@test.com \  
+ password=test \   
+ grant_type=password \  
+ Authorization:'Basic dHV0b3JpYWwtZGNrci1zaXRlLTAwMDAteHByZXNzd2ViYXBwOnR1dG9yaWFsLWRja3Itc2l0ZS0wMDAwLWNsaWVudHNlY3JldA==' \
+ Content-Type:'application/x-www-form-urlencoded'
 ```
 
 #### Response:
@@ -513,62 +928,25 @@ The response returns an access code to identify the user:
 
 ```json
 {
-    "access_token": "a7e22dfe2bd7d883c8621b9eb50797a7f126eeab",
-    "token_type": "Bearer",
+    "access_token": "25c5f5a1a53984d7322b36a6227f36201399a471",
     "expires_in": 3599,
-    "refresh_token": "05e386edd9f95ed0e599c5004db8573e86dff874",
-    "scope":["bearer"]
+    "refresh_token": "6527f0b041eb890ea361fdd8db91ce2781f60618",
+    "scope": [
+        "bearer"
+    ],
+    "token_type": "bearer"
 }
 ```
 
 This can also be done by entering the Tutorial Application on http:/localhost and logging in using any of the OAuth2
-grants on the page. A successful log-in will return an access token.
-
-### PEP Proxy - Accessing Orion-LD with an Access Token
-
-If a request to the PEP Proxy is made including a valid access token in the `X-Auth-Token` header with the value 
-obtained in the `X-Auth-token` key in the previous response, the request is authorized and the service behind the 
-PEP Proxy (in this case the Orion-LD Context Broker) will return the data as expected.
-
-#### :one::four: Request:
+grants on the page. A successful log-in will return an access token. For the next step, we export a TOKEN variable 
+to keep the information of the oAuth token.
 
 ```console
-curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
-  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-Token: ${TOKEN}'
+export TOKEN={{access_token}}
 ```
 
-#### Response:
-
-The response returns the information regarding the Farm001:
-
-```console
-{
-  "@context": "https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld",
-  "id": "urn:ngsi-ld:Building:farm001",
-  "type": "Building",
-  "category": "farm",
-  "address": {
-    "streetAddress": "Großer Stern 1",
-    "addressRegion": "Berlin",
-    "addressLocality": "Tiergarten",
-    "postalCode": "10557"
-  },
-  "location": {
-    "type": "Point",
-    "coordinates": [
-      13.3505,
-      52.5144
-    ]
-  },
-  "name": "Victory Farm",
-  "owner": "urn:ngsi-ld:Person:person001"
-}
-```
-
-
-### PEP Proxy - Accessing Orion-LD with an Authorization: Bearer
+### PEP Proxy - Accessing Orion-LD with an Authorization
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
 is permitted and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
@@ -577,95 +955,30 @@ expected.
 #### :one::five: Request:
 
 ```console
-curl -X GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002?options=keyValues' \
-  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer {{X-Auth-token}}'
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
 ```
 
 #### Response:
 
 ```json
 {
-  "@context": "https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld",
-  "id": "urn:ngsi-ld:Building:barn002",
-  "type": "Building",
-  "category": "barn",
-  "address": {
-    "streetAddress": "Straße des 17. Juni",
-    "addressRegion": "Berlin",
-    "addressLocality": "Tiergarten",
-    "postalCode": "10557"
-  },
-  "location": {
-    "type": "Point",
-    "coordinates": [
-      13.3698,
-      52.5163
-    ]
-  },
-  "name": "Big Red Barn",
-  "owner": "urn:ngsi-ld:Person:person001"
+    "@context": "https://schema.lab.fiware.org/ld/context",
+    "address": {
+        "addressLocality": "Berlin",
+        "addressRegion": "Berlin",
+        "postalCode": "14199",
+        "streetAddress": "Detmolder Str. 10"
+    },
+    "email": "ole-lahm@xyz.foo",
+    "id": "urn:ngsi-ld:Person:person001",
+    "name": "Ole Lahm",
+    "telephone": "0049 1522 99999999",
+    "type": "Person"
 }
 ```
 
-## Securing Orion-LD - Sample Code
-
-When a User logs in to the application using the User Credentials Grant, an `access_token` is obtained which identifies
-the User. The `access_token` is stored in session:
-
-```javascript
-function userCredentialGrant(req, res) {
-    debug("userCredentialGrant");
-
-    const email = req.body.email;
-    const password = req.body.password;
-
-    oa.getOAuthPasswordCredentials(email, password).then(results => {
-        req.session.access_token = results.access_token;
-        return;
-    });
-}
-```
-
-For each subsequent request, the `access_token` is supplied in the `X-Auth-Token` Header
-
-```javascript
-function setAuthHeaders(req) {
-    const headers = {};
-    if (req.session.access_token) {
-        headers["X-Auth-Token"] = req.session.access_token;
-    }
-    return headers;
-}
-```
-
-For example, when buying an item, two requests are made, the same `X-Auth-Token` Header must be added to each request -
-therefore the User can be identified and access granted.
-
-```javascript
-async function buyItem(req, res) {
-    const inventory = await retrieveEntity(
-        req.params.inventoryId,
-        {
-            options: "keyValues",
-            type: "InventoryItem"
-        },
-        setAuthHeaders(req)
-    );
-    const count = inventory.shelfCount - 1;
-
-    await updateExistingEntityAttributes(
-        req.params.inventoryId,
-        { shelfCount: { type: "Integer", value: count } },
-        {
-            type: "InventoryItem"
-        },
-        setAuthHeaders(req)
-    );
-    res.redirect(`/app/store/${inventory.refStore}/till`);
-}
-```
 
 ## License
 

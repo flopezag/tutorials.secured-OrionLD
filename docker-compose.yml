@@ -135,7 +135,6 @@ services:
       - "MYSQL_ROOT_HOST=182.18.1.5" # Allow Keyrock to access this database
     volumes:
       - mysql-db:/var/lib/mysql
-      - ./mysql-data:/docker-entrypoint-initdb.d/:ro
     secrets:
       - my_secret_data
 

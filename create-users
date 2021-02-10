@@ -1,0 +1,89 @@
+#!/bin/bash
+#
+#  http commands to create the users in Identity Management
+#
+#
+
+set -e
+
+echo -e "⏳ Creating identities into IdM"
+
+echo -e "      Obtaining the X-Subject-Token for admin user: Alice"
+
+#
+# Get admin token
+#
+TOKEN=$(http -h POST http://localhost:3005/v1/auth/tokens \
+  name=alice-the-admin@test.com \
+  password=test | grep 'X-Subject-Token' | awk '{print $2}')
+
+echo -e "          ... $TOKEN"
+
+echo -e "      Creating the users: Bob, Charlie, Eve, Mallory, Ole, Torsten, Frank, Lothar"
+
+#
+# Create five Person Entities in various locations across Berlin
+#
+echo '{
+  "user": {
+    "username": "Bob",
+    "email": "bob-the-appmanager@test.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
+
+echo '{
+  "user": {
+    "username": "Charlie",
+    "email": "charlie-the-appuser@test.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
+
+echo '{
+  "user": {
+    "username": "Eve",
+    "email": "eve@example.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
+
+echo '{
+  "user": {
+    "username": "Mallory",
+    "email": "mallory@example.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
+
+echo '{
+  "user": {
+    "username": "Ole",
+    "email": "ole-lahm@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
+
+echo '{
+  "user": {
+    "username": "Torsten",
+    "email": "torsten-kuehl@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
+
+echo '{
+  "user": {
+    "username": "Frank",
+    "email": "frank-king@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
+
+echo '{
+  "user": {
+    "username": "Lothar",
+    "email": "lothar-lammich@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN"
