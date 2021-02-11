@@ -248,12 +248,12 @@ and writing only:
 
 Three organizations have also been set up by Alice:
 
-| Name       | Description                         | UUID                                   |
-| ---------- | ----------------------------------- | -------------------------------------- |
-| Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
-| Management | Management Group for Store Managers | `managers-team-0000-0000-000000000000` |
-| Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
-| Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
+| Name       | Description                          |
+| ---------- | ------------------------------------ |
+| Managers   | This group is for the Project Managers of the Personal Data application with full control access.          |
+| Users      | This group is for the Project Users of the Personal Data application with read control access.             |
+| Data       | This group is for the Personal Data owners who can read and modify only their own data.                    |
+| Others     | This group is for the rest of IdM registered users not authorized to access the Personal Data Application. |
 
 One application, with appropriate roles and permissions has also been created:
 
@@ -264,15 +264,11 @@ One application, with appropriate roles and permissions has also been created:
 | URL           | `http://localhost:3000`                |
 | RedirectURL   | `http://localhost:3000/login`          |
 
-### Logging In to Keyrock using the REST API
+### Logging In to Keyrock using the REST API. Getting admin token
 
 Enter a username and password to enter the application. The default user has the values `alice-the-admin@test.com`
-and `test`.
-
-#### Create Token with Password
-
-The following example logs in using the Admin User, if you want to obtain the corresponding tokens for the other users
-after their creation just change the proper name and password data in this request:
+and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for 
+the other users after their creation just change the proper name and password data in this request:
 
 ##### :one: Request:
 
@@ -338,9 +334,11 @@ able to read or modify other user accounts. The standard CRUD actions are assign
 GET, PATCH and DELETE) under the `/v1/users` endpoint.
 
 To create a new user, send a POST request to the `/v1/users` endpoint containing the `username`, `email` and `password`
-along with the `X-Auth-Token` header from a previously logged in administrative user (see previous section). Additional
+along with the `X-Auth-Token` header from a previously logged in administrative user (see the previous section). Additional
 users can be added by making repeated POST requests with the proper information following the previous table. 
 For example to create additional accounts for Bob, the Application Manager we should execute the following request
+
+> **Note** You can take a look and execute the create-users script to automatically create all the users accounts.
 
 #### 5 Request:
 
@@ -426,129 +424,82 @@ The response contains basic details of all accounts:
 }
 ```
 
----
 
-# Grouping User Accounts under Organizations
+### Grouping User Accounts under Organizations
 
 For any identity management system of a reasonable size, it is useful to be able to assign roles to groups of users,
-rather than setting them up individually. Since user administration is a time consuming business, it is also necessary
+rather than setting them up individually. Since user administration is a time-consuming business, it is also necessary
 to be able to delegate the responsibility of managing these group of users down to other accounts with a lower level of
 access.
 
-Consider our supermarket chain for example, there could be a group of users (Managers) who can change the prices of
-products within the store, and another group of users (Store Detectives) who can lock and unlock door after closing
-time. Rather than give access to each individual account, it would be easier to assign the rights to an organization and
-then add users to the groups.
+Consider our Personal Data management example, there could be a group of users (Application Managers) who can introduce
+new Personal Data into the system as well as modify existing data introduced previously. Another group of users 
+(Application Users) who need to access the Personal Data information to produce some report based on them but cannot
+modify them. Another group of users (Data Users) correspond to each of the persons that provide the Personal Data, 
+therefore they can access for reading and modifying their only own data. Finally, Another group of users (Others) 
+exist that are not related to this application and therefore they cannot access to the Personal Data for neither 
+reading or writing. Rather than give access to each individual account, it would be easier to assign the rights to 
+an organization and then add users to these organizations.
 
-Furthermore, Alice, the **Keyrock** administrator does not need to explicitly add additional user accounts to each
-organization herself - she could delegate that right to an owner within each organization. For example Bob the Regional
-Manager would be made the owner of the _management_ organization and could add and remove addition manager accounts
-(such as `manager1` and `manager2`) to that organization whereas Charlie the Head of Security could be handed an
-ownership role in the _security_ organization and add additional store detectives to that organization.
+Furthermore, Alice, the **Identity Management** administrator does not need to explicitly add additional user 
+accounts to each organization herself - she could delegate that right to an owner within each organization. 
+For example Bob the Project Manager would be made the owner of the _Application Managers_ organization and could 
+add and remove addition manager accounts to that organization whereas Charlie the Head of _Application Users_ 
+could be handed an ownership role his organization and add additional application users to that organization.
 
-Note that Bob does not have the rights to alter the membership list of the _security_ organization and Charlie does not
-have the rights to alter the membership list of the _management_ organization. Furthermore neither Bob nor Charlie would
-be able to alter the permissions of the application themselves, merely add and remove existing user accounts to the
-organization they control.
+Note that Bob does not have the rights to alter the membership list of the _Users_ organization and Charlie 
+does not have the rights to alter the membership list of the _Managers_ organization. Furthermore, neither Bob 
+nor Charlie would be able to alter the permissions of the application themselves, merely add and remove existing 
+user accounts to the organization they control.
 
-Creating an application and setting-up the permissions is not covered here as it is the subject of the next tutorial.
+By the execution of this tutorial, alice will be the person in charge of the creation of all organizations for 
+management purposes. Therefore, Alice will be automatically assigned to all of these groups.
 
-## Organization CRUD Actions
+#### Create an Organization
 
-#### GUI
+The standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
+the `/v1/organizations` endpoint. To create a new organization, send a POST request to the `/v1/organizations` 
+endpoint containing the `name` and `description` along with the `X-Auth-token` header from a previously 
+logged-in user.
 
-Once signed-in, users are able to create and update organizations for themselves.
-
-![](https://fiware.github.io/tutorials.Identity-Management/img/create-org.png)
-
-#### REST API
-
-Alternatively, the standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
-the `/v1/organizations` endpoint.
-
-### Create an Organization
-
-To create a new organization, send a POST request to the `/v1/organizations` endpoint containing the `name` and
-`description` along with the `X-Auth-token` header from a previously logged in user.
-
-#### 9 Request:
+> **Note** You can take a look and execute the organization-mgmt script to automatically create all organizations
+> and assign the users to each organization.
 
 ```bash
-curl -iX POST \
-  'http://localhost:3005/v1/organizations' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
+printf '{
   "organization": {
-    "name": "Security",
-    "description": "This group is for the store detectives"
+    "name": "Managers",
+    "description": "This group is for the Project Managers of the Personal Data application with full control access"
   }
-}'
+}'| http  POST http://localhost:3005/v1/organizations \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
 ```
 
-#### Response:
-
-The Organization is created and the user who created it is automatically assigned as a user. The response returns UUID
-to identify the new organization.
+The Organization is created, and the user who created it is automatically assigned as a user. The response returns 
+UUID to identify the new organization.
 
 ```json
 {
     "organization": {
-        "id": "18deea43-e12a-4018-a45a-664c3158780d",
+        "description": "This group is for the Project Managers of the Personal Data application with full control access",
+        "id": "e3980d68-4f0e-4f7b-b1d5-d3bbc7125fb1",
         "image": "default",
-        "name": "Security",
-        "description": "This group is for the store detectives"
+        "name": "Managers"
     }
 }
 ```
 
-### Read Organization Details
-
-Making a GET request to a resource under the `/v1/organizations/{{organization-id}}` endpoint will return the
-organization listed under that ID. The `X-Auth-token` must be supplied in the headers as only permitted organizations
-will be shown.
-
-#### 10 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/organizations/{{organization-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns the details of the organization.
-
-```json
-{
-    "organization": {
-        "id": "18deea43-e12a-4018-a45a-664c3158780d",
-        "name": "Security",
-        "description": "This group is for the store detectives",
-        "website": null,
-        "image": "default"
-    }
-}
-```
-
-### List all Organizations
+#### List all Organizations
 
 Obtaining a complete list of all organizations is a super-admin permission requiring the `X-Auth-token` - most users
 will only be permitted to return users within their own organization. Listing users can be done by making a GET request
-to the `/v1/organizations` endpoint
-
-#### 11 Request:
+to the `/v1/organizations` endpoint.
 
 ```bash
-curl -X GET \
-  'http://localhost:3005/v1/organizations' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+http GET http://localhost:3005/v1/organizations \
+ X-Auth-Token:"$TOKEN"
 ```
-
-#### Response:
 
 The response returns the details of the visible organizations.
 
@@ -556,92 +507,60 @@ The response returns the details of the visible organizations.
 {
     "organizations": [
         {
-            "role": "owner",
             "Organization": {
-                "id": "18deea43-e12a-4018-a45a-664c3158780d",
-                "name": "Security",
-                "description": "This group is for the store detectives",
+                "description": "This group is for the Personal Data owners who can read and modify only their own data",
+                "id": "1d157e87-32e3-4812-bde2-c0d1e3967170",
                 "image": "default",
+                "name": "Data",
                 "website": null
-            }
+            },
+            "role": "owner"
         },
         {
-            "role": "owner",
             "Organization": {
-                "id": "a45f9b5a-dd23-4d0f-a0d4-e97e2d7431a3",
-                "name": "Management",
-                "description": "This group is for the store manangers",
+                "description": "This group is for the Project Users of the Personal Data application with read control access",
+                "id": "531f0f5c-a7c4-4826-96b2-31988caefc11",
                 "image": "default",
+                "name": "Users",
                 "website": null
-            }
+            },
+            "role": "owner"
+        },
+        {
+            "Organization": {
+                "description": "This group is for the rest of IdM registered users not authorized to access the Personal Data Application",
+                "id": "df58f9d2-443a-4375-abf7-00a88677e7b5",
+                "image": "default",
+                "name": "Others",
+                "website": null
+            },
+            "role": "owner"
+        },
+        {
+            "Organization": {
+                "description": "This group is for the Project Managers of the Personal Data application with full control access",
+                "id": "e3980d68-4f0e-4f7b-b1d5-d3bbc7125fb1",
+                "image": "default",
+                "name": "Managers",
+                "website": null
+            },
+            "role": "owner"
         }
     ]
 }
 ```
 
-### Update an Organization
 
-To amend the details of an existing organization, a PATCH request is send to the `/v1/organizations/{{organization-id}}`
-endpoint.
-
-#### 12 Request:
-
-```bash
-curl -iX PATCH \
-  'http://localhost:3005/v1/organizations/{{organization-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-    "organization": {
-        "name": "FIWARE Security",
-        "description": "The FIWARE Foundation is the legal independent body promoting, augmenting open-source FIWARE technologies",
-        "website": "https://fiware.org"
-    }
-}'
-```
-
-#### Response:
-
-The response contains a list of the fields which have been amended.
-
-```json
-{
-    "values_updated": {
-        "name": "FIWARE Security",
-        "description": "The FIWARE Foundation is the legal independent body promoting, augmenting open-source FIWARE technologies",
-        "website": "https://fiware.org"
-    }
-}
-```
-
-### Delete an Organization
-
-#### 13 Request:
-
-```bash
-curl -iX DELETE \
-  'http://localhost:3005/v1/organizations/{{organization-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-## Administrating Users within an Organization
+#### Administrating Users within an Organization
 
 Users within an Organization are assigned to one of types - `owner` or `member`. The members of an organization inherit
-all of the roles and permissions assigned to the organization itself. In addition, owners of an organization are able to
-add an remove other members and owners.
-
-### Add a User as a Member of an Organization
-
-To add a user to an organization using the GUI, first click on the existing organization, then click on the **Manage**
-button:
-
-![](https://fiware.github.io/tutorials.Identity-Management/img/add-user-to-org.png)
+all the roles and permissions assigned to the organization itself. In addition, owners of an organization are able to
+add and remove other members and owners.
 
 To add a user as a member of an organization, an owner must make a PUT request as shown, including the
 `<organization-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 
-#### 14 Request:
+##### 14 Request:
 
 ```bash
 curl -iX PUT \
@@ -650,7 +569,7 @@ curl -iX PUT \
   -H 'X-Auth-token: {{X-Auth-token}}'
 ```
 
-#### Response:
+##### Response:
 
 The response lists the user's current role within the organization (i.e. `member`)
 
@@ -759,18 +678,6 @@ The response returns the role of the given `<user-id>`
 }
 ```
 
-### Remove a User from an Organization
-
-Owners and Super-Admins can remove a user from and organization by making a delete request.
-
-#### 18 Request:
-
-```bash
-curl -X DELETE \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/member' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
 
 ### Creating Roles and Permissions
 
