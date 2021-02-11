@@ -133,6 +133,13 @@ will need to follow the instructions found [here](https://docs.docker.com/compos
 We will start up our services using a simple bash script. Windows users should download [cygwin](http://www.cygwin.com/)
 to provide a command-line functionality similar to a Linux distribution on Windows.
 
+## Postman
+
+## http
+
+## jq
+
+
 # Architecture
 
 This application protects access to the existing Stock Management and Sensors-based application by adding PEP Proxy
@@ -551,7 +558,7 @@ The response returns the details of the visible organizations.
 ```
 
 
-#### Administrating Users within an Organization
+#### Assign users to organizations
 
 Users within an Organization are assigned to one of types - `owner` or `member`. The members of an organization inherit
 all the roles and permissions assigned to the organization itself. In addition, owners of an organization are able to
@@ -563,11 +570,15 @@ To add a user as a member of an organization, an owner must make a PUT request a
 ##### 14 Request:
 
 ```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/member' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+http  PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
 ```
+
+We have to repeat this operation for all the users created previously.
+
+> Note: $MANAGERS corresponds to the organization id of the _Managers_ organization and $BOB correponds to the user id
+> of the Bob user. See the mgmt-users-organization script for more details
 
 ##### Response:
 
@@ -583,50 +594,16 @@ The response lists the user's current role within the organization (i.e. `member
 }
 ```
 
-### Add a User as an Owner of an Organization
+#### List Users within an Organization
 
-An owner can also create new owners by making a PUT request as shown, including the `<organization-id>` and `<user-id>`
-in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-
-#### 15 Request:
-
-```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/owner' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response lists the user's current role within the organization (i.e. `owner`)
-
-```json
-{
-    "user_organization_assignments": {
-        "role": "owner",
-        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
-        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d"
-    }
-}
-```
-
-### List Users within an Organization
-
-To list the users of an organization using the GUI, just click on the existing organization:
-
-![](https://fiware.github.io/tutorials.Identity-Management/img/org-with-users.png)
-
-Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing users
-can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
+Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing 
+users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
 
 #### 16 Request:
 
 ```bash
-curl -X GET \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+http GET "http://localhost:3005/v1/organizations/$OTHERS/users" \
+ X-Auth-Token:"$TOKEN"
 ```
 
 #### Response:
@@ -637,47 +614,778 @@ The response contains the users list.
 {
     "organization_users": [
         {
-            "user_id": "admin",
-            "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
-            "role": "owner"
+            "organization_id": "f47a6dfb-bf25-4117-be79-723123f11ec4",
+            "role": "owner",
+            "user_id": "admin"
         },
         {
-            "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
-            "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
-            "role": "member"
+            "organization_id": "f47a6dfb-bf25-4117-be79-723123f11ec4",
+            "role": "member",
+            "user_id": "ff7ff1d6-c34e-4784-a511-dfc86ea6c260"
+        },
+        {
+            "organization_id": "f47a6dfb-bf25-4117-be79-723123f11ec4",
+            "role": "member",
+            "user_id": "4901190d-7233-4a9c-854a-45551b01d912"
         }
     ]
 }
 ```
 
-### Read User Roles within an Organization
 
-To find the role of a user within an organization, send a GET request to the
-`/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles` endpoint.
+## Managing Roles and Permissions
 
-#### 17 Request:
+The next step consists in the creation of the proper application, and how to assign roles and permissions to them. 
+It takes the users and organizations created in the previous sections and ensures that only legitimate users will 
+have access to resources.
+
+Authorization is the function of specifying access rights/privileges to resources related to information security. 
+More formally, "to authorize" is to define an access policy. With identity management controlled via the 
+FIWARE Keyrock Generic Enabler, User access is granted based on permissions assigned to a role.
+
+Every application secured by the Keyrock generic enabler can define a set of permissions - i.e. a set of things 
+that can be done within the application. For example within the application, the ability to read and modify new
+Personal Data . Similarly, the ability to read and modify only your own Personal Data could be secured a proper
+defined permission.
+
+These permissions are grouped together in a series of roles - for example read and modify Personal Data could 
+both be assigned to the Managers role, meaning that Users who are subsequently given that role would gain both 
+permissions over Personal Data stored in the application. Permissions can overlap and be assigned to multiple 
+roles - maybe read Personal Data is also assigned to the Users role.
+
+In turn users or organizations will be assigned to one of more roles - each user will gain the sum of all the 
+permissions for each role they have. For example if Alice is assigned to both Managers and Users roles, she 
+will gain all permissions for reading and modifying Personal Data.
+
+The concept of a role is unknown to a user - they only know the list of permissions they have been granted, 
+not how the permissions are split up within the application.
+
+In summary, permissions are all the possible actions that can be done to resources within an application, whereas 
+roles are groups of actions which can be done by a type of user of that application. The relationship between the 
+objects can be seen below.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
+
+### Create an Application
+
+Any FIWARE application can be broken down into a collection of microservices. These microservices connect together 
+to read and alter the state of the real world. Security can be added to these services by restricting actions on 
+these resources down to users how have appropriate permissions. It is therefore necessary to define an application 
+to offer a set of permissible actions and to hold a list of permitted users (or groups of users i.e. an Organization). 
+Therefore, applications are therefore a conceptual bucket holding who can do what on which resource.
+
+To create a new application via the REST API, send a POST request to the `/v1/application` endpoint containing 
+details of the application such as `name` and `description`, along with OAuth information fields such as the 
+`url` of the webservice to be protected, and `redirect_uri` (where a user will be challenged for their credentials). 
+The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-token` 
+from a previously logged in user will automatically be granted a provider role over the application.
+
+#### Request:
+
+In the example below, Alice (who holds `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
+application which accepts three different grant types
+
+```bash
+printf '{
+  "application": {
+    "name": "Personal Data Mgmt. Application",
+    "description": "FIWARE Application protected by OAuth2 for managing Personal Data",
+    "redirect_uri": "http://localhost:1027/login",
+    "url": "http://localhost:1027",
+    "grant_type": [
+      "authorization_code",
+      "implicit",
+      "password"
+    ]
+  }
+}'| http  POST http://localhost:3005/v1/applications \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+```
+
+#### Response:
+
+The response includes a Client ID and Secret which can be used to secure the application.
+
+```json
+{
+    "application": {
+        "description": "FIWARE Application protected by OAuth2 for managing Personal Data",
+        "grant_type": "password,authorization_code,implicit",
+        "id": "3fc4e897-a9b5-4b2e-bcce-98849c628972",
+        "image": "default",
+        "jwt_secret": null,
+        "name": "Personal Data Mgmt. Application",
+        "redirect_uri": "http://localhost:1027/login",
+        "response_type": "code,token",
+        "scope": null,
+        "secret": "a3e10297-7a67-4f41-a5a8-e065332f2bbc",
+        "token_types": "bearer",
+        "url": "http://localhost:1027"
+    }
+}
+```
+
+Copy the Application Client ID to be used for all other application requests - in the case above the ID is
+`3fc4e897-a9b5-4b2e-bcce-98849c628972` (export APP=3fc4e897-a9b5-4b2e-bcce-98849c628972).
+
+### Create a Permission
+
+An application permission is an allowable action on a resource within that application. Each resource is defined 
+by a URL (e.g. `/entities`), and the action is any HTTP verb (e.g. GET). The combination will be used to ensure 
+only permitted users are able to access the `/entities` resource.
+
+It should be emphasized that permissions are always found bound to an application - abstract permissions do not 
+exist on their own. The standard permission CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, 
+PATCH and DELETE) under the `/v1/applications/{{application-id}}/permissions` endpoint. As you can see the 
+`<application-id>` itself is integral to the URL.
+
+Permissions are usually defined once and set-up when the application is created. If the design of your use-case 
+means that you find you need to alter the permissions regularly, then the definition has probably been defined 
+incorrectly or in the wrong layer - complex access control rules should be pushed down into the XACML definitions 
+or moved into the business logic of the application - they should not be dealt with within **Keyrock**.
+
+To create a new permission via the REST API, send a POST request to the `/applications/{{application-id}}/permissions`
+endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged in 
+user (Alice).
+
+#### 8 Request:
+
+```bash
+printf '{
+  "permission": {
+    "name": "Access to a Personal Data entity",
+    "action": "GET",
+    "resource": "/entities/*",
+    "is_regex": true
+  }
+}' | http  POST "http://localhost:3005/v1/applications/$APP/permissions" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+```
+
+#### Response:
+
+The response returns the details of the newly created permission.
+
+```json
+{
+    "permission": {
+        "action": "GET",
+        "id": "6ec726dc-fcad-447b-8222-7b3035de805b",
+        "is_internal": false,
+        "is_regex": true,
+        "name": "Access to a Personal Data entity",
+        "oauth_client_id": "3fc4e897-a9b5-4b2e-bcce-98849c628972",
+        "resource": "/entities/*"
+    }
+}
+```
+
+We need to repeat this procedure for the rest of resources from which we want to control the access. In our example
+we wanted to control the access to OrionLD regarding the creation of entities, creation of several entities. Take a
+look in the following table to see the different permissions to be created:
+
+| Permission | Verb  | Resource    | Description | Organizations |
+| ---------- | ----- | ----------- | ----------- | ------------- |
+| #1         | GET   | /entities/*                  | Get detailed information of an entity (all entities)          | MANAGERS, USERS |
+| #2         | GET   | /entities/{{entityID}}       | Get detailed information of an entity (one entity)            | DATA            |
+| #3         | POST  | /entityOperations/upsert     | Add some entities                                             | MANAGERS        |
+| #4         | PATCH | /entities/*/attrs            | Update the information associated to an entity (all entities) | MANAGERS        |
+| #5         | PATCH | /entities/{{entityID}}/attrs | Update the information associated to an entity (one entity)   | DATA            |
+
+We have to mention that the permission #1 include the permission #2, and the permission #2 in generated after
+we have the upload the Personal Data associated to a person (e.g. Ole's Personal Data has the entityID 
+`urn:ngsi-ld:Person:person001`).
+
+> Note: We should manage all the permissions related to the OrionLD API but for this document we will center only
+> on the previous resources.
+
+### List Permissions
+
+Listing the permissions with an application can be done by making a GET request to the
+`/v1/applications/{{application-id}}/permissions/` endpoint
+
+#### 10 Request:
 
 ```bash
 curl -X GET \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles' \
+  'http://localhost:3005/v1/applications/{{application-id}}/permissions' \
   -H 'Content-Type: application/json' \
   -H 'X-Auth-token: {{X-Auth-token}}'
 ```
 
 #### Response:
 
-The response returns the role of the given `<user-id>`
+The complete list of permissions includes any custom permissions created previously plus all the standard permissions
+which are avaiable by default
 
 ```json
 {
-    "organization_user": {
-        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
-        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
-        "role": "member"
+    "permissions": [
+        {
+            "id": "c8ace792-d058-4650-9958-59753215e1cc",
+            "name": "Access Price Changes",
+            "description": null,
+            "action": "GET",
+            "resource": "/price-change",
+            "xml": null
+        },
+        {
+            "id": "c21983d5-58f9-4bcc-b2b0-f21819080ad0",
+            "name": "Enable Alarm Bell",
+            "description": null,
+            "action": "POST",
+            "resource": "/ring",
+            "xml": null
+        },
+        ...etc
+        {
+            "id": "2",
+            "name": "Manage the application",
+            "description": null,
+            "action": null,
+            "resource": null,
+            "xml": null
+        },
+        {
+            "id": "1",
+            "name": "Get and assign all internal application roles",
+            "description": null,
+            "action": null,
+            "resource": null,
+            "xml": null
+        }
+    ]
+}
+```
+
+
+## Role CRUD Actions
+
+A permission is an allowable action on a resource, as noted above. A role consists of a group of permissions, in other
+words a series of permitted actions over a group of resources. Roles are usually given a description with a broad scope
+so that they can be assigned to a wide range of users or organizations for example a _Reader_ role could be able to
+access but not update a series of devices.
+
+There are two predefined roles with **Keyrock** :
+
+-   a _Purchaser_ who can
+    -   Get and assign all public application roles
+-   a _Provider_ who can:
+    -   Get and assign only public owned roles
+    -   Get and assign all public application roles
+    -   Manage authorizations
+    -   Manage roles
+    -   Manage the application
+    -   Get and assign all internal application roles
+
+Using our Supermarket Store Example, Alice the admin would be assigned the _Provider_ role, she could then create any
+additional application-specific roles needed (such as _Management_ or _Security_)
+
+Once again, roles are always directly bound to an application - abstract roles do not exist on their own. The standard
+CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under the
+`/v1/applications/{{application-id}}/roles` endpoint.
+
+### Create a Role
+
+Within the GUI, a role can be added to an application by selecting the application, clicking on **Manage Roles** and
+then pressing the plus next to the Role label.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/create-role.png)
+
+Just fill out the wizard and click save.
+
+To create a new role via the REST API, send a POST request to the `/applications/{{application-id}}/roles` endpoint
+containing the `name` of the new role, with the `X-Auth-token` header from a previously logged in user.
+
+#### 13 Request:
+
+```bash
+curl -X POST \
+  'http://localhost:3005/v1/applications/{{application-id}}/roles' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}' \
+  -d '{
+  "role": {
+    "name": "Management"
+  }
+}'
+```
+
+#### Response:
+
+The details of the created role are returned
+
+```json
+{
+    "role": {
+        "id": "bc64fe78-f440-4ce0-815d-78b1d3d8b9a1",
+        "is_internal": false,
+        "name": "Management",
+        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482"
     }
 }
 ```
 
+### Read Role Details
+
+The `/applications/{{application-id}}/roles/{role-id}}` endpoint will return the role listed under that ID. The
+`X-Auth-token` must be supplied in the headers.
+
+#### 14 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns the details of the requested role.
+
+```json
+{
+    "role": {
+        "id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
+        "name": "Security",
+        "is_internal": false,
+        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482"
+    }
+}
+```
+
+### List Roles
+
+Listing all the roles offered by an application can be done by making a GET request to the
+`/v1/applications/{{application-id/roles` endpoint
+
+#### 15 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/applications/{{application-id}}/roles' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+A summary of all roles associated with the application is returned containing both standard roles and custom roles.
+
+```json
+{
+    "roles": [
+        {
+            "id": "purchaser",
+            "name": "Purchaser"
+        },
+        {
+            "id": "provider",
+            "name": "Provider"
+        },
+        {
+            "id": "bc64fe78-f440-4ce0-815d-78b1d3d8b9a1",
+            "name": "Management"
+        },
+        {
+            "id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
+            "name": "Security"
+        }
+    ]
+}
+```
+
+### Update a Role
+
+It is possible to amend the name of a role using a PATCH request is sent to the
+`/applications/{{application-id}}/permissions/{permission-id}}` endpoint.
+
+#### 16 Request:
+
+```bash
+curl -iX PATCH \
+  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}' \
+  -d '{
+  "role": {
+    "name": "Security Team"
+  }
+}'
+```
+
+#### Response:
+
+The response contains a list of the fields which have been amended.
+
+```json
+{
+    "values_updated": {
+        "name": "Security Team"
+    }
+}
+```
+
+### Delete a Role
+
+Application roles can also be deleted - this will also remove the role from any users.
+
+#### 17 Request:
+
+```bash
+curl -iX DELETE \
+  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+## Assigning Permissions to each Role
+
+Having created a set of application permissions, and a series of application roles, the next step is to assign the
+relevant permissions to each role - in other words defining _Who can do What_.
+
+### Add a Permission to a Role
+
+Within the GUI, select the role and check permissions from the list before saving.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/add-permission-to-role.png)
+
+To add a permission using the REST API make a PUT request as shown, including the `<application-id>`, `<role-id>` and
+`<permission-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+
+#### 18 Request:
+
+```bash
+curl -iX PUT \
+  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}/permissions/{{permission-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns the permissions for the role
+
+```json
+{
+    "role_permission_assignments": {
+        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
+        "permission_id": "c21983d5-58f9-4bcc-b2b0-f21819080ad0"
+    }
+}
+```
+
+### List Permissions of a Role
+
+A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
+`/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint
+
+#### 19 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}/permissions' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+```json
+{
+    "role_permission_assignments": [
+        {
+            "id": "c21983d5-58f9-4bcc-b2b0-f21819080ad0",
+            "is_internal": false,
+            "name": "Ring Alarm Bell",
+            "description": null,
+            "action": "POST",
+            "resource": "/ring",
+            "xml": null
+        },
+        {
+            "id": "2d611223-0b9e-4ffb-83b4-518e236890b6",
+            "is_internal": false,
+            "name": "Unlock",
+            "description": "Unlock main entrance",
+            "action": "POST",
+            "resource": "/door/unlock",
+            "xml": null
+        }
+    ]
+}
+```
+
+### Remove a Permission from a Role
+
+To remove a permission using the REST API make a DELETE request as shown, including the `<application-id>`, `<role-id>`
+and `<permission-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+
+#### 20 Request:
+
+```bash
+curl -X DELETE \
+  'http://keyrock/v1/applications/{{application_id}}/roles/{{role_id}}/permissions/{{permission_id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+# Authorizing Application Access
+
+In the end, a user logs into an application , identifies himself and then is granted a list of permissions that the user
+is able to do. However it should be emphasized that it is the application, not the user that holds and offers the
+permissions, and the user is merely associated with a aggregated list of permissions via the role(s) they have been
+granted.
+
+The application can grant roles to either Users or Organizations - the latter should always be preferred, as it allows
+the owners of the organization to add new users - delegating the responsibility for user maintenance to a wider group.
+
+For example, imagine the supermarket gains another store detective. Alice has already created role called Security and
+assigned it to the Security team. Charlie is the owner of the Security team organization, and is able to add the new
+`detective3` user to his team. `detective3` can then inherit all the rights of his team without further input from
+Alice.
+
+Granting roles to individual Users should be restricted to special cases - some roles may be very specialized an only
+contain one member so there is no need to create an organization. This reduced the administrative burden when setting up
+the application, but any further changes (such as removing access rights when someone leaves) will need to be done by
+Alice herself - no delegation is possible.
+
+## Authorizing Organizations
+
+A role cannot be granted to an organization unless the role has already been defined within the application itself. The
+organization must also have be created as was demonstrated in the previous tutorial.
+
+### Grant a Role to an Organization
+
+To grant an organization access to an application, click on the appliation to get to the details page and scroll to the
+bottom of the page, click the **Authorize** button and select the relevant organization.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/add-role-to-org.png)
+
+A Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
+making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<organzation-id>` in the URL path and
+identifying themselves using an `X-Auth-Token` in the header.
+
+#### 21 Request:
+
+This example adds the role to all members of the organization
+
+```bash
+curl -iX PUT \
+  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles/{{role-id}}/organization_roles/member' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response lists the role assignment as shown:
+
+```json
+{
+    "role_organization_assignments": {
+        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
+        "organization_id": "security-0000-0000-0000-000000000000",
+        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482",
+        "role_organization": "member"
+    }
+}
+```
+
+### List Granted Organization Roles
+
+A full list of roles granted to an organization can be retrieved by making a GET request to the
+`/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles` endpoint
+
+#### 22 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response shows all roles assigned to the organization
+
+```json
+{
+    "role_organization_assignments": [
+        {
+            "organization_id": "security-0000-0000-0000-000000000000",
+            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
+        }
+    ]
+}
+```
+
+### Revoke a Role from an Organization
+
+To revoke a role using the REST API make a DELETE request as shown, including the `<application-id>`,
+`<organization-id>` and `<role-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+
+The following example revokes a role to `members` of the organization.
+
+#### 23 Request:
+
+```bash
+curl -iX DELETE \
+  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles/{{role-id}}/organization_roles/member' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+## Authorizing Individual User Accounts
+
+A defined role cannot be granted to a user unless the role has already been associated to an application
+
+### Grant a Role to a User
+
+Granting User access via the GUI can be done in the same manner as for organizations.
+
+A Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
+making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<user-id>` in the URL path and
+identifying themselves using an `X-Auth-Token` in the header.
+
+#### 24 Request:
+
+```bash
+curl -iX PUT \
+  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles/{{role-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+```json
+{
+    "role_user_assignments": {
+        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
+        "user_id": "bbbbbbbb-good-0000-0000-000000000000",
+        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482"
+    }
+}
+```
+
+### List Granted User Roles
+
+To list the roles granted to an Individual user, make a GET request to the
+`v1/applications/{{application-id}}/users/{{user-id}}/roles` endpoint
+
+#### 25 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns all roles assigned to the user
+
+```json
+{
+    "role_user_assignments": [
+        {
+            "user_id": "bbbbbbbb-good-0000-0000-000000000000",
+            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
+        }
+    ]
+}
+```
+
+### Revoke a Role from a User
+
+In a similar manner to organizations, to revoke a user role using the REST API make a DELETE request as shown, including
+the `<application-id>`, `<user-id>` and `<role-id>` in the URL path and identifying themselves using an `X-Auth-Token`
+in the header.
+
+#### 26 Request:
+
+```bash
+curl -iX DELETE \
+  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles/{{role-id}}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+## List Application Grantees
+
+By creating a series of roles and granting them to Users and Organizations, we have made an association between them.
+The REST API offers two convienience methods exist to list all the grantees of an application
+
+### List Authorized Organizations
+
+To list all organizations which are authorized to use an application, make a GET request to the
+`/v1/applications/{{application-id}}/organizations` endpoint.
+
+#### 27 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organizations-id}}/roles' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns all organizations which can access the application and the roles they have been assigned.
+Individual members are not listed.
+
+```json
+{
+    "role_organization_assignments": [
+        {
+            "organization_id": "security-0000-0000-0000-000000000000",
+            "role_organization": "member",
+            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
+        }
+    ]
+}
+```
+
+### List Authorized Users
+
+To list all individual users who are authorized to use an application, make a GET request to the
+`/v1/applications/{{application-id}}/users` endpoint.
+
+#### 28 Request:
+
+```bash
+curl -X GET \
+  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Auth-token: {{X-Auth-token}}'
+```
+
+#### Response:
+
+The response returns all individual users who can access the application and the roles they have been assigned. Note
+that users of an organization granted access are not listed.
+
+```json
+{
+    "role_user_assignments": [
+        {
+            "user_id": "aaaaaaaa-good-0000-0000-000000000000",
+            "role_id": "provider"
+        },
+        {
+            "user_id": "bbbbbbbb-good-0000-0000-000000000000",
+            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
+        }
+    ]
+}
+```
 
 ### Creating Roles and Permissions
 

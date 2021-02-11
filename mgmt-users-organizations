@@ -1,0 +1,198 @@
+#!/bin/bash
+#
+#  http commands to create the users in Identity Management
+#
+#
+
+set -e
+
+echo -e "⏳ Obtaining the X-Subject-Token for admin user: Alice"
+
+#
+# Get admin token
+#
+TOKEN=$(http -h POST http://localhost:3005/v1/auth/tokens \
+  name=alice-the-admin@test.com \
+  password=test | grep 'X-Subject-Token' | awk '{print $2}')
+
+echo -e "          ... $TOKEN"
+export TOKEN
+
+
+echo
+echo -e "⏳ Creating identities into IdM"
+echo -e "      Creating the users: Bob, Charlie, Eve, Mallory, Ole, Torsten, Frank, Lothar"
+
+#
+# Create five Person Entities in various locations across Berlin
+#
+BOB=$(echo '{
+  "user": {
+    "username": "Bob",
+    "email": "bob-the-appmanager@test.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+CHARLIE=$(echo '{
+  "user": {
+    "username": "Charlie",
+    "email": "charlie-the-appuser@test.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+EVE=$(echo '{
+  "user": {
+    "username": "Eve",
+    "email": "eve@example.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+MALLORY=$(echo '{
+  "user": {
+    "username": "Mallory",
+    "email": "mallory@example.com",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+OLE=$(echo '{
+  "user": {
+    "username": "Ole",
+    "email": "ole-lahm@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+TORSTEN=$(echo '{
+  "user": {
+    "username": "Torsten",
+    "email": "torsten-kuehl@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+FRANK=$(echo '{
+  "user": {
+    "username": "Frank",
+    "email": "frank-king@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+LOTHAR=$(echo '{
+  "user": {
+    "username": "Lothar",
+    "email": "lothar-lammich@xyz.foo",
+    "password": "test"
+  }
+}' | http  POST 'http://localhost:3005/v1/users' X-Auth-Token:"$TOKEN" | jq -r .user.id)
+
+echo -e "          ... Bob ID: $BOB"
+echo -e "          ... Charlie ID: $CHARLIE"
+echo -e "          ... Eve Owners ID: $EVE"
+echo -e "          ... Mallory ID: $MALLORY"
+echo -e "          ... Ole ID: $OLE"
+echo -e "          ... Torsten ID: $TORSTEN"
+echo -e "          ... Frank ID: $FRANK"
+echo -e "          ... Lothar ID: $LOTHAR"
+
+export BOB
+export CHARLIE
+export EVE
+export MALLORY
+export OLE
+export TORSTEN
+export FRANK
+export LOTHAR
+
+
+echo
+echo -e "⏳ Creating organizations into IdM"
+
+#
+# Create the four organizations: Managers, Users, Data, Others
+#
+echo -e "      Creating the organizations (Managers, Users, Data, Others)"
+
+MANAGERS=$(printf '{
+  "organization": {
+    "name": "Managers",
+    "description": "This group is for the Project Managers of the Personal Data application with full control access"
+  }
+}'| http  POST http://localhost:3005/v1/organizations \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN" | jq -r .organization.id)
+
+USERS=$(printf '{
+  "organization": {
+    "name": "Users",
+    "description": "This group is for the Project Users of the Personal Data application with read control access"
+  }
+}'| http  POST http://localhost:3005/v1/organizations \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN" | jq -r .organization.id)
+
+DATA=$(printf '{
+  "organization": {
+    "name": "Data",
+    "description": "This group is for the Personal Data owners who can read and modify only their own data"
+  }
+}'| http  POST http://localhost:3005/v1/organizations \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN" | jq -r .organization.id)
+
+OTHERS=$(printf '{
+  "organization": {
+    "name": "Others",
+    "description": "This group is for the rest of IdM registered users not authorized to access the Personal Data Application"
+  }
+}'| http  POST http://localhost:3005/v1/organizations \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN" | jq -r .organization.id)
+
+echo -e "          ... Managers ID: $MANAGERS"
+echo -e "          ... Users ID: $USERS"
+echo -e "          ... Data Owners ID: $DATA"
+echo -e "          ... Others ID: $OTHERS"
+
+export MANAGERS
+export USERS
+export DATA
+export OTHERS
+
+echo
+echo -e "⏳ Assign users to organizations"
+http -q PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/organizations/$USERS/users/$CHARLIE/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/organizations/$OTHERS/users/$EVE/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/organizations/$OTHERS/users/$MALLORY/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/organizations/$DATA/users/$OLE/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/organizations/$DATA/users/$TORSTEN/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/organizations/$DATA/users/$FRANK/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/organizations/$DATA/users/$LOTHAR/organization_roles/member" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
