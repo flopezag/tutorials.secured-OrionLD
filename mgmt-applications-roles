@@ -15,7 +15,7 @@ TOKEN=$(http -h POST http://localhost:3005/v1/auth/tokens \
   name=alice-the-admin@test.com \
   password=test | grep 'X-Subject-Token' | awk '{print $2}')
 
-echo -e "          ... $TOKEN"
+echo -e "          ... Token: $TOKEN"
 export TOKEN
 
 
@@ -41,17 +41,19 @@ APP=$(printf '{
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN" | jq -r .application.id)
 
+export APP
+
 echo -e "          ... Application ID: $APP"
 
 #
 # Create the corresponding permissions
 #
 echo
-echo -e "⏳ Creating the permissions for /entities, ..."
+echo -e "⏳ Creating the permissions for /entities and /entityOperations"
 
 printf '{
   "permission": {
-    "name": "Access to a Personal Data entity",
+    "name": "Permission to get Personal Data information of an entity (all entities)",
     "action": "GET",
     "resource": "/entities/*",
     "is_regex": true
@@ -59,3 +61,53 @@ printf '{
 }' | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN"
+
+for a in person001 person002 person003 person004
+do
+  a="urn:ngsi-ld:Person:"$a
+
+  printf '{
+  "permission": {
+    "name": "Permission to get Personal Data information of an entity (%s)",
+    "action": "GET",
+    "resource": "/entities/%s"
+  }
+}' $a $a  | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+  printf '{
+  "permission": {
+    "name": "Permission to Update the Personal Data information associated to an entity (%s)",
+    "action": "PATCH",
+    "resource": "/entities/%s"
+  }
+}' $a $a  | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+done
+
+printf '{
+  "permission": {
+    "name": "Permission to add some entities",
+    "action": "POST",
+    "resource": "/entityOperations/upsert",
+  }
+}' | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+printf '{
+  "permission": {
+    "name": "Permission to update the information associated to an entity (all entities)",
+    "action": "PATCH",
+    "resource": "/entities/*",
+    "is_regex": true
+  }
+}' | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+echo
+echo -e " \033[1;32mdone\033[0m"

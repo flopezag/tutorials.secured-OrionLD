@@ -800,6 +800,8 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 
 > Note: We should manage all the permissions related to the OrionLD API but for this document we will center only
 > on the previous resources.
+> 
+> Note: The script `mgmt-users-organizations` will create all the corresponding permissions for this example application.
 
 ### List Permissions
 
@@ -809,10 +811,8 @@ Listing the permissions with an application can be done by making a GET request 
 #### 10 Request:
 
 ```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/permissions' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+http GET "http://localhost:3005/v1/applications/$APP/permissions" \
+ X-Auth-Token:"$TOKEN"
 ```
 
 #### Response:
@@ -822,41 +822,35 @@ which are avaiable by default
 
 ```json
 {
-    "permissions": [
-        {
-            "id": "c8ace792-d058-4650-9958-59753215e1cc",
-            "name": "Access Price Changes",
-            "description": null,
-            "action": "GET",
-            "resource": "/price-change",
-            "xml": null
-        },
-        {
-            "id": "c21983d5-58f9-4bcc-b2b0-f21819080ad0",
-            "name": "Enable Alarm Bell",
-            "description": null,
-            "action": "POST",
-            "resource": "/ring",
-            "xml": null
-        },
-        ...etc
-        {
-            "id": "2",
-            "name": "Manage the application",
-            "description": null,
-            "action": null,
-            "resource": null,
-            "xml": null
-        },
-        {
-            "id": "1",
-            "name": "Get and assign all internal application roles",
-            "description": null,
-            "action": null,
-            "resource": null,
-            "xml": null
-        }
-    ]
+  "permissions": [
+    {
+      "action": "PATCH",
+      "description": null,
+      "id": "d7bd7555-e769-4c71-9143-04bdc327cbe0",
+      "name": "Permission to Update the Personal Data information associated to an entity (urn:ngsi-ld:Person:person001)",
+      "resource": "/entities/urn:ngsi-ld:Person:person001",
+      "xml": null
+    },
+    {
+      "action": "GET",
+      "description": null,
+      "id": "d2cee587-46bf-4233-a455-8f1abb7f7122",
+      "name": "Permission to get Personal Data information of an entity (urn:ngsi-ld:Person:person004)",
+      "resource": "/entities/urn:ngsi-ld:Person:person004",
+      "xml": null
+    },
+    {
+      "action": "PATCH",
+      "description": null,
+      "id": "ab95d325-e8fe-43bb-b34e-fe5837b14e28",
+      "name": "Permission to update the information associated to an entity (all entities)",
+      "resource": "/entities/*",
+      "xml": null
+    },
+    
+  ...
+  
+  ]
 }
 ```
 

@@ -15,7 +15,7 @@ TOKEN=$(http -h POST http://localhost:3005/v1/auth/tokens \
   name=alice-the-admin@test.com \
   password=test | grep 'X-Subject-Token' | awk '{print $2}')
 
-echo -e "          ... $TOKEN"
+echo -e "          ... Token: $TOKEN"
 export TOKEN
 
 
@@ -196,3 +196,6 @@ http -q PUT "http://localhost:3005/v1/organizations/$DATA/users/$FRANK/organizat
 http -q PUT "http://localhost:3005/v1/organizations/$DATA/users/$LOTHAR/organization_roles/member" \
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN"
+
+echo
+echo -e " \033[1;32mdone\033[0m"
