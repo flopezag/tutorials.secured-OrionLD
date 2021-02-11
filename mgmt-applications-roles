@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+#  http commands to management of application roles
+#
+#
+
+set -e
+
+echo -e "⏳ Obtaining the X-Subject-Token for admin user: Alice"
+
+#
+# Get admin token
+#
+TOKEN=$(http -h POST http://localhost:3005/v1/auth/tokens \
+  name=alice-the-admin@test.com \
+  password=test | grep 'X-Subject-Token' | awk '{print $2}')
+
+echo -e "          ... $TOKEN"
+export TOKEN
+
+
+#
+# Create new application
+#
+echo
+echo -e "⏳ Creating a new application into IdM"
+
+APP=$(printf '{
+  "application": {
+    "name": "Personal Data Mgmt. Application",
+    "description": "FIWARE Application protected by OAuth2 for managing Personal Data",
+    "redirect_uri": "http://localhost:1027/login",
+    "url": "http://localhost:1027/ngsi-ld/v1",
+    "grant_type": [
+      "authorization_code",
+      "implicit",
+      "password"
+    ]
+  }
+}' | http  POST http://localhost:3005/v1/applications \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN" | jq -r .application.id)
+
+echo -e "          ... Application ID: $APP"
+
+#
+# Create the corresponding permissions
+#
+echo
+echo -e "⏳ Creating the permissions for /entities, ..."
+
+printf '{
+  "permission": {
+    "name": "Access to a Personal Data entity",
+    "action": "GET",
+    "resource": "/entities/*",
+    "is_regex": true
+  }
+}' | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
