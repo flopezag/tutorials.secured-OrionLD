@@ -786,8 +786,8 @@ We need to repeat this procedure for the rest of resources from which we want to
 we wanted to control the access to OrionLD regarding the creation of entities, creation of several entities. Take a
 look in the following table to see the different permissions to be created:
 
-| Permission | Verb  | Resource    | Description | Organizations |
-| ---------- | ----- | ----------- | ----------- | ------------- |
+| Permission | Verb  | Resource                     | Description                                                   | Organizations   |
+| ---------- | ----- | ---------------------------- | ------------------------------------------------------------- | --------------- |
 | #1         | GET   | /entities/*                  | Get detailed information of an entity (all entities)          | MANAGERS, USERS |
 | #2         | GET   | /entities/{{entityID}}       | Get detailed information of an entity (one entity)            | DATA            |
 | #3         | POST  | /entityOperations/upsert     | Add some entities                                             | MANAGERS        |
@@ -886,15 +886,6 @@ containing the `name` of the new role, with the `X-Auth-token` header from a pre
 #### 13 Request:
 
 ```bash
-curl -X POST \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "role": {
-    "name": "Management"
-  }
-}'
 printf '{
   "role": {
     "name": "Manager"
@@ -927,13 +918,23 @@ relevant permissions to each role - in other words defining _Who can do What_. T
 API makes a PUT request as shown, including the `<application-id>`, `<role-id>` and `<permission-id>` in the URL 
 path and identifying themselves using an `X-Auth-Token` in the header.
 
+The following table summarize the relationship of each *Role* with the different *Permissions*
+
+| *Role*    | *Permissions*                                                           |
+| --------- | ----------------------------------------------------------------------- |
+| Manager   | #1(/entities/*), #3(/entityOperations/upsert), #4(/entities/*/attrs)    |
+| Users     | #1(/entities/*)                                                         |
+| Data      | #2(/entities/{{entityID}}), #5(/entities/{{entityID}}/attrs)            |
+| Others    |                                                                         |
+
+Due to the roles are associated to the application, the Role _Others_ does not have any permission assigned in the
+application, therefore the users under the Role Others should be rejected.
+
 #### 18 Request:
 
 ```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}/permissions/{{permission-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+http PUT "http://localhost:3005/v1/applications/$APP/roles/$MANAGER_ROLE/permissions/$PERMID' \
+ X-Auth-Token:"$TOKEN"
 ```
 
 #### Response:
@@ -943,11 +944,15 @@ The response returns the permissions for the role
 ```json
 {
     "role_permission_assignments": {
-        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
-        "permission_id": "c21983d5-58f9-4bcc-b2b0-f21819080ad0"
+        "permission_id": "c21983d5-58f9-4bcc-b2b0-f21819080ad0",
+        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
     }
 }
 ```
+
+> Note: take a look into the applications-roles script to see how we associated the 
+> different permissions with the corresponding Roles.
+
 
 ### List Permissions of a Role
 
@@ -957,10 +962,8 @@ A full list of all permissions assigned to an application role can be retrieved 
 #### 19 Request:
 
 ```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}/permissions' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions" \
+  X-Auth-Token:"$TOKEN"
 ```
 
 #### Response:
@@ -969,27 +972,68 @@ curl -X GET \
 {
     "role_permission_assignments": [
         {
-            "id": "c21983d5-58f9-4bcc-b2b0-f21819080ad0",
-            "is_internal": false,
-            "name": "Ring Alarm Bell",
+            "action": "GET",
             "description": null,
-            "action": "POST",
-            "resource": "/ring",
+            "id": "c8f127b2-fabc-420c-93aa-79ef104592d4",
+            "is_internal": false,
+            "name": "Permission to get Personal Data information of an entity (all entities)",
+            "resource": "/entities/*",
             "xml": null
         },
         {
-            "id": "2d611223-0b9e-4ffb-83b4-518e236890b6",
-            "is_internal": false,
-            "name": "Unlock",
-            "description": "Unlock main entrance",
             "action": "POST",
-            "resource": "/door/unlock",
+            "description": null,
+            "id": "e2f8bd53-0ce5-4179-abaf-66abebb0e582",
+            "is_internal": false,
+            "name": "Permission to add some entities",
+            "resource": "/entityOperations/upsert",
+            "xml": null
+        },
+        {
+            "action": "PATCH",
+            "description": null,
+            "id": "c6e50b77-d34b-40a9-9929-03b1b7ae0886",
+            "is_internal": false,
+            "name": "Permission to update the information associated to an entity (all entities)",
+            "resource": "/entities/*",
             "xml": null
         }
     ]
 }
 ```
 
+In case of the Roles associated to the Person001, the request would be:
+
+```bash
+http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions" \
+  X-Auth-Token:"$TOKEN"
+```
+
+and the response:
+```json
+{
+    "role_permission_assignments": [
+        {
+            "action": "GET",
+            "description": null,
+            "id": "226b3cd7-37f7-4378-99ae-f19bb50469ca",
+            "is_internal": false,
+            "name": "Permission to get Personal Data information of an entity (urn:ngsi-ld:Person:person001)",
+            "resource": "/entities/urn:ngsi-ld:Person:person001",
+            "xml": null
+        },
+        {
+            "action": "PATCH",
+            "description": null,
+            "id": "14738fe7-78b6-4b71-884e-5fda37bafe19",
+            "is_internal": false,
+            "name": "Permission to Update the Personal Data information associated to an entity (urn:ngsi-ld:Person:person001)",
+            "resource": "/entities/urn:ngsi-ld:Person:person001",
+            "xml": null
+        }
+    ]
+}
+```
 
 # Authorizing Application Access
 

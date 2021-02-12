@@ -64,11 +64,12 @@ PERM_GET_ALL=$(printf '{
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN" | jq -r .permission.id)
 
+i=0
 for a in person001 person002 person003 person004
 do
   a="urn:ngsi-ld:Person:"$a
 
-  PERM_GET_ONE=$(printf '{
+  arrayPermGetOne[i]=$(printf '{
   "permission": {
     "name": "Permission to get Personal Data information of an entity (%s)",
     "action": "GET",
@@ -78,7 +79,7 @@ do
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN" | jq -r .permission.id)
 
-  PERM_UPDATE_ONE=$(printf '{
+  arrayPermUpdateOne[i]=$(printf '{
   "permission": {
     "name": "Permission to Update the Personal Data information associated to an entity (%s)",
     "action": "PATCH",
@@ -88,8 +89,9 @@ do
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN" | jq -r .permission.id)
 
-  echo -e "          ... Permission GET one($a) ID:   $PERM_GET_ONE"
-  echo -e "          ... Permission PATCH one($a) ID: $PERM_UPDATE_ONE"
+  echo -e "          ... Permission GET one($a) ID:   ${arrayPermGetOne[i]}"
+  echo -e "          ... Permission PATCH one($a) ID: ${arrayPermUpdateOne[i]}"
+  i=$((i+1))
 done
 
 PERM_UPSERT=$(printf '{
@@ -125,24 +127,76 @@ echo -e "          ... Permission PATCH all ID: $PERM_UPDATE_ALL"
 echo
 echo -e "⏳ Creating the roles Manager, Users, Data or Others"
 
-for a in Manager Users Data Others
+i=0
+for a in Manager Users Data
 do
-  ROLE=$(printf '{
+  arrayRoles[i]=$(printf '{
     "role": {
       "name": "%s"
     }
   }' $a | http POST "http://localhost:3005/v1/applications/$APP/roles" \
    X-Auth-Token:"$TOKEN" | jq -r .role.id)
 
-  echo -e "          ... Role($a) ID: $ROLE"
+  echo -e "          ... Role($a) ID: ${arrayRoles[i]}"
+  i=$((i+1))
+done
 
+i=0
+for a in Person001 Person002 Person003 Person004
+do
+  arrayDataRoles[i]=$(printf '{
+    "role": {
+      "name": "%s"
+    }
+  }' $a | http POST "http://localhost:3005/v1/applications/$APP/roles" \
+   X-Auth-Token:"$TOKEN" | jq -r .role.id)
+
+  echo -e "          ... Role($a) ID: ${arrayDataRoles[i]}"
+  i=$((i+1))
 done
 
 
+#
+# | *Role*    | *Permissions* |
+# | --------- | ------------- |
+# | Manager   | #1(/entities/*), #3(/entityOperations/upsert), #4(/entities/*/attrs)    |
+# | Users     | #1(/entities/*)            |
+# | Data(n)   | #2(/entities/{{entityID}}), #5(/entities/{{entityID}}/attrs)        |
+# | Others    |               |
+#
 
+echo
+echo -e "⏳ Assign the permissions to the roles in the application"
 
+# Managers
+http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[0]}/permissions/$PERM_GET_ALL" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
 
+http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[0]}/permissions/$PERM_UPSERT" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
 
+http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[0]}/permissions/$PERM_UPDATE_ALL" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+# Users
+http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[1]}/permissions/$PERM_GET_ALL" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+# Data
+for (( i=0; i<4; i++ ))
+do
+  http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayDataRoles[i]}/permissions/${arrayPermGetOne[i]}" \
+    Content-Type:'application/json' \
+    X-Auth-Token:"$TOKEN"
+
+  http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayDataRoles[i]}/permissions/${arrayPermUpdateOne[i]}" \
+    Content-Type:'application/json' \
+    X-Auth-Token:"$TOKEN"
+done
 
 
 echo
