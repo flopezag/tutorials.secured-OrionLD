@@ -6,6 +6,7 @@
 
 set -e
 
+echo
 echo -e "⏳ Obtaining the X-Subject-Token for admin user: Alice"
 
 #
@@ -51,63 +52,98 @@ echo -e "          ... Application ID: $APP"
 echo
 echo -e "⏳ Creating the permissions for /entities and /entityOperations"
 
-printf '{
+PERM_GET_ALL=$(printf '{
   "permission": {
     "name": "Permission to get Personal Data information of an entity (all entities)",
     "action": "GET",
     "resource": "/entities/*",
     "is_regex": true
   }
-}' | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+}' | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
+ X-Auth-Token:"$TOKEN" | jq -r .permission.id)
 
 for a in person001 person002 person003 person004
 do
   a="urn:ngsi-ld:Person:"$a
 
-  printf '{
+  PERM_GET_ONE=$(printf '{
   "permission": {
     "name": "Permission to get Personal Data information of an entity (%s)",
     "action": "GET",
     "resource": "/entities/%s"
   }
-}' $a $a  | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+}' $a $a  | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
+ X-Auth-Token:"$TOKEN" | jq -r .permission.id)
 
-  printf '{
+  PERM_UPDATE_ONE=$(printf '{
   "permission": {
     "name": "Permission to Update the Personal Data information associated to an entity (%s)",
     "action": "PATCH",
     "resource": "/entities/%s"
   }
-}' $a $a  | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+}' $a $a  | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
+ X-Auth-Token:"$TOKEN" | jq -r .permission.id)
+
+  echo -e "          ... Permission GET one($a) ID:   $PERM_GET_ONE"
+  echo -e "          ... Permission PATCH one($a) ID: $PERM_UPDATE_ONE"
 
 done
 
-printf '{
+PERM_UPSERT=$(printf '{
   "permission": {
     "name": "Permission to add some entities",
     "action": "POST",
     "resource": "/entityOperations/upsert",
   }
-}' | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+}' | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
+ X-Auth-Token:"$TOKEN" | jq -r .permission.id)
 
-printf '{
+PERM_UPDATE_ALL=$(printf '{
   "permission": {
     "name": "Permission to update the information associated to an entity (all entities)",
     "action": "PATCH",
     "resource": "/entities/*",
     "is_regex": true
   }
-}' | http -q POST "http://localhost:3005/v1/applications/$APP/permissions" \
+}' | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
+ X-Auth-Token:"$TOKEN" | jq -r .permission.id)
+
+
+echo -e "          ... Permission GET all ID: $PERM_GET_ALL"
+echo -e "          ... Permission Upsert all ID: $PERM_UPSERT"
+echo -e "          ... Permission PATCH all ID: $PERM_UPDATE_ALL"
+
+
+#
+# Create the roles Manager, Users, Data or Others
+#
+echo
+echo -e "⏳ Creating the roles Manager, Users, Data or Others"
+
+for a in Manager Users Data Others
+do
+  ROLE=$(printf '{
+    "role": {
+      "name": "%s"
+    }
+  }' $a | http POST "http://localhost:3005/v1/applications/$APP/roles" \
+   X-Auth-Token:"$TOKEN" | jq -r .role.id)
+
+  echo -e "          ... Role($a) ID: $ROLE"
+
+done
+
+
+
+
+
+
+
 
 echo
 echo -e " \033[1;32mdone\033[0m"

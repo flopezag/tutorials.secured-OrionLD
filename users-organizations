@@ -6,6 +6,7 @@
 
 set -e
 
+echo
 echo -e "⏳ Obtaining the X-Subject-Token for admin user: Alice"
 
 #

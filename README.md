@@ -854,8 +854,7 @@ which are avaiable by default
 }
 ```
 
-
-## Role CRUD Actions
+### Create a Role
 
 A permission is an allowable action on a resource, as noted above. A role consists of a group of permissions, in other
 words a series of permitted actions over a group of resources. Roles are usually given a description with a broad scope
@@ -874,21 +873,12 @@ There are two predefined roles with **Keyrock** :
     -   Manage the application
     -   Get and assign all internal application roles
 
-Using our Supermarket Store Example, Alice the admin would be assigned the _Provider_ role, she could then create any
-additional application-specific roles needed (such as _Management_ or _Security_)
+Using our Personal Data Example, Alice the admin would be assigned the _Provider_ role, she could then create any
+additional application-specific roles needed (such as _Manager_, _Users_, _Data_ or _Others_).
 
-Once again, roles are always directly bound to an application - abstract roles do not exist on their own. The standard
+Roles are always directly bound to an application - abstract roles do not exist on their own. The standard
 CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under the
 `/v1/applications/{{application-id}}/roles` endpoint.
-
-### Create a Role
-
-Within the GUI, a role can be added to an application by selecting the application, clicking on **Manage Roles** and
-then pressing the plus next to the Role label.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/create-role.png)
-
-Just fill out the wizard and click save.
 
 To create a new role via the REST API, send a POST request to the `/applications/{{application-id}}/roles` endpoint
 containing the `name` of the new role, with the `X-Auth-token` header from a previously logged in user.
@@ -905,6 +895,12 @@ curl -X POST \
     "name": "Management"
   }
 }'
+printf '{
+  "role": {
+    "name": "Manager"
+  }
+}'| http  POST "http://localhost:3005/v1/applications/$APP/roles" \
+ X-Auth-Token:"$TOKEN"
 ```
 
 #### Response:
@@ -914,141 +910,22 @@ The details of the created role are returned
 ```json
 {
     "role": {
-        "id": "bc64fe78-f440-4ce0-815d-78b1d3d8b9a1",
+        "id": "e5aa8b37-701c-4baf-96d4-9021396445dd",
         "is_internal": false,
-        "name": "Management",
-        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482"
+        "name": "Manager",
+        "oauth_client_id": "e295e248-096b-4222-8969-ea3c4e92d409"
     }
 }
 ```
 
-### Read Role Details
+We need to repeat the process for _Users_, _Data_ or _Others_, changing the value `name` in the json payload.
 
-The `/applications/{{application-id}}/roles/{role-id}}` endpoint will return the role listed under that ID. The
-`X-Auth-token` must be supplied in the headers.
-
-#### 14 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns the details of the requested role.
-
-```json
-{
-    "role": {
-        "id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
-        "name": "Security",
-        "is_internal": false,
-        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482"
-    }
-}
-```
-
-### List Roles
-
-Listing all the roles offered by an application can be done by making a GET request to the
-`/v1/applications/{{application-id/roles` endpoint
-
-#### 15 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-A summary of all roles associated with the application is returned containing both standard roles and custom roles.
-
-```json
-{
-    "roles": [
-        {
-            "id": "purchaser",
-            "name": "Purchaser"
-        },
-        {
-            "id": "provider",
-            "name": "Provider"
-        },
-        {
-            "id": "bc64fe78-f440-4ce0-815d-78b1d3d8b9a1",
-            "name": "Management"
-        },
-        {
-            "id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
-            "name": "Security"
-        }
-    ]
-}
-```
-
-### Update a Role
-
-It is possible to amend the name of a role using a PATCH request is sent to the
-`/applications/{{application-id}}/permissions/{permission-id}}` endpoint.
-
-#### 16 Request:
-
-```bash
-curl -iX PATCH \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "role": {
-    "name": "Security Team"
-  }
-}'
-```
-
-#### Response:
-
-The response contains a list of the fields which have been amended.
-
-```json
-{
-    "values_updated": {
-        "name": "Security Team"
-    }
-}
-```
-
-### Delete a Role
-
-Application roles can also be deleted - this will also remove the role from any users.
-
-#### 17 Request:
-
-```bash
-curl -iX DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-## Assigning Permissions to each Role
+### Assigning Permissions to each Role
 
 Having created a set of application permissions, and a series of application roles, the next step is to assign the
-relevant permissions to each role - in other words defining _Who can do What_.
-
-### Add a Permission to a Role
-
-Within the GUI, select the role and check permissions from the list before saving.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/add-permission-to-role.png)
-
-To add a permission using the REST API make a PUT request as shown, including the `<application-id>`, `<role-id>` and
-`<permission-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+relevant permissions to each role - in other words defining _Who can do What_. To add a permission using the REST 
+API makes a PUT request as shown, including the `<application-id>`, `<role-id>` and `<permission-id>` in the URL 
+path and identifying themselves using an `X-Auth-Token` in the header.
 
 #### 18 Request:
 
@@ -1113,19 +990,6 @@ curl -X GET \
 }
 ```
 
-### Remove a Permission from a Role
-
-To remove a permission using the REST API make a DELETE request as shown, including the `<application-id>`, `<role-id>`
-and `<permission-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-
-#### 20 Request:
-
-```bash
-curl -X DELETE \
-  'http://keyrock/v1/applications/{{application_id}}/roles/{{role_id}}/permissions/{{permission_id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
 
 # Authorizing Application Access
 
@@ -1218,22 +1082,6 @@ The response shows all roles assigned to the organization
 }
 ```
 
-### Revoke a Role from an Organization
-
-To revoke a role using the REST API make a DELETE request as shown, including the `<application-id>`,
-`<organization-id>` and `<role-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-
-The following example revokes a role to `members` of the organization.
-
-#### 23 Request:
-
-```bash
-curl -iX DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles/{{role-id}}/organization_roles/member' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
 ## Authorizing Individual User Accounts
 
 A defined role cannot be granted to a user unless the role has already been associated to an application
@@ -1294,21 +1142,6 @@ The response returns all roles assigned to the user
         }
     ]
 }
-```
-
-### Revoke a Role from a User
-
-In a similar manner to organizations, to revoke a user role using the REST API make a DELETE request as shown, including
-the `<application-id>`, `<user-id>` and `<role-id>` in the URL path and identifying themselves using an `X-Auth-Token`
-in the header.
-
-#### 26 Request:
-
-```bash
-curl -iX DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles/{{role-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
 ```
 
 ## List Application Grantees
@@ -1380,26 +1213,6 @@ that users of an organization granted access are not listed.
     ]
 }
 ```
-
-### Creating Roles and Permissions
-
-To save time, the data creating users and organizations from the
-[previous tutorial](https://github.com/FIWARE/tutorials.Roles-Permissions) has been downloaded and is automatically
-persisted to the MySQL database on start-up so the assigned UUIDs do not change and the data does not need to be entered
-again.
-
-The **Keyrock** MySQL database deals with all aspects of application security including storing users, password etc.;
-defining access rights and dealing with OAuth2 authorization protocols. The complete database relationship diagram can
-be found [here](https://fiware.github.io/tutorials.Securing-Access/img/keyrock-db.png)
-
-To refresh your memory about how to create users and organizations and applications, you can log in at
-`http://localhost:3005/idm` using the account `alice-the-admin@test.com` with a password of `test`.
-
-![](https://fiware.github.io/tutorials.PEP-Proxy/img/keyrock-log-in.png)
-
-and look around.
-
-
 
 # Securing the OrionLD Context Broker
 
