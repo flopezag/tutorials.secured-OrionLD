@@ -5,6 +5,7 @@
 #
 
 set -e
+# set -x
 
 echo
 echo -e "⏳ Obtaining the X-Subject-Token for admin user: Alice"
@@ -89,14 +90,13 @@ do
 
   echo -e "          ... Permission GET one($a) ID:   $PERM_GET_ONE"
   echo -e "          ... Permission PATCH one($a) ID: $PERM_UPDATE_ONE"
-
 done
 
 PERM_UPSERT=$(printf '{
   "permission": {
     "name": "Permission to add some entities",
     "action": "POST",
-    "resource": "/entityOperations/upsert",
+    "resource": "/entityOperations/upsert"
   }
 }' | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
