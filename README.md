@@ -1035,7 +1035,79 @@ and the response:
 }
 ```
 
-# Authorizing Application Access
+### Create a PEP Proxy
+
+By default, the docker-compose is created with default credentials to be used by the PEP Proxy, but it is not a good
+example to use in production environment, and it is recommended to create a new PEP Proxy account. To create a new PEP 
+Proxy account within an application, send a POST request to the `/v1/applications/{{application-id}}/pep_proxies` 
+endpoint along with the `X-Auth-Token` header from a previously logged in administrative user.
+
+Provided there is no previously existing PEP Proxy account associated with the application, a new account will be 
+created with a unique id and password and the values will be returned in the response. The first two data are obteined
+in the creation of the PEP Proxy, the Application Id is obtained after the creation if you request the PEP Proxy details
+associated to the application.
+
+The following table summarize the Data that are needed, where you can find them and which are the configuration 
+parameters in PEP Proxy associated to this value.
+
+| Data               | Request response          | Configuration parameter |
+| ------------------ | ------------------------- | ----------------------- |
+| Pep Proxy Username | pep.proxy.id              | PEP_PROXY_USERNAME      |
+| PEP Proxy Password | pep_proxy.password        | PEP_PASSWORD            |
+| Application Id     | pep_proxy.oauth_client_id | PEP_PROXY_APP_ID        |
+
+Finally, there will be only one credential associated to an application for a PEP Proxy, therefore a subsequent request
+will produce a 409 Conflict with the message `Pep Proxy already registered`.
+
+#### Request:
+
+```bash
+http POST "http://localhost:3005/v1/applications/$APP/pep_proxies" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+```
+
+#### Response:
+
+```json
+{
+    "pep_proxy": {
+        "id": "pep_proxy_5551b5d3-8293-41cb-b569-5836097224ab",
+        "password": "pep_proxy_d7a44050-7c61-4f1e-ae9d-49bb626c41c7"
+    }
+}
+```
+
+### Read PEP Proxy details
+
+Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint will return the details of the 
+associated PEP Proxy Account. The `X-Auth-Token` must be supplied in the headers. It is important to see that if you
+want to obtain the `oauth_client_id`, you need to request this information with the API.
+
+#### Request:
+
+```bash
+http GET "http://localhost:3005/v1/applications/$APP/pep_proxies" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+```
+
+#### Response:
+
+```json
+{
+    "pep_proxy": {
+        "id": "pep_proxy_5551b5d3-8293-41cb-b569-5836097224ab",
+        "oauth_client_id": "6f0d6fa9-888e-4371-b9e8-3863e503d242"
+    }
+}
+```
+
+> Note: To update the PEP Proxy credentials just change the configuration parameters *PEP_PROXY_APP_ID*, *PEP_PASSWORD*,
+> and *PEP_PROXY_USERNAME* in the docker-compose file and launch again the docker-compose. It automatically updates the 
+> PEP Proxy container with the new data. For your convenience, the script application-management execute all the process.
+
+### Authorizing Application Access
 
 In the end, a user logs into an application , identifies himself and then is granted a list of permissions that the user
 is able to do. However it should be emphasized that it is the application, not the user that holds and offers the

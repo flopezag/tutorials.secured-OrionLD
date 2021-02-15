@@ -199,5 +199,49 @@ do
 done
 
 
-echo
-echo -e " \033[1;32mdone\033[0m"
+#
+#  http commands to create a new PEP Proxy credentials associated to an Application ID
+#
+#
+
+echo -e "\n⏳ Creating new PEP Proxy credentials"
+
+# | Data               | Request response          | Configuration parameter |
+# | ------------------ | ------------------------- | ----------------------- |
+# | PEP Proxy Username | pep.proxy.id              | PEP_PROXY_USERNAME      |
+# | PEP Proxy Password | pep_proxy.password        | PEP_PASSWORD            |
+# | Application Id     | pep_proxy.oauth_client_id | PEP_PROXY_APP_ID        |
+
+PEP_PROXY=$(http POST "http://localhost:3005/v1/applications/$APP/pep_proxies" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN" | jq .pep_proxy)
+
+PEP_PROXY_USERNAME=$(echo $PEP_PROXY | jq -r .id)
+PEP_PASSWORD=$(echo $PEP_PROXY | jq -r .password)
+
+PEP_PROXY_APP_ID=$(http GET "http://localhost:3005/v1/applications/$APP/pep_proxies" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN" | jq -r .pep_proxy.oauth_client_id)
+
+echo -e "          ... PEP Proxy Username (PEP_PROXY_USERNAME): $PEP_PROXY_USERNAME"
+echo -e "          ... PEP Proxy Password (PEP_PASSWORD): $PEP_PASSWORD"
+echo -e "          ... Application Id (PEP_PROXY_APP_ID): $PEP_PROXY_APP_ID"
+
+#
+# Update docker-compose with the new PEP Proxy credentials
+#
+sed -i .bak "s/pep\_proxy\_00000000\-0000\-0000\-0000\-000000000000/$PEP_PROXY_USERNAME/g" docker-compose.yml
+sed -i '' "s/tutorial\-dckr\-site\-0000\-xpresswebapp/$PEP_PROXY_APP_ID/g" docker-compose.yml
+sed -i '' "s/PEP\_PASSWORD\=test/PEP\_PASSWORD=$PEP_PASSWORD/g" docker-compose.yml
+
+#
+# Upload the docker-compose PEP Proxy container
+#
+docker-compose --log-level ERROR -p fiware up -d --remove-orphans
+
+# Display services
+
+echo ""
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" --filter name=fiware-*
+
+echo -e "\n \033[1;32mdone\033[0m"
