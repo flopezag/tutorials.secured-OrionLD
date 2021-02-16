@@ -1107,41 +1107,43 @@ X-Auth-Token:"$TOKEN"
 > and *PEP_PROXY_USERNAME* in the docker-compose file and launch again the docker-compose. It automatically updates the 
 > PEP Proxy container with the new data. For your convenience, the script application-management execute all the process.
 
-### Authorizing Application Access
+## Authorizing Application Access
 
-In the end, a user logs into an application , identifies himself and then is granted a list of permissions that the user
-is able to do. However it should be emphasized that it is the application, not the user that holds and offers the
-permissions, and the user is merely associated with a aggregated list of permissions via the role(s) they have been
+In the end, a user logs into an application, identifies himself and then is granted a list of permissions that the user
+is able to do. However, it should be emphasized that it is the application, not the user that holds and offers the
+permissions, and the user is merely associated with an aggregated list of permissions via the role(s) they have been
 granted.
 
 The application can grant roles to either Users or Organizations - the latter should always be preferred, as it allows
 the owners of the organization to add new users - delegating the responsibility for user maintenance to a wider group.
 
-For example, imagine the supermarket gains another store detective. Alice has already created role called Security and
-assigned it to the Security team. Charlie is the owner of the Security team organization, and is able to add the new
-`detective3` user to his team. `detective3` can then inherit all the rights of his team without further input from
-Alice.
+For example, imagine the Personal Data Application Management gains another user data. Alice has already created 
+role called _Users_ and assigned it to the Application Users' team. Charlie is the owner of the Application Users' 
+team organization, and is able to add the new `user1` user to his team. `user1` can then inherit all the rights of 
+his team without further input from Alice.
 
 Granting roles to individual Users should be restricted to special cases - some roles may be very specialized an only
-contain one member so there is no need to create an organization. This reduced the administrative burden when setting up
-the application, but any further changes (such as removing access rights when someone leaves) will need to be done by
-Alice herself - no delegation is possible.
+contain one member so there is no need to create an organization. This reduced the administrative burden when setting 
+up the application, but any further changes (such as removing access rights when someone leaves) will need to be done 
+by Alice herself - no delegation is possible.
 
-## Authorizing Organizations
+### Grant a Role to an Application
 
-A role cannot be granted to an organization unless the role has already been defined within the application itself. The
-organization must also have be created as was demonstrated in the previous tutorial.
+A role cannot be granted to an organization unless the role has already been defined within the application itself. A 
+Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
+making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<organzation-id>` in the URL path 
+and identifying themselves using an `X-Auth-Token` in the header.
 
-### Grant a Role to an Organization
+For your convenience, we show in the following table the corresponding environment variables that we will use to grant
+the roles to the organizations inside the corresponding Personal Data Application Management
 
-To grant an organization access to an application, click on the appliation to get to the details page and scroll to the
-bottom of the page, click the **Authorize** button and select the relevant organization.
+| Application Id | Role Id       | Organization Id |
+| -------------- | ------------- | --------------- |
+| $APP           | $ROLE_MANAGER | $MANAGERS       |
+| $APP           | $ROLE_USER    | $USERS          |
 
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/add-role-to-org.png)
-
-A Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
-making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<organzation-id>` in the URL path and
-identifying themselves using an `X-Auth-Token` in the header.
+The Data Users, how we saw in the previoud section, has concrete roles to access concrete information, therefore, they
+are not associated to an organization and will be managed as grant a role to a user.
 
 #### 21 Request:
 
@@ -1152,6 +1154,9 @@ curl -iX PUT \
   'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles/{{role-id}}/organization_roles/member' \
   -H 'Content-Type: application/json' \
   -H 'X-Auth-token: {{X-Auth-token}}'
+http PUT "http://localhost:3005/v1/applications/$APP/organizations/$MANAGERS/roles/$ROLE_MANAGER/organization_roles/member" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
 ```
 
 #### Response:
@@ -1169,46 +1174,18 @@ The response lists the role assignment as shown:
 }
 ```
 
-### List Granted Organization Roles
-
-A full list of roles granted to an organization can be retrieved by making a GET request to the
-`/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles` endpoint
-
-#### 22 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response shows all roles assigned to the organization
-
-```json
-{
-    "role_organization_assignments": [
-        {
-            "organization_id": "security-0000-0000-0000-000000000000",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
-```
-
-## Authorizing Individual User Accounts
-
-A defined role cannot be granted to a user unless the role has already been associated to an application
-
 ### Grant a Role to a User
 
-Granting User access via the GUI can be done in the same manner as for organizations.
+Using the REST API, the role can be granted making a PUT request as shown, including the `<application-id>`, 
+`<role-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+In our case, the tabla bellow shows us the correspondent values.
 
-A Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
-making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<user-id>` in the URL path and
-identifying themselves using an `X-Auth-Token` in the header.
+| Application Id | Role Id         | Person Id       |
+| -------------- | --------------- | --------------- |
+| $APP           | $ROLE_PERSON001 | $OLE            |
+| $APP           | $ROLE_PERSON002 | $TORSTEN        |
+| $APP           | $ROLE_PERSON003 | $FRANK          |
+| $APP           | $ROLE_PERSON004 | $LOTHAR         |
 
 #### 24 Request:
 
@@ -1217,6 +1194,9 @@ curl -iX PUT \
   'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles/{{role-id}}' \
   -H 'Content-Type: application/json' \
   -H 'X-Auth-token: {{X-Auth-token}}'
+http PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
 ```
 
 #### Response:
@@ -1231,182 +1211,7 @@ curl -iX PUT \
 }
 ```
 
-### List Granted User Roles
-
-To list the roles granted to an Individual user, make a GET request to the
-`v1/applications/{{application-id}}/users/{{user-id}}/roles` endpoint
-
-#### 25 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns all roles assigned to the user
-
-```json
-{
-    "role_user_assignments": [
-        {
-            "user_id": "bbbbbbbb-good-0000-0000-000000000000",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
-```
-
-## List Application Grantees
-
-By creating a series of roles and granting them to Users and Organizations, we have made an association between them.
-The REST API offers two convienience methods exist to list all the grantees of an application
-
-### List Authorized Organizations
-
-To list all organizations which are authorized to use an application, make a GET request to the
-`/v1/applications/{{application-id}}/organizations` endpoint.
-
-#### 27 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organizations-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns all organizations which can access the application and the roles they have been assigned.
-Individual members are not listed.
-
-```json
-{
-    "role_organization_assignments": [
-        {
-            "organization_id": "security-0000-0000-0000-000000000000",
-            "role_organization": "member",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
-```
-
-### List Authorized Users
-
-To list all individual users who are authorized to use an application, make a GET request to the
-`/v1/applications/{{application-id}}/users` endpoint.
-
-#### 28 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns all individual users who can access the application and the roles they have been assigned. Note
-that users of an organization granted access are not listed.
-
-```json
-{
-    "role_user_assignments": [
-        {
-            "user_id": "aaaaaaaa-good-0000-0000-000000000000",
-            "role_id": "provider"
-        },
-        {
-            "user_id": "bbbbbbbb-good-0000-0000-000000000000",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
-```
-
-# Securing the OrionLD Context Broker
-
-![](https://fiware.github.io/tutorials.PEP-Proxy/img/pep-proxy-orion.png)
-
-## Securing Orion-LD - PEP Proxy Configuration
-
-The `orion-proxy` container is an instance of FIWARE **Wilma** listening on port `1027`, it is configured to forward
-traffic to `orion` on port `1026`, which is the default port that the Orion-LD Context Broker is listening to for NGSI
-Requests.
-
-```yaml
-orion-proxy:
-    image: fiware/pep-proxy
-    container_name: fiware-orion-proxy
-    hostname: orion-pepproxy
-    networks:
-        default:
-            ipv4_address: 172.18.1.10
-    depends_on:
-        - keyrock
-    ports:
-        - "1027:1027"
-    expose:
-        - "1027"
-    environment:
-        - PEP_PROXY_APP_HOST=orionld
-        - PEP_PROXY_APP_PORT=1026
-        - PEP_PROXY_PORT=1027
-        - PEP_PROXY_IDM_HOST=keyrock
-        - PEP_PROXY_HTTPS_ENABLED=false
-        - PEP_PROXY_AUTH_ENABLED=false
-        - PEP_PROXY_IDM_SSL_ENABLED=false
-        - PEP_PROXY_IDM_PORT=3005
-        - PEP_PROXY_APP_ID=tutorial-dckr-site-0000-xpresswebapp
-        - PEP_PROXY_USERNAME=pep_proxy_00000000-0000-0000-0000-000000000000
-        - PEP_PASSWORD=test
-        - PEP_PROXY_PDP=idm
-        - PEP_PROXY_MAGIC_KEY=1234
-```
-
-The `PEP_PROXY_APP_ID` and `PEP_PROXY_USERNAME` would usually be obtained by adding new entries to the application in
-**Keyrock**, however, in this tutorial, they have been predefined by populating the **MySQL** database with data on
-start-up.
-
-The `orion-pepproxy` container is listening on a single port:
-
--   The PEP Proxy Port - `1027` is exposed purely for tutorial access - so that cUrl or Postman can requests directly to
-    the **Wilma** instance without being part of the same network.
-
-| Key                       | Value                                            | Description                                            |
-| ------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
-| PEP_PROXY_APP_HOST        | `orionld`                                        | The hostname of the service behind the PEP Proxy       |
-| PEP_PROXY_APP_PORT        | `1026`                                           | The port of the service behind the PEP Proxy           |
-| PEP_PROXY_PORT            | `1027`                                           | The port that the PEP Proxy is listening on            |
-| PEP_PROXY_IDM_HOST        | `keyrock`                                        | The hostname for the Identity Manager                  |
-| PEP_PROXY_HTTPS_ENABLED   | `false`                                          | Whether the PEP Proxy itself is running under HTTPS    |
-| PEP_PROXY_AUTH_ENABLED    | `false`                                          | Whether the PEP Proxy is checking for Authorization    |
-| PEP_PROXY_IDM_SSL_ENABLED | `false`                                          | Whether the Identity Manager is running under HTTPS    |
-| PEP_PROXY_IDM_PORT        | `3005`                                           | The Port for the Identity Manager instance             |
-| PEP_PROXY_APP_ID          | `tutorial-dckr-site-0000-xpresswebapp`           |                                                        |
-| PEP_PROXY_USERNAME        | `pep_proxy_00000000-0000-0000-0000-000000000000` | The Username for the PEP Proxy                         |
-| PEP_PASSWORD              | `test`                                           | The Password for the PEP Proxy                         |
-| PEP_PROXY_PDP             | `idm`                                            | The Type of service offering the Policy Decision Point |
-| PEP_PROXY_MAGIC_KEY       | `1234`                                           |                                                        |
-
-For this example, the PEP Proxy is checking for Level 1 - _Authentication Access_ not Level 2 - _Basic Authorization_ or
-Level 3 - _Advanced Authorization_.
-
 ## Securing Orion-LD 
-
-### :arrow_forward: Video : Securing A REST API
-
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=coxFQEY0_So "Securing a REST API")
-
-Click on the image above to see a video about securing a REST API using the Wilma PEP Proxy
-
-## User Logs In to the Application using the REST API
 
 ### PEP Proxy - No Access to Orion-LD without an Access Token
 
@@ -1418,16 +1223,20 @@ present a valid token results in a denial of access.
 
 If a request to the PEP Proxy is made without any access token as shown:
 
-```console
+```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:001?options=keyValues \           
-Link:'<https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'  
+Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'  
+
+http GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues' \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Content-Type:'application/json'
 ```
 
 #### Response:
 
 The response is a **401 Unauthorized** error code, with the following explanation:
 
-```
+```bash
 Auth-token not found in request header
 ```
 
@@ -1444,19 +1253,20 @@ For example to log-in as Alice the Admin:
 * The resulting string is encoded using a variant of Base64. For your convenience you can use the following 
   command line instruction:
   
-  ```console
-  #! echo -n "<Client ID>:<Client Secret>" | base64
+  ```bash
+  echo -n "<Client ID>:<Client Secret>" | base64
   ```
 * The authorization method and a space (e.g. "Basic ") is then prepended to the encoded string.
 
 For example to log-in as Alice the Admin:
 
-```console
+```bash
 http --form POST 'http://localhost:3005/oauth2/token' \
- username=alice-the-admin@test.com \  
- password=test \   
- grant_type=password \  
- Authorization:'Basic dHV0b3JpYWwtZGNrci1zaXRlLTAwMDAteHByZXNzd2ViYXBwOnR1dG9yaWFsLWRja3Itc2l0ZS0wMDAwLWNsaWVudHNlY3JldA==' \
+ 'username'='alice-the-admin@test.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:'Basic NDUzYjRhYmEtNDg1Zi00MGZkLThjMmItMGQwMmM0NzhiOTk1OjAyNDNmNjdkLTYxZDgtNDYyYS1iYzA3LTEyYTFjMzAzOTY5Zgo=' \
  Content-Type:'application/x-www-form-urlencoded'
 ```
 
@@ -1480,7 +1290,7 @@ This can also be done by entering the Tutorial Application on http:/localhost an
 grants on the page. A successful log-in will return an access token. For the next step, we export a TOKEN variable 
 to keep the information of the oAuth token.
 
-```console
+```bash
 export TOKEN={{access_token}}
 ```
 
@@ -1492,7 +1302,7 @@ expected.
 
 #### :one::five: Request:
 
-```console
+```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
@@ -1516,6 +1326,10 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
     "type": "Person"
 }
 ```
+
+### Data owner try to get info from other user
+
+User: Ole
 
 
 ## License

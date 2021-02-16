@@ -4,7 +4,7 @@
 #
 #
 
-set -e
+#set -x
 
 echo
 echo -e "⏳ Obtaining the X-Subject-Token for admin user: Alice"
@@ -198,5 +198,5 @@ http -q PUT "http://localhost:3005/v1/organizations/$DATA/users/$LOTHAR/organiza
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN"
 
-echo
-echo -e " \033[1;32mdone\033[0m"
+
+echo -e "\n \033[1;32mdone\033[0m"

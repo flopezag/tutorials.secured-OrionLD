@@ -4,11 +4,9 @@
 #
 #
 
-set -e
 # set -x
 
-echo
-echo -e "⏳ Obtaining the X-Subject-Token for admin user: Alice"
+echo -e "\n⏳ Obtaining the X-Subject-Token for admin user: Alice"
 
 #
 # Get admin token
@@ -24,8 +22,7 @@ export TOKEN
 #
 # Create new application
 #
-echo
-echo -e "⏳ Creating a new application into IdM"
+echo -e "\n⏳ Creating a new application into IdM"
 
 APP=$(printf '{
   "application": {
@@ -43,15 +40,21 @@ APP=$(printf '{
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN" | jq -r .application.id)
 
-export APP
+CLIENT_SECRET=$(http GET "http://localhost:3005/v1/applications/$APP" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN" | jq -r .application.secret)
 
-echo -e "          ... Application ID: $APP"
+export APP
+export CLIENT_SECRET
+
+echo -e "          ... Application ID (Client Id): $APP"
+echo -e "          ... Client Secret: $CLIENT_SECRET"
+
 
 #
 # Create the corresponding permissions
 #
-echo
-echo -e "⏳ Creating the permissions for /entities and /entityOperations"
+echo -e "\n⏳ Creating the permissions for /entities and /entityOperations"
 
 PERM_GET_ALL=$(printf '{
   "permission": {
@@ -64,7 +67,7 @@ PERM_GET_ALL=$(printf '{
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN" | jq -r .permission.id)
 
-i=0
+i=1
 for a in person001 person002 person003 person004
 do
   a="urn:ngsi-ld:Person:"$a
@@ -124,10 +127,9 @@ echo -e "          ... Permission PATCH all ID: $PERM_UPDATE_ALL"
 #
 # Create the roles Manager, Users, Data or Others
 #
-echo
-echo -e "⏳ Creating the roles Manager, Users, Data or Others"
+echo -e "\n⏳ Creating the roles Manager, Users, Data or Others"
 
-i=0
+i=1
 for a in Manager Users Data
 do
   arrayRoles[i]=$(printf '{
@@ -141,7 +143,7 @@ do
   i=$((i+1))
 done
 
-i=0
+i=1
 for a in Person001 Person002 Person003 Person004
 do
   arrayDataRoles[i]=$(printf '{
@@ -155,6 +157,20 @@ do
   i=$((i+1))
 done
 
+ROLE_MANAGER=${arrayRoles[1]}
+ROLE_USER=${arrayRoles[2]}
+ROLE_PERSON001=${arrayDataRoles[1]}
+ROLE_PERSON002=${arrayDataRoles[2]}
+ROLE_PERSON003=${arrayDataRoles[3]}
+ROLE_PERSON004=${arrayDataRoles[4]}
+
+export ROLE_MANAGER
+export ROLE_USER
+export ROLE_PERSON001
+export ROLE_PERSON002
+export ROLE_PERSON003
+export ROLE_PERSON004
+
 
 #
 # | *Role*    | *Permissions* |
@@ -165,8 +181,7 @@ done
 # | Others    |               |
 #
 
-echo
-echo -e "⏳ Assign the permissions to the roles in the application"
+echo -e "\n⏳ Assign the permissions to the roles in the application"
 
 # Managers
 http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[0]}/permissions/$PERM_GET_ALL" \
@@ -237,11 +252,12 @@ sed -i '' "s/PEP\_PASSWORD\=test/PEP\_PASSWORD=$PEP_PASSWORD/g" docker-compose.y
 #
 # Upload the docker-compose PEP Proxy container
 #
-docker-compose --log-level ERROR -p fiware up -d --remove-orphans
+echo
+# docker-compose --log-level ERROR -p fiware up -d --remove-orphans
 
 # Display services
 
-echo ""
+echo
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" --filter name=fiware-*
 
 echo -e "\n \033[1;32mdone\033[0m"
