@@ -59,6 +59,10 @@ services:
       - IDM_ADMIN_USER=Alice
       - IDM_ADMIN_EMAIL=alice-the-admin@test.com
       - IDM_ADMIN_PASS=test
+      # - IDM_EIDAS_ENABLED=true                               # Enable IdM to allow user authentication in services using their eID (true,false)
+      # - IDM_EIDAS_GATEWAY_HOST=localhost                     # Name of the host in which IdM is running
+      # - IDM_EIDAS_NODE_HOST=https://eidas.node.es/EidasNode  # Name of the host in which is running node eIDAS Service
+      # - IDM_EIDAS_METADATA_LIFETIME=31536000                 # Lifetime of metadata of a service with eIDAS authentication enabled in seconds (1 year)
     secrets:
       - my_secret_data
     healthcheck:

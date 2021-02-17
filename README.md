@@ -1266,7 +1266,7 @@ http --form POST 'http://localhost:3005/oauth2/token' \
  'password'='test' \
  'grant_type'='password' \
  Accept:'application/json' \
- Authorization:'Basic NDUzYjRhYmEtNDg1Zi00MGZkLThjMmItMGQwMmM0NzhiOTk1OjAyNDNmNjdkLTYxZDgtNDYyYS1iYzA3LTEyYTFjMzAzOTY5Zgo=' \
+ Authorization:"Basic $BASE64" \
  Content-Type:'application/x-www-form-urlencoded'
 ```
 
@@ -1329,9 +1329,103 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 ### Data owner try to get info from other user
 
+Let's try to test the access to the Personal data from data owners. Imaging that Ole try to access their data identify
+with the Entity id Person001 and wanted to access to the sensible data of Lother with EntityID:Person004. The first step
+is obtain the corresponding token for Ole
+
+```bash
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='bob-the-appmanager@test.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='ole-lahm@xyz.foo' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='alice-the-admin@test.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='alice-the-admin@test.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='eve@example.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+
+export TOKEN=$(http -h POST http://localhost:3005/v1/auth/tokens \
+  name=bob-the-appmanager@test.com \
+  password=test | grep 'X-Subject-Token' | awk '{print $2}')
+
+
+
+
+
+
+
+
+```
+
+
+The response should be something like the following
+
+```json
+{
+    "access_token": "0f1dbcfd7685708f7972839bb82bc4314e245315",
+    "expires_in": 3599,
+    "refresh_token": "ea779760b69854f047e9c3b775306cbef693dbc7",
+    "scope": [
+        "bearer"
+    ],
+    "token_type": "bearer"
+}
+```
+
+Now, Try to get information about his data 
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+
+User Ole
+Data: Ole
+
 User: Ole
+Data: Lothar
 
 
-## License
+
+
+
+
+# License
 
 [MIT](LICENSE) © 2018-2020 FIWARE Foundation e.V.

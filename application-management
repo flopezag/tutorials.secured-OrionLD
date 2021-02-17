@@ -44,11 +44,14 @@ CLIENT_SECRET=$(http GET "http://localhost:3005/v1/applications/$APP" \
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN" | jq -r .application.secret)
 
+BASE64=$(echo -n "$APP:$CLIENT_SECRET" | base64)
+
 export APP
-export CLIENT_SECRET
+export BASE64
 
 echo -e "          ... Application ID (Client Id): $APP"
 echo -e "          ... Client Secret: $CLIENT_SECRET"
+echo -e "          ... Base64(Client Id:Client Secret): $BASE64"
 
 
 #
@@ -184,25 +187,25 @@ export ROLE_PERSON004
 echo -e "\n⏳ Assign the permissions to the roles in the application"
 
 # Managers
-http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[0]}/permissions/$PERM_GET_ALL" \
- Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
-
-http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[0]}/permissions/$PERM_UPSERT" \
- Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
-
-http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[0]}/permissions/$PERM_UPDATE_ALL" \
- Content-Type:'application/json' \
- X-Auth-Token:"$TOKEN"
-
-# Users
 http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[1]}/permissions/$PERM_GET_ALL" \
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN"
 
+http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[1]}/permissions/$PERM_UPSERT" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[1]}/permissions/$PERM_UPDATE_ALL" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
+# Users
+http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[2]}/permissions/$PERM_GET_ALL" \
+ Content-Type:'application/json' \
+ X-Auth-Token:"$TOKEN"
+
 # Data
-for (( i=0; i<4; i++ ))
+for (( i=1; i<5; i++ ))
 do
   http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayDataRoles[i]}/permissions/${arrayPermGetOne[i]}" \
     Content-Type:'application/json' \
@@ -253,7 +256,7 @@ sed -i '' "s/PEP\_PASSWORD\=test/PEP\_PASSWORD=$PEP_PASSWORD/g" docker-compose.y
 # Upload the docker-compose PEP Proxy container
 #
 echo
-# docker-compose --log-level ERROR -p fiware up -d --remove-orphans
+docker-compose --log-level ERROR -p fiware up -d --remove-orphans
 
 # Display services
 
