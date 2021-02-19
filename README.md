@@ -920,12 +920,12 @@ path and identifying themselves using an `X-Auth-Token` in the header.
 
 The following table summarize the relationship of each *Role* with the different *Permissions*
 
-| *Role*    | *Permissions*                                                           |
-| --------- | ----------------------------------------------------------------------- |
-| Manager   | #1(/entities/*), #3(/entityOperations/upsert), #4(/entities/*/attrs)    |
-| Users     | #1(/entities/*)                                                         |
-| Data      | #2(/entities/{{entityID}}), #5(/entities/{{entityID}}/attrs)            |
-| Others    |                                                                         |
+| *Role*    | *Permissions*                                                                 |
+| --------- | ----------------------------------------------------------------------------- |
+| Manager   | #1(GET:/entities/*), #3(POST:/entityOperations/upsert), #4(PATCH:/entities/*) |
+| Users     | #1(GET:/entities/*)                                                           |
+| Data(n)   | #2(GET:/entities/{{entityID}}), #5(PATCH:/entities/{{entityID}})              |
+| Others    |                                                                               |
 
 Due to the roles are associated to the application, the Role _Others_ does not have any permission assigned in the
 application, therefore the users under the Role Others should be rejected.

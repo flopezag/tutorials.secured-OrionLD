@@ -114,7 +114,7 @@ PERM_UPDATE_ALL=$(printf '{
   "permission": {
     "name": "Permission to update the information associated to an entity (all entities)",
     "action": "PATCH",
-    "resource": "/entities/*",
+    "resource": "/entities/*/attrs/*",
     "is_regex": true
   }
 }' | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
@@ -262,5 +262,13 @@ docker-compose --log-level ERROR -p fiware up -d --remove-orphans
 
 echo
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" --filter name=fiware-*
+
+echo -e "\n⏳ Waiting for \033[1;31mIdM\033[0m to be available"
+
+while [ `curl -s -o /dev/null -w %{http_code} 'http://localhost:3005/version'` -eq 000 ]
+do
+  echo -e "IdM HTTP state: " `curl -s -o /dev/null -w %{http_code} 'http://localhost:3005/version'` " (waiting for 200)"
+	sleep 5
+done
 
 echo -e "\n \033[1;32mdone\033[0m"

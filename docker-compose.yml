@@ -37,7 +37,7 @@ services:
 
   # Keyrock is an Identity Management Front-End
   idm:
-    image: fiware/idm:${KEYROCK_VERSION}
+    image: ging/fiware-idm:${KEYROCK_VERSION}  # fiware/idm:${KEYROCK_VERSION}
     container_name: fiware-idm
     hostname: idm
     networks:
@@ -91,7 +91,7 @@ services:
       - PEP_PROXY_PORT=${ORION_PROXY_PORT}
       - PEP_PROXY_IDM_HOST=idm
       - PEP_PROXY_HTTPS_ENABLED=false
-      - PEP_PROXY_AUTH_ENABLED=false
+      - PEP_PROXY_AUTH_ENABLED=true
       - PEP_PROXY_IDM_SSL_ENABLED=false
       - PEP_PROXY_IDM_PORT=${KEYROCK_PORT}
       - PEP_PROXY_APP_ID=tutorial-dckr-site-0000-xpresswebapp

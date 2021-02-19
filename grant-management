@@ -40,7 +40,7 @@ X-Auth-Token:"$TOKEN"
 #
 # Grant access to the Personal Data Management Application for the persons: Ole, Torsten, Frank, and Lothar
 #
-echo -e "\n⏳ Grant access to the Personal Data Management Application for the organizations: Managers, Users"
+echo -e "\n⏳ Grant access to the Personal Data Management Application for users: Ole, Torsten, Frank, Lothar"
 
 # | Application Id | Role Id         | Person Id       |
 # | -------------- | --------------- | --------------- |
