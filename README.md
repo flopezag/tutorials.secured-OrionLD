@@ -1142,7 +1142,7 @@ the roles to the organizations inside the corresponding Personal Data Applicatio
 | $APP           | $ROLE_MANAGER | $MANAGERS       |
 | $APP           | $ROLE_USER    | $USERS          |
 
-The Data Users, how we saw in the previoud section, has concrete roles to access concrete information, therefore, they
+The Data Users, how we saw in the previous section, has concrete roles to access concrete information, therefore, they
 are not associated to an organization and will be managed as grant a role to a user.
 
 #### 21 Request:
@@ -1150,11 +1150,8 @@ are not associated to an organization and will be managed as grant a role to a u
 This example adds the role to all members of the organization
 
 ```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles/{{role-id}}/organization_roles/member' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-http PUT "http://localhost:3005/v1/applications/$APP/organizations/$MANAGERS/roles/$ROLE_MANAGER/organization_roles/member" \
+http PUT \
+"http://localhost:3005/v1/applications/$APP/organizations/$MANAGERS/roles/$ROLE_MANAGER/organization_roles/member" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
@@ -1166,13 +1163,15 @@ The response lists the role assignment as shown:
 ```json
 {
     "role_organization_assignments": {
-        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
-        "organization_id": "security-0000-0000-0000-000000000000",
-        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482",
+        "oauth_client_id": "d89426c3-d3b5-4b4f-a9f2-2f697220141e",
+        "organization_id": "a8da6722-5fa9-4231-99b6-d88137124c54",
+        "role_id": "d27f1e17-3c58-4370-a25d-03f0d76567e6",
         "role_organization": "member"
     }
 }
 ```
+
+We need to do the same for $USERS and $ROLE_USER who it was described in the previous table.
 
 ### Grant a Role to a User
 
@@ -1190,10 +1189,6 @@ In our case, the tabla bellow shows us the correspondent values.
 #### 24 Request:
 
 ```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles/{{role-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
 http PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
@@ -1204,16 +1199,18 @@ X-Auth-Token:"$TOKEN"
 ```json
 {
     "role_user_assignments": {
-        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
-        "user_id": "bbbbbbbb-good-0000-0000-000000000000",
-        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482"
+        "oauth_client_id": "d89426c3-d3b5-4b4f-a9f2-2f697220141e",
+        "role_id": "39a583b5-63df-4a10-a140-05735b7d2987",
+        "user_id": "cf756095-01d7-4d85-9be6-365d4b12f7d9"
     }
 }
 ```
 
+We have to do the same with the other users and roles how was described in the previous table
+
 ## Securing Orion-LD 
 
-### PEP Proxy - No Access to Orion-LD without an Access Token
+### PEP Proxy - No Access to Orion-LD without Access Token
 
 Secured Access can be ensured by requiring all requests to the secured service are made indirectly via a PEP Proxy (in
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
@@ -1224,9 +1221,6 @@ present a valid token results in a denial of access.
 If a request to the PEP Proxy is made without any access token as shown:
 
 ```bash
-http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:001?options=keyValues \           
-Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'  
-
 http GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues' \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Content-Type:'application/json'
@@ -1240,15 +1234,15 @@ The response is a **401 Unauthorized** error code, with the following explanatio
 Auth-token not found in request header
 ```
 
-### Keyrock - User obtains an Access Token
+### Keyrock - User obtains Access Token
 
 #### :one::three: Request:
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
-endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follow:
+endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows:
 
 For example to log-in as Alice the Admin:
-* The Client ID and Client Secret created in the IDM for your application are combined with a single colon (:). 
+* The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`. 
   This means that the Client ID itself cannot contain a colon.
 * The resulting string is encoded using a variant of Base64. For your convenience you can use the following 
   command line instruction:
@@ -1256,6 +1250,7 @@ For example to log-in as Alice the Admin:
   ```bash
   echo -n "<Client ID>:<Client Secret>" | base64
   ```
+  
 * The authorization method and a space (e.g. "Basic ") is then prepended to the encoded string.
 
 For example to log-in as Alice the Admin:
@@ -1294,7 +1289,7 @@ to keep the information of the oAuth token.
 export TOKEN={{access_token}}
 ```
 
-### PEP Proxy - Accessing Orion-LD with an Authorization
+### PEP Proxy - Accessing Orion-LD with an Authorization - Alice user
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
 is permitted and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
@@ -1309,6 +1304,42 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 ```
 
 #### Response:
+
+```json
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Fri, 19 Feb 2021 11:08:51 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
+That is the expected response due to Alice is not included in any of the permissions to access the OrionLD.
+
+### PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)
+
+```bash
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='bob-the-appmanager@test.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+```
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
 
 ```json
 {
@@ -1327,6 +1358,144 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 }
 ```
 
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+{
+    "@context": "https://schema.lab.fiware.org/ld/context",
+    "address": {
+        "addressLocality": "Berlin",
+        "addressRegion": "Berlin",
+        "postalCode": "10997",
+        "streetAddress": "Eisenbahnstraße 42/43"
+    },
+    "email": "torsten-kuehl@xyz.foo",
+    "id": "urn:ngsi-ld:Person:person002",
+    "name": "Torsten Kühl",
+    "telephone": "0049 1533 8888888",
+    "type": "Person"
+}
+```
+
+Modify something ...
+
+### PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Bob)
+
+
+### PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Bob)
+
+The users under this organization only had permissions to access and modify their own data.
+
+```bash
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='ole-lahm@xyz.foo' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+```
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+{
+    "@context": "https://schema.lab.fiware.org/ld/context",
+    "address": {
+        "addressLocality": "Berlin",
+        "addressRegion": "Berlin",
+        "postalCode": "14199",
+        "streetAddress": "Detmolder Str. 10"
+    },
+    "email": "ole-lahm@xyz.foo",
+    "id": "urn:ngsi-ld:Person:person001",
+    "name": "Ole Lahm",
+    "telephone": "0049 1522 99999999",
+    "type": "Person"
+}
+
+
+ERROR
+```
+
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+???
+```
+
+
+### PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
+
+```bash
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='eve@example.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+```
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Fri, 19 Feb 2021 11:21:02 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Fri, 19 Feb 2021 11:21:30 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
 ### Data owner try to get info from other user
 
 Let's try to test the access to the Personal data from data owners. Imaging that Ole try to access their data identify
@@ -1335,91 +1504,14 @@ is obtain the corresponding token for Ole
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
- 'username'='bob-the-appmanager@test.com' \
- 'password'='test' \
- 'grant_type'='password' \
- Accept:'application/json' \
- Authorization:"Basic $BASE64" \
- Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
-
-export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  'username'='ole-lahm@xyz.foo' \
  'password'='test' \
  'grant_type'='password' \
  Accept:'application/json' \
  Authorization:"Basic $BASE64" \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
-
-export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
- 'username'='alice-the-admin@test.com' \
- 'password'='test' \
- 'grant_type'='password' \
- Accept:'application/json' \
- Authorization:"Basic $BASE64" \
- Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
-
-export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
- 'username'='alice-the-admin@test.com' \
- 'password'='test' \
- 'grant_type'='password' \
- Accept:'application/json' \
- Authorization:"Basic $BASE64" \
- Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
-
-export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
- 'username'='eve@example.com' \
- 'password'='test' \
- 'grant_type'='password' \
- Accept:'application/json' \
- Authorization:"Basic $BASE64" \
- Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
-
-export TOKEN=$(http -h POST http://localhost:3005/v1/auth/tokens \
-  name=bob-the-appmanager@test.com \
-  password=test | grep 'X-Subject-Token' | awk '{print $2}')
-
-
-
-
-
-
-
-
 ```
 
-
-The response should be something like the following
-
-```json
-{
-    "access_token": "0f1dbcfd7685708f7972839bb82bc4314e245315",
-    "expires_in": 3599,
-    "refresh_token": "ea779760b69854f047e9c3b775306cbef693dbc7",
-    "scope": [
-        "bearer"
-    ],
-    "token_type": "bearer"
-}
-```
-
-Now, Try to get information about his data 
-
-```bash
-http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
- Authorization:"Bearer $TOKEN"
-
-http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
- Authorization:"Bearer $TOKEN"
-```
-
-
-User Ole
-Data: Ole
-
-User: Ole
-Data: Lothar
 
 
 

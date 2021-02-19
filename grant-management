@@ -28,12 +28,12 @@ echo -e "\n⏳ Grant access to the Personal Data Management Application for the 
 # | $APP           | $ROLE_MANAGER | $MANAGERS       |
 # | $APP           | $ROLE_USER    | $USERS          |
 
-http POST "http://localhost:3005/v1/applications/$APP/organizations/$MANAGERS/roles/$ROLE_MANAGER/organization_roles/member" \
+http -q PUT "http://localhost:3005/v1/applications/$APP/organizations/$MANAGERS/roles/$ROLE_MANAGER/organization_roles/member" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 
 
-http POST "http://localhost:3005/v1/applications/$APP/organizations/$USERS/roles/$ROLE_USER/organization_roles/member" \
+http -q PUT "http://localhost:3005/v1/applications/$APP/organizations/$USERS/roles/$ROLE_USER/organization_roles/member" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 
@@ -50,18 +50,18 @@ echo -e "\n⏳ Grant access to the Personal Data Management Application for the 
 # | $APP           | $ROLE_PERSON004 | $LOTHAR         |
 
 
-http POST "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 
-http POST "http://localhost:3005/v1/applications/$APP/users/$TORSTEN/roles/$ROLE_PERSON002" \
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$TORSTEN/roles/$ROLE_PERSON002" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 
-http POST "http://localhost:3005/v1/applications/$APP/users/$FRANK/roles/$ROLE_PERSON003" \
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$FRANK/roles/$ROLE_PERSON003" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 
-http POST "http://localhost:3005/v1/applications/$APP/users/$LOTHAR/roles/$ROLE_PERSON004" \
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$LOTHAR/roles/$ROLE_PERSON004" \
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"

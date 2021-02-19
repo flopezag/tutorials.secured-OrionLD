@@ -178,9 +178,9 @@ export ROLE_PERSON004
 #
 # | *Role*    | *Permissions* |
 # | --------- | ------------- |
-# | Manager   | #1(/entities/*), #3(/entityOperations/upsert), #4(/entities/*/attrs)    |
-# | Users     | #1(/entities/*)            |
-# | Data(n)   | #2(/entities/{{entityID}}), #5(/entities/{{entityID}}/attrs)        |
+# | Manager   | #1(GET:/entities/*), #3(POST:/entityOperations/upsert), #4(PATCH:/entities/*)    |
+# | Users     | #1(GET:/entities/*)            |
+# | Data(n)   | #2(GET:/entities/{{entityID}}), #5(PATCH:/entities/{{entityID}})        |
 # | Others    |               |
 #
 
