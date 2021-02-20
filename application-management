@@ -199,10 +199,14 @@ http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[1]}/p
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN"
 
+
+
 # Users
 http -q PUT "http://localhost:3005/v1/applications/$APP/roles/${arrayRoles[2]}/permissions/$PERM_GET_ALL" \
  Content-Type:'application/json' \
  X-Auth-Token:"$TOKEN"
+
+
 
 # Data
 for (( i=1; i<5; i++ ))

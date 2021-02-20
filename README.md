@@ -1382,12 +1382,65 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 }
 ```
 
-Modify something ...
+Now trying to modify some attribute.
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Bob)
+```bash
+printf '{
+    "type": "Property",
+    "value": "0049 2644 99999999"
+},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+ERROR...
+User access-token not authorized
+```
+
+Finally, check if we can upload a new Personal Data information:
+
+```bash
+printf '[
+{
+  "id": "urn:ngsi-ld:Person:person010",
+  "type": "Person",
+  "address": {
+    "type": "Property",
+    "value": {
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "14199",
+      "streetAddress": "Detmolder Str. 10"
+    }
+  },
+  "telephone": {
+    "type": "Property",
+    "value": "0000"
+  },
+  "email": {
+    "type": "Property",
+    "value": "xxx@xyz.foo"
+  },
+  "name": {
+    "type": "Property",
+    "value": "Xxx Yyy"
+  }
+}]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
+  Content-Type:application/json \
+  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Authorization:"Bearer $TOKEN"
+```
+
+```json
+ERROR
+User access-token not authorized
+```
+
+### PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)
 
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Bob)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)
 
 The users under this organization only had permissions to access and modify their own data.
 
