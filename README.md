@@ -26,12 +26,27 @@ relevant to authenticating other services are described in detail.
 <summary><strong>Details</strong></summary>
 
 -   [Securing Microservices with a PEP Proxy](#securing-microservices-with-a-pep-proxy)
-    -   [Standard Concepts of Identity Management](#standard-concepts-of-identity-management)
-    -   [:arrow_forward: Video : Introduction to Wilma PEP Proxy](#arrow_forward-video--introduction-to-wilma-pep-proxy)
+    - [Standard Concepts of Identity Management](#standard-concepts-of-identity-management)
+    - [Video: Introduction to Keyrock](#arrow_forward-video--introduction-to-keyrock)
+    - [Video: Introduction to Wilma PEP Proxy](#arrow_forward-video--introduction-to-wilma-pep-proxy)
 -   [Prerequisites](#prerequisites)
-    -   [Docker](#docker)
-    -   [Cygwin](#cygwin)
+    - [Docker](#docker)
+    - [Cygwin](#cygwin)
+    - [Postman](#postman)
+    - [http](#http)
+    - [jq](#jq)
 -   [Architecture](#architecture)
+-   [Start Up](#start-up)
+    - [Dramatis Personae](#dramatis-personae)
+    - [Logging In to Keyrock using the REST API. Getting admin token](#logging-in-to-keyrock-using-the-rest-api.-getting-admin-token)
+-   [Users management](#users-management)
+    - [Creating Users](#creating-users)
+    - [List all Users](#list-all-users)
+
+
+
+
+
 -   [Start Up](#start-up)
     -   [Dramatis Personae](#dramatis-personae)
         -   [Introduction](...)
@@ -95,7 +110,7 @@ The following common objects are found with the **Keyrock** Identity Management 
     associated to their organization
 -   **Permission** - An ability to do something on a resource within the system
 
-Additionally two further non-human application objects can be secured within a FIWARE application:
+Additionally, two further non-human application objects can be secured within a FIWARE application:
 
 -   **IoTAgent** - a proxy between IoT Sensors and the Context Broker
 -   **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
@@ -105,7 +120,13 @@ tutorial:
 
 ![](https://fiware.github.io/tutorials.PEP-Proxy/img/entities.png)
 
-## :arrow_forward: Video : Introduction to Wilma PEP Proxy
+## :arrow_forward: Video: Introduction to Keyrock
+
+[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
+
+Click on the image above to watch an introductory video
+
+## :arrow_forward: Video: Introduction to Wilma PEP Proxy
 
 [![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
 
@@ -206,8 +227,6 @@ Where `<command>` will be help, start, stop or create.
 
 ## Dramatis Personae
 
-### Introduction
-
 The following people at `test.com` legitimately have accounts within the Application
 
 -   Alice, she will be the Administrator of the **Identity Management** Application. The account is created in the 
@@ -271,7 +290,7 @@ One application, with appropriate roles and permissions has also been created:
 | URL           | `http://localhost:3000`                |
 | RedirectURL   | `http://localhost:3000/login`          |
 
-### Logging In to Keyrock using the REST API. Getting admin token
+## Logging In to Keyrock using the REST API. Getting admin token
 
 Enter a username and password to enter the application. The default user has the values `alice-the-admin@test.com`
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for 
@@ -290,7 +309,7 @@ http POST http://localhost:3005/v1/auth/tokens \
 The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
 required in all subsequent requests to gain access
 
-```yaml
+```bash
 HTTP/1.1 201 Created
 Cache-Control: no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0
 Connection: keep-alive
@@ -328,7 +347,8 @@ X-XSS-Protection: 0
 }
 ```
 
-### Creating Users
+# Users management
+## Creating Users
 
 In this section, we explain how to create the corresponding users, making use of the corresponding 
 [Identity Management API](https://keyrock.docs.apiary.io).
@@ -382,7 +402,7 @@ The response contains details about the creation of this account:
 }
 ```
 
-### List all Users
+## List all Users
 
 Obtaining a complete list of all users is a super-admin permission requiring the `X-Auth-token` - most users will only
 be permitted to return users within their own organization. Listing users can be done by making a GET request to the
@@ -432,7 +452,7 @@ The response contains basic details of all accounts:
 ```
 
 
-### Grouping User Accounts under Organizations
+# Grouping User Accounts under Organizations
 
 For any identity management system of a reasonable size, it is useful to be able to assign roles to groups of users,
 rather than setting them up individually. Since user administration is a time-consuming business, it is also necessary
@@ -462,7 +482,7 @@ user accounts to the organization they control.
 By the execution of this tutorial, alice will be the person in charge of the creation of all organizations for 
 management purposes. Therefore, Alice will be automatically assigned to all of these groups.
 
-#### Create an Organization
+## Create an Organization
 
 The standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
 the `/v1/organizations` endpoint. To create a new organization, send a POST request to the `/v1/organizations` 
@@ -497,7 +517,7 @@ UUID to identify the new organization.
 }
 ```
 
-#### List all Organizations
+## List all Organizations
 
 Obtaining a complete list of all organizations is a super-admin permission requiring the `X-Auth-token` - most users
 will only be permitted to return users within their own organization. Listing users can be done by making a GET request
@@ -558,7 +578,7 @@ The response returns the details of the visible organizations.
 ```
 
 
-#### Assign users to organizations
+## Assign users to organizations
 
 Users within an Organization are assigned to one of types - `owner` or `member`. The members of an organization inherit
 all the roles and permissions assigned to the organization itself. In addition, owners of an organization are able to
@@ -594,7 +614,7 @@ The response lists the user's current role within the organization (i.e. `member
 }
 ```
 
-#### List Users within an Organization
+## List Users within an Organization
 
 Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing 
 users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
@@ -633,7 +653,7 @@ The response contains the users list.
 ```
 
 
-## Managing Roles and Permissions
+# Managing Roles and Permissions
 
 The next step consists in the creation of the proper application, and how to assign roles and permissions to them. 
 It takes the users and organizations created in the previous sections and ensures that only legitimate users will 
@@ -666,7 +686,7 @@ objects can be seen below.
 
 ![](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
 
-### Create an Application
+## Create an Application
 
 Any FIWARE application can be broken down into a collection of microservices. These microservices connect together 
 to read and alter the state of the real world. Security can be added to these services by restricting actions on 
@@ -729,7 +749,7 @@ The response includes a Client ID and Secret which can be used to secure the app
 Copy the Application Client ID to be used for all other application requests - in the case above the ID is
 `3fc4e897-a9b5-4b2e-bcce-98849c628972` (export APP=3fc4e897-a9b5-4b2e-bcce-98849c628972).
 
-### Create a Permission
+## Create a Permission
 
 An application permission is an allowable action on a resource within that application. Each resource is defined 
 by a URL (e.g. `/entities`), and the action is any HTTP verb (e.g. GET). The combination will be used to ensure 
@@ -803,7 +823,7 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 > 
 > Note: The script `mgmt-users-organizations` will create all the corresponding permissions for this example application.
 
-### List Permissions
+## List Permissions
 
 Listing the permissions with an application can be done by making a GET request to the
 `/v1/applications/{{application-id}}/permissions/` endpoint
@@ -854,7 +874,7 @@ which are avaiable by default
 }
 ```
 
-### Create a Role
+## Create a Role
 
 A permission is an allowable action on a resource, as noted above. A role consists of a group of permissions, in other
 words a series of permitted actions over a group of resources. Roles are usually given a description with a broad scope
@@ -911,7 +931,7 @@ The details of the created role are returned
 
 We need to repeat the process for _Users_, _Data_ or _Others_, changing the value `name` in the json payload.
 
-### Assigning Permissions to each Role
+## Assigning Permissions to each Role
 
 Having created a set of application permissions, and a series of application roles, the next step is to assign the
 relevant permissions to each role - in other words defining _Who can do What_. To add a permission using the REST 
@@ -954,7 +974,7 @@ The response returns the permissions for the role
 > different permissions with the corresponding Roles.
 
 
-### List Permissions of a Role
+## List Permissions of a Role
 
 A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
 `/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint
@@ -1035,7 +1055,12 @@ and the response:
 }
 ```
 
-### Create a PEP Proxy
+# PEP Proxy
+
+## Introduction
+
+
+## Create a PEP Proxy
 
 By default, the docker-compose is created with default credentials to be used by the PEP Proxy, but it is not a good
 example to use in production environment, and it is recommended to create a new PEP Proxy account. To create a new PEP 
@@ -1078,7 +1103,7 @@ X-Auth-Token:"$TOKEN"
 }
 ```
 
-### Read PEP Proxy details
+## Read PEP Proxy details
 
 Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint will return the details of the 
 associated PEP Proxy Account. The `X-Auth-Token` must be supplied in the headers. It is important to see that if you
@@ -1107,7 +1132,7 @@ X-Auth-Token:"$TOKEN"
 > and *PEP_PROXY_USERNAME* in the docker-compose file and launch again the docker-compose. It automatically updates the 
 > PEP Proxy container with the new data. For your convenience, the script application-management execute all the process.
 
-## Authorizing Application Access
+# Authorizing Application Access
 
 In the end, a user logs into an application, identifies himself and then is granted a list of permissions that the user
 is able to do. However, it should be emphasized that it is the application, not the user that holds and offers the
@@ -1127,7 +1152,7 @@ contain one member so there is no need to create an organization. This reduced t
 up the application, but any further changes (such as removing access rights when someone leaves) will need to be done 
 by Alice herself - no delegation is possible.
 
-### Grant a Role to an Application
+## Grant a Role to an Application
 
 A role cannot be granted to an organization unless the role has already been defined within the application itself. A 
 Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
@@ -1173,7 +1198,7 @@ The response lists the role assignment as shown:
 
 We need to do the same for $USERS and $ROLE_USER who it was described in the previous table.
 
-### Grant a Role to a User
+## Grant a Role to a User
 
 Using the REST API, the role can be granted making a PUT request as shown, including the `<application-id>`, 
 `<role-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
@@ -1208,9 +1233,9 @@ X-Auth-Token:"$TOKEN"
 
 We have to do the same with the other users and roles how was described in the previous table
 
-## Securing Orion-LD 
+# Securing Orion-LD 
 
-### PEP Proxy - No Access to Orion-LD without Access Token
+## PEP Proxy - No Access to Orion-LD without Access Token
 
 Secured Access can be ensured by requiring all requests to the secured service are made indirectly via a PEP Proxy (in
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
@@ -1234,7 +1259,7 @@ The response is a **401 Unauthorized** error code, with the following explanatio
 Auth-token not found in request header
 ```
 
-### Keyrock - User obtains Access Token
+## Keyrock - User obtains Access Token
 
 #### :one::three: Request:
 
@@ -1265,6 +1290,19 @@ http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded'
 ```
 
+> :Note: you can execute the following command to automatically export the value of the TOKEN
+> 
+> ```bash
+> export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+> 'username'='alice-the-admin@test.com' \
+> 'password'='test' \
+> 'grant_type'='password' \
+> Accept:'application/json' \
+> Authorization:"Basic $BASE64" \
+> Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+> ```
+
+
 #### Response:
 
 The response returns an access code to identify the user:
@@ -1289,7 +1327,7 @@ to keep the information of the oAuth token.
 export TOKEN={{access_token}}
 ```
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Alice user
+## PEP Proxy - Accessing Orion-LD with an Authorization - Alice user
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
 is permitted and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
@@ -1305,7 +1343,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 #### Response:
 
-```json
+```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
 Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
@@ -1323,7 +1361,7 @@ User access-token not authorized
 
 That is the expected response due to Alice is not included in any of the permissions to access the OrionLD.
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)
+## PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1395,7 +1433,7 @@ printf '{
 
 ```json
 ERROR...
-User access-token not authorized
+User access-token not authorized, Wow maybe it is the Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
 ```
 
 Finally, check if we can upload a new Personal Data information:
@@ -1432,15 +1470,190 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
-```json
-ERROR
-User access-token not authorized
+```bash
+HTTP/1.1 204 No Content
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+ETag: W/"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"
+X-Powered-By: Express
+connection: close
+date: Mon, 22 Feb 2021 14:44:40 GMT
+
 ```
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)
+Now, we check if we can access to the new data:
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+{
+    "@context": "https://schema.lab.fiware.org/ld/context",
+    "address": {
+        "addressLocality": "Berlin",
+        "addressRegion": "Berlin",
+        "postalCode": "14199",
+        "streetAddress": "Detmolder Str. 10"
+    },
+    "email": "xxx@xyz.foo",
+    "id": "urn:ngsi-ld:Person:person010",
+    "name": "Xxx Yyy",
+    "telephone": "0000",
+    "type": "Person"
+}
+```
+
+## PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)
+
+For reminding, this group includes users that can access to all the data but cannot neither create new data or modify
+existing one.
+
+```bash
+export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
+ 'username'='charlie-the-appuser@test.com' \
+ 'password'='test' \
+ 'grant_type'='password' \
+ Accept:'application/json' \
+ Authorization:"Basic $BASE64" \
+ Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+```
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+{
+    "@context": "https://schema.lab.fiware.org/ld/context",
+    "address": {
+        "addressLocality": "Berlin",
+        "addressRegion": "Berlin",
+        "postalCode": "14199",
+        "streetAddress": "Detmolder Str. 10"
+    },
+    "email": "ole-lahm@xyz.foo",
+    "id": "urn:ngsi-ld:Person:person001",
+    "name": "Ole Lahm",
+    "telephone": "0049 1522 99999999",
+    "type": "Person"
+}
+```
 
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+{
+    "@context": "https://schema.lab.fiware.org/ld/context",
+    "address": {
+        "addressLocality": "Berlin",
+        "addressRegion": "Berlin",
+        "postalCode": "10997",
+        "streetAddress": "Eisenbahnstraße 42/43"
+    },
+    "email": "torsten-kuehl@xyz.foo",
+    "id": "urn:ngsi-ld:Person:person002",
+    "name": "Torsten Kühl",
+    "telephone": "0049 1533 8888888",
+    "type": "Person"
+}
+```
+
+Now trying to modify some attribute.
+
+```bash
+printf '{
+    "type": "Property",
+    "value": "0049 2644 99999999"
+},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+ERROR...
+User access-token not authorized, Wow maybe it is the Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+```
+
+Finally, check if we can upload a new Personal Data information:
+
+```bash
+printf '[
+{
+  "id": "urn:ngsi-ld:Person:person011",
+  "type": "Person",
+  "address": {
+    "type": "Property",
+    "value": {
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "14199",
+      "streetAddress": "Detmolder Str. 10"
+    }
+  },
+  "telephone": {
+    "type": "Property",
+    "value": "0000"
+  },
+  "email": {
+    "type": "Property",
+    "value": "xxx@xyz.foo"
+  },
+  "name": {
+    "type": "Property",
+    "value": "Xxx Yyy"
+  }
+}]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
+  Content-Type:application/json \
+  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Mon, 22 Feb 2021 15:00:10 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
+Now, we check if we can access to the new data:
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person011?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 404 Not Found
+
+{
+    "detail": "urn:ngsi-ld:Person:person011",
+    "title": "Entity Not Found",
+    "type": "https://uri.etsi.org/ngsi-ld/errors/ResourceNotFound"
+}
+```
+
+## PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)
 
 The users under this organization only had permissions to access and modify their own data.
 
@@ -1475,9 +1688,6 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
     "telephone": "0049 1522 99999999",
     "type": "Person"
 }
-
-
-ERROR
 ```
 
 
@@ -1487,12 +1697,113 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Authorization:"Bearer $TOKEN"
 ```
 
-```json
-???
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Mon, 22 Feb 2021 15:02:02 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
 ```
 
+Now trying to modify some attribute.
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
+```bash
+printf '{
+    "type": "Property",
+    "value": "0049 2644 99999999"
+},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001/attrs/telephone \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```json
+ERROR...
+User access-token not authorized, Wow maybe it is the Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+```
+
+Finally, check if we can upload a new Personal Data information:
+
+```bash
+printf '[
+{
+  "id": "urn:ngsi-ld:Person:person012",
+  "type": "Person",
+  "address": {
+    "type": "Property",
+    "value": {
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "14199",
+      "streetAddress": "Detmolder Str. 10"
+    }
+  },
+  "telephone": {
+    "type": "Property",
+    "value": "0000"
+  },
+  "email": {
+    "type": "Property",
+    "value": "xxx@xyz.foo"
+  },
+  "name": {
+    "type": "Property",
+    "value": "Xxx Yyy"
+  }
+}]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
+  Content-Type:application/json \
+  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Mon, 22 Feb 2021 15:03:01 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
+Now, we check if we can access to the new data:
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person012?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Mon, 22 Feb 2021 15:03:30 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
+## PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1510,7 +1821,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
-```json
+```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
 Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
@@ -1518,7 +1829,7 @@ Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
 Content-Type: text/html; charset=utf-8
-Date: Fri, 19 Feb 2021 11:21:02 GMT
+Date: Mon, 22 Feb 2021 15:04:09 GMT
 ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
 X-Powered-By: Express
 
@@ -1533,7 +1844,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Authorization:"Bearer $TOKEN"
 ```
 
-```json
+```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
 Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
@@ -1541,7 +1852,7 @@ Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
 Content-Type: text/html; charset=utf-8
-Date: Fri, 19 Feb 2021 11:21:30 GMT
+Date: Mon, 22 Feb 2021 15:04:28 GMT
 ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
 X-Powered-By: Express
 
@@ -1549,22 +1860,106 @@ User access-token not authorized
 
 ```
 
-### Data owner try to get info from other user
-
-Let's try to test the access to the Personal data from data owners. Imaging that Ole try to access their data identify
-with the Entity id Person001 and wanted to access to the sensible data of Lother with EntityID:Person004. The first step
-is obtain the corresponding token for Ole
+Now trying to modify some attribute.
 
 ```bash
-export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
- 'username'='ole-lahm@xyz.foo' \
- 'password'='test' \
- 'grant_type'='password' \
- Accept:'application/json' \
- Authorization:"Basic $BASE64" \
- Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
+printf '{
+    "type": "Property",
+    "value": "0049 2644 99999999"
+},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
 ```
 
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Mon, 22 Feb 2021 15:04:47 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
+Finally, check if we can upload a new Personal Data information:
+
+```bash
+printf '[
+{
+  "id": "urn:ngsi-ld:Person:person014",
+  "type": "Person",
+  "address": {
+    "type": "Property",
+    "value": {
+      "addressLocality": "Berlin",
+      "addressRegion": "Berlin",
+      "postalCode": "14199",
+      "streetAddress": "Detmolder Str. 10"
+    }
+  },
+  "telephone": {
+    "type": "Property",
+    "value": "0000"
+  },
+  "email": {
+    "type": "Property",
+    "value": "xxx@xyz.foo"
+  },
+  "name": {
+    "type": "Property",
+    "value": "Xxx Yyy"
+  }
+}]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
+  Content-Type:application/json \
+  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Mon, 22 Feb 2021 15:05:18 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
+
+Now, we check if we can access to the new data:
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Mon, 22 Feb 2021 15:05:44 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
+```
 
 
 
