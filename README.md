@@ -42,28 +42,34 @@ relevant to authenticating other services are described in detail.
 -   [Users management](#users-management)
     - [Creating Users](#creating-users)
     - [List all Users](#list-all-users)
-
-
-
-
-
--   [Start Up](#start-up)
-    -   [Dramatis Personae](#dramatis-personae)
-        -   [Introduction](...)
-        -   [Administrating Users](...)
-        -   [Creating Roles and Permissions](...)
-    -   [Logging In to Keyrock using the REST API](#logging-in-to-keyrock-using-the-rest-api)
-        -   [Create Token with Password](#create-token-with-password)
-        -   [Get Token Info](#get-token-info)
--   [Securing the Orion Context Broker](#securing-the-orion-context-broker)
-    -   [Securing Orion - PEP Proxy Configuration](#securing-orion---pep-proxy-configuration)
-    -   [Securing Orion - Start up](#securing-orion---start-up)
-        -   [:arrow_forward: Video : Securing A REST API](#arrow_forward-video--securing-a-rest-api)
-    -   [User Logs In to the Application using the REST API](#user-logs-in-to-the-application-using-the-rest-api)
-        -   [PEP Proxy - No Access to Orion-LD without an Access Token](#pep-proxy---no-access-to-orion-without-an-access-token)
-        -   [Keyrock - User Obtains an Access Token](#keyrock---user-obtains-an-access-token)
-        -   [PEP Proxy - Accessing Orion-LD with an Authorization](pep-proxy---accessing-orion-awith-an-authorization)
--   [Integration with eIDAS](...)
+-   [Grouping User Accounts under Organizations](#grouping-user-accounts-under-organizations)
+    - [Create an Organization](#create-an-organization)
+    - [List all Organizations](#list-all-organization)
+    - [Assign users to organizations](#assign-users-to-organizations)
+    - [List Users within an Organization](#list-users-within-an-organization)
+-   [Managing Roles and Permissions](#managing-roles-and-permissions)
+    - [Create an Application](#create-an-application)
+    - [Create a Permission](#create-a-permission)
+    - [List Permissions](#list-permissions)
+    - [Create a Role](#create-a-role)
+    - [Assigning Permissions to each Role](#assigning-permissions-to-each-role)
+    - [List Permissions of a Role](#list-permissions-of-a-role)
+-   [PEP Proxy](#pep-proxy)
+    - [Introduction](#introduction)
+    - [Create a PEP Proxy](#create-a-pep-proxy)
+    - [Read PEP Proxy details](#read-pep-proxy-details)
+-   [Authorizing Application Access](#authorizing-application-access)
+    - [Grant a Role to an Application](#grant-a-role-to-an-application)
+    - [Grant a Role to a User](#grant-a-role-to-a-user)
+-   [Securing Orion-LD](#securing-orion-ld)
+    - [PEP Proxy - No Access to Orion-LD without Access Token](#pep-proxy---no-access-to-orion-ld-without-access-token)
+    - [Keyrock - User obtains Access Token](#keyrock---user-obtains-access-token)
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Alice user](#pep-proxy---accessing-orion-ld-with-an-authorization---alice-user)
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---manager-users-(e.g.-bob))
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-users-(e.g.-charlie))
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-(e.g.-ole))
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-(e.g.-eve))
+-   [Integration with eIDAS](#integration-with-eidas) …
 
 </details>
 
@@ -156,10 +162,22 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 
 ## Postman
 
+Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and 
+streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions 
+[here](https://www.postman.com/downloads).
+
 ## http
+
+This a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions, 
+and wget-like downloads with ab expressive and intuitive syntax. `http` can be installed on each operating system. Follow
+the instructions described [here](https://httpie.io/docs#installation).
 
 ## jq
 
+This is a program to slice, filter and map the content of JSON data. This is a very useful tool to extract certain
+information automatically from the HTTP responses. `jq` is written in C with no dependencies, therefore can be use
+on nearly any platform. Prebuilt binaries are available for Linux, OS X and Windows. For more details how to install
+the tool you can go [here](https://stedolan.github.io/jq/download).
 
 # Architecture
 
@@ -1961,10 +1979,132 @@ User access-token not authorized
 
 ```
 
+# Integration with eIDAS
 
+## Introduction
 
+Secure electronic identification (eID) is one of the key enablers of data protection, privacy and the prevention of 
+online fraud, especially in new areas of application, like Smart Cities, where incorporating real identities into 
+trustable infrastructures has a huge potential.
 
+eID can guarantee the unambiguous identification of a person and make it possible to get the service delivered 
+to the person who is really entitled to it. The Electronic Identification, Authentication and Trust Services 
+(eIDAS) Regulation provides a solution to European Member States for recognizing and accepting eIDs issued in 
+other Member States.
 
+Technical specifications and reference implementations of the interoperability nodes for the eID mechanisms were 
+[published as open source](https://joinup.ec.europa.eu/solution/european-system-recognition-electronic-identities-eidas)
+on 26th November 2015 for the technological infrastructure under Connecting Europe Facility (CEF) program.
+
+The FIWARE identity - eIDAS authentication module that this GE offers allows CEF eID transnational authentication 
+of EU citizens by means of their national eID in FIWARE based OAuth2 authentication domains. Thus, every service 
+deployed according FIWARE security basis, is now accessible by european citizens using their eID and transparently 
+for service providers.
+
+## Architecture
+
+The FIWARE identity - eIDAS authentication module allows users with valid eIDAS accounts (provided by its 
+national eID) to directly login in the IdM and obtain an OAuth2.0 access tokens that represent them in 
+terms of authorization. For enabling this, the service has to be registered in both IdM and eIDAS node. 
+The service is registered in the IdM as a regular *Application*, including some extra configuration 
+parameters as explained in the next section. 
+
+On the other hand, the service has to be registered in the eIDAS node as a *Service Provider* following 
+the procedure of the specific Member State. Then, when the user is going to authenticate in the IdM it 
+will have the option of selecting a kind of *“Login with eID”* option that will redirect it to the 
+specific authentication gateway. Then, the IdM and the eIDAS node will interchange the needed SAML 
+requests to finally obtain the user eIDAS profile. With this profile, the IdM will create a local user 
+mapping the received attributes with the local ones and creating an authorization code. This code will 
+be sent to the Service. Finally, the Service requests the Access Token to allow the OAuth2.0 flows.
+
+Once the service has the Access Token, it can use it as always to authorize requests to other services. 
+Furthermore, as the user is created in the IdM, permissions and roles could be managed in the same way 
+as a regular local user, how it was explained in the previous sections of this documentation. 
+Next figures show the architecture and exchanged data flows between the entities.
+
+![eIDAS integration in FIWARE IAM model](./img/eIDAS_integration_in_FIWARE_IdM.png)
+
+![FIWARE IdM - eIDAS data flow](./img/FIWARE_IdM-eIDAS_data_flow.png)
+
+## IdM server configuration
+
+For configuring IdM to allow users to login with their eID, the connection to an eIDAS node has to be 
+enabled in the configuration file:
+
+```console
+config.eidas = {
+    enabled: true,
+    gateway_host: 'localhost',
+    node_host: 'https://eidas.node.es/EidasNode',
+    metadata_expiration: 60 * 60 * 24 * 365 // One year
+};
+```
+
+Or using the environment variables in the deployment of the corresponding instance:
+
+```yaml
+IDM_EIDAS_ENABLED=true                               # Enable IdM to allow user authentication in services using their eID (true,false)
+IDM_EIDAS_GATEWAY_HOST=localhost                     # Name of the host in which IdM is running
+IDM_EIDAS_NODE_HOST=https://eidas.node.es/EidasNode  # Name of the host in which is running node eIDAS Service
+IDM_EIDAS_METADATA_LIFETIME=31536000                 # Lifetime of metadata of a service with eIDAS authentication enabled in seconds (1 year)
+```
+
+The meaning of the attributes is the following:
+-	*enabled*: set to true enables the connection to the eIDAS node.
+-	*gateway_host*: indicates the DNS of the IdM service.
+-	*node_host*: indicates the endpoint where the eIDAS node server is running.
+-	*metadata_expiration*: expiration time for the service certificates.
+
+## Registering an application as an eIDAS Service Provider
+
+Once the IdM has be configured to support eID authentication, registered applications can enable this kind of 
+authentication individually. During the registration process a new checkbox is included as seen in the following 
+image:
+
+![Enabling eIDAS in application registration](./img/Enabling_eIDAS_in_application_registration.png)
+
+Then, a new step in the registration process is included. In this new step the data regarding the Service Provider
+registered in the eIDAS node has to be filled.
+
+![eIDAS Service Provider data](./img/eIDAS_Service_Provider_data.png)
+
+Once the application is registered, the metadata of the Service Provider is exposed in the endpoint 
+`/applications/{{application-id}}/saml2/metadata`. This metadata file is needed for registering 
+the Service Provider in the eIDAS node.
+
+> :Note: It is very important to register the Service Provider in the eIDAS node following the specific instructions 
+> of the node owner. These instructions depend on the Member State where the node is deployed. Testing nodes can be 
+> deployed following the 
+> [instructions provided by the EC]( https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eIDAS-Node+Integration+Package).
+
+## User authentication
+
+When a user is going to authenticate in an application with eIDAS connection enabled, a new button that allows 
+authentication with eID is included in the log in the panel:
+ 
+![eIDAS application log in panel](./img/eIDAS_application_log_in_panel.png)
+
+When clicking in the option Sign with eID the user will be redirected to the eIDAS authentication gateway to login 
+using his/her national identifier and defined in the `node_host` attribute in the configuration file or with the 
+corresponding environment variable `IDM_EIDAS_NODE_HOST`. For instance, the spanish gateway has the following 
+interface:
+ 
+![Spanish_eIDAS_gateway 1](./img/Spanish_eIDAS_gateway.png)
+
+If the users select the option for authenticating european citizens, they are redirected to a new view in which, 
+selecting the specific country, they can authenticate using their national identifier:
+ 
+![Spanish eIDAS gateway 2.png](./img/Spanish_eIDAS_gateway_2.png)
+
+Once the authentication is performed, the eIDAS node sends de SAML response back to the IdM. Then, IdM extracts the 
+user information from the response and proceeds with the creation of a local user for the first iteration. Once the 
+local user is created, Keyrock generates an OAuth 2.0 access token as for a regular user. Thus, the eIDAS user has 
+the same rights and features than every user registered in Keyrock. The user data is included in the token validation 
+information when it is checked, for instance, from a PEP Proxy.
+
+The next time the user wants to authenticate using eIDAS the process is the same one. However, after the eIDAS 
+authentication, IdM detects the user has been already created in its database, and it does simply create the 
+token without performing the user creation.
 
 # License
 

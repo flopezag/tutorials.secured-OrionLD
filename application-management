@@ -275,4 +275,55 @@ do
 	sleep 5
 done
 
+
+
+#
+# Grant access to the Personal Data Management Application for the organizations: Managers, Users
+#
+echo -e "\n⏳ Grant access to the Personal Data Management Application for the organizations: Managers, Users"
+
+# | Application Id | Role Id       | Organization Id |
+# | -------------- | ------------- | --------------- |
+# | $APP           | $ROLE_MANAGER | $MANAGERS       |
+# | $APP           | $ROLE_USER    | $USERS          |
+
+http -q PUT "http://localhost:3005/v1/applications/$APP/organizations/$MANAGERS/roles/$ROLE_MANAGER/organization_roles/member" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+
+
+http -q PUT "http://localhost:3005/v1/applications/$APP/organizations/$USERS/roles/$ROLE_USER/organization_roles/member" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+
+#
+# Grant access to the Personal Data Management Application for the persons: Ole, Torsten, Frank, and Lothar
+#
+echo -e "\n⏳ Grant access to the Personal Data Management Application for users: Ole, Torsten, Frank, Lothar"
+
+# | Application Id | Role Id         | Person Id       |
+# | -------------- | --------------- | --------------- |
+# | $APP           | $ROLE_PERSON001 | $OLE            |
+# | $APP           | $ROLE_PERSON002 | $TORSTEN        |
+# | $APP           | $ROLE_PERSON003 | $FRANK          |
+# | $APP           | $ROLE_PERSON004 | $LOTHAR         |
+
+
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$TORSTEN/roles/$ROLE_PERSON002" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$FRANK/roles/$ROLE_PERSON003" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+
+http -q PUT "http://localhost:3005/v1/applications/$APP/users/$LOTHAR/roles/$ROLE_PERSON004" \
+Content-Type:application/json \
+X-Auth-Token:"$TOKEN"
+
+
 echo -e "\n \033[1;32mdone\033[0m"
