@@ -69,7 +69,12 @@ relevant to authenticating other services are described in detail.
     - [PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-users-(e.g.-charlie))
     - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-(e.g.-ole))
     - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-(e.g.-eve))
--   [Integration with eIDAS](#integration-with-eidas) …
+-   [Integration with eIDAS](#integration-with-eidas)
+    - [Introduction](#introduction)
+    - [Architecture](#architecture) 
+    - [IdM server configuration](#idm-server-configuration)
+    - [Registering an application as an eIDAS Service Provider](#registering-an-application-as-an-eidas-service-provider)
+    - [User authentication](#user-authentication)
 
 </details>
 
