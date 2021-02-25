@@ -13,10 +13,10 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: Lint changelog file
+      - name: Lint readme file
         uses: docker://avtodev/markdown-lint:v1 # fastest way
         with:
-          rules: './markdownlint.json'
+          rules: './.markdownlint.json'
           args: './README.md'
 
   lint-shell:
