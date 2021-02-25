@@ -7,6 +7,22 @@ name: CI
     branches:
       - master
 jobs:
+  test-modules:
+    name: Test Script
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+        submodules: recursive
+    - name: Build Images
+      run: |
+        ./services create || true
+    - name: Run Script
+      run: |
+        ./services start && ./services stop
+
   lint-dockerfile:
     name: Lint Dockerfile
     runs-on: ubuntu-latest
@@ -17,38 +33,17 @@ jobs:
         uses: burdzwastaken/hadolint-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HADOLINT_ACTION_DOCKERFILE_FOLDER: docker
+          HADOLINT_ACTION_DOCKERFILE_FOLDER: .
 
   lint-markdown:
     name: Lint Markdown
     runs-on: ubuntu-latest
     steps:
-      - name: Git checkout
+      - name: Check out code
         uses: actions/checkout@v2
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
+      - name: Lint changelog file
+        uses: docker://avtodev/markdown-lint:v1 # fastest way
         with:
-          node-version: 12.x
-      - name: Run Remark Markdown Linter
-        run: |
-          npm install
-          npm run lint:md
-      - name: Run Textlint Markdown Linter
-        run: npm run lint:text
-
-  lint-code:
-    name: Lint JavaScript
-    runs-on: ubuntu-latest
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v2
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
-      - name: Run EsLint Node.js Linter
-        run: |
-          npm install -C ./app
-          npm test -C ./app
+          rules: '/lint/rules/changelog.js'
+          config: '/lint/config/changelog.yml'
+          args: './README.md'
