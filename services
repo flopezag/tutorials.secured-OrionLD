@@ -20,7 +20,7 @@ loadData () {
 	addDatabaseIndex
 
   echo -e "\n⏳ Uploading some data into the \033[1;34mOrionLD\033[0m\n"
-	docker run --rm -v "$(pwd)/import-data":"/import-data" \
+	docker run --rm -v "$(pwd)"/import-data:/import-data \
 		--network fiware_default \
 		-e CONTEXT_BROKER="${CONTEXT_BROKER}" \
 		-e TUTORIAL_DATA_MODELS_CONTEXT="https://schema.lab.fiware.org/ld/context" \
@@ -44,12 +44,12 @@ waitForKeyrock () {
 waitForOrion () {
 	echo -e "\n⏳ Waiting for \033[1;34mOrionLD\033[0m to be available"
 
-	status=$(docker run --network fiware_default --rm curlimages/curl -s -o /dev/null -w %{http_code} 'http://orionld:1026/version')
+	status=$(http -h http://localhost:1026/version 2>/dev/null | grep HTTP/ | awk '{print $2}')
 	while (( status != '200' ))
 	do
 	  echo -e "Context Broker HTTP state: $status (waiting for 200)"
 	  sleep 1
-	  status=$(docker run --network fiware_default --rm curlimages/curl -s -o /dev/null -w %{http_code} 'http://orionld:1026/version')
+	  status=$(http -h http://localhost:1026/version 2>/dev/null | grep HTTP/ | awk '{print $2}')
 	done
 
   echo -e " \033[1;32mdone\033[0m"
