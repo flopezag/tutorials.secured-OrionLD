@@ -1010,7 +1010,7 @@ The response returns the permissions for the role
 ## List Permissions of a Role
 
 A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
-`/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint
+`/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint.
 
 #### 19 Request
 
@@ -1094,16 +1094,16 @@ and the response:
 ## Create a PEP Proxy
 
 By default, the docker-compose is created with default credentials to be used by the PEP Proxy, but it is not a good
-example to use in production environment, and it is recommended to create a new PEP Proxy account. To create a new PEP 
-Proxy account within an application, send a POST request to the `/v1/applications/{{application-id}}/pep_proxies` 
+example to use in production environment, and it is recommended to create a new PEP Proxy account. To create a new PEP
+Proxy account within an application, send a POST request to the `/v1/applications/{{application-id}}/pep_proxies`
 endpoint along with the `X-Auth-Token` header from a previously logged in administrative user.
 
-Provided there is no previously existing PEP Proxy account associated with the application, a new account will be 
-created with a unique id and password and the values will be returned in the response. The first two data are obteined
-in the creation of the PEP Proxy, the Application Id is obtained after the creation if you request the PEP Proxy details
-associated to the application.
+Provided there is no previously existing PEP Proxy account associated with the application, a new account will be
+created with a unique id and password and the values will be returned to the response. The first two data are obtained
+in the creation of the PEP Proxy, the Application Id is obtained after the creation if you request the PEP Proxy
+details associated to the application.
 
-The following table summarize the Data that are needed, where you can find them and which are the configuration 
+The following table summarize the Data that are needed, where you can find them and which are the configuration
 parameters in PEP Proxy associated to this value.
 
 | Data               | Request response          | Configuration parameter |
@@ -1136,7 +1136,7 @@ X-Auth-Token:"$TOKEN"
 
 ## Read PEP Proxy details
 
-Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint will return the details of the 
+Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint will return the details of the
 associated PEP Proxy Account. The `X-Auth-Token` must be supplied in the headers. It is important to see that if you
 want to obtain the `oauth_client_id`, you need to request this information with the API.
 
@@ -1160,7 +1160,7 @@ X-Auth-Token:"$TOKEN"
 ```
 
 > Note: To update the PEP Proxy credentials just change the configuration parameters *PEP_PROXY_APP_ID*, *PEP_PASSWORD*,
-> and *PEP_PROXY_USERNAME* in the docker-compose file and launch again the docker-compose. It automatically updates the 
+> and *PEP_PROXY_USERNAME* in the docker-compose file and launch again the docker-compose. It automatically updates the
 > PEP Proxy container with the new data. For your convenience, the script application-management execute all the process.
 
 # Authorizing Application Access
@@ -1173,21 +1173,21 @@ granted.
 The application can grant roles to either Users or Organizations - the latter should always be preferred, as it allows
 the owners of the organization to add new users - delegating the responsibility for user maintenance to a wider group.
 
-For example, imagine the Personal Data Application Management gains another user data. Alice has already created 
-role called _Users_ and assigned it to the Application Users' team. Charlie is the owner of the Application Users' 
-team organization, and is able to add the new `user1` user to his team. `user1` can then inherit all the rights of 
+For example, imagine the Personal Data Application Management gains another user data. Alice has already created
+role called _Users_ and assigned it to the Application Users' team. Charlie is the owner of the Application Users'
+team organization, and is able to add the new `user1` user to his team. `user1` can then inherit all the rights of
 his team without further input from Alice.
 
 Granting roles to individual Users should be restricted to special cases - some roles may be very specialized an only
-contain one member so there is no need to create an organization. This reduced the administrative burden when setting 
-up the application, but any further changes (such as removing access rights when someone leaves) will need to be done 
+contain one member so there is no need to create an organization. This reduced the administrative burden when setting
+up the application, but any further changes (such as removing access rights when someone leaves) will need to be done
 by Alice herself - no delegation is possible.
 
 ## Grant a Role to an Application
 
-A role cannot be granted to an organization unless the role has already been defined within the application itself. A 
+A role cannot be granted to an organization unless the role has already been defined within the application itself. A
 Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
-making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<organzation-id>` in the URL path 
+making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<organzation-id>` in the URL path
 and identifying themselves using an `X-Auth-Token` in the header.
 
 For your convenience, we show in the following table the corresponding environment variables that we will use to grant
@@ -1203,7 +1203,7 @@ are not associated to an organization and will be managed as grant a role to a u
 
 #### 21 Request
 
-This example adds the role to all members of the organization
+This example adds the role to all members of the organization:
 
 ```bash
 http PUT \
@@ -1231,7 +1231,7 @@ We need to do the same for $USERS and $ROLE_USER who it was described in the pre
 
 ## Grant a Role to a User
 
-Using the REST API, the role can be granted making a PUT request as shown, including the `<application-id>`, 
+Using the REST API, the role can be granted making a PUT request as shown, including the `<application-id>`,
 `<role-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 In our case, the tabla bellow shows us the correspondent values.
 
@@ -1262,7 +1262,7 @@ X-Auth-Token:"$TOKEN"
 }
 ```
 
-We have to do the same with the other users and roles how was described in the previous table
+We have to do the same with the other users and roles how was described in the previous table.
 
 # Securing Orion-LD 
 
@@ -1311,9 +1311,9 @@ To log in to the application using the user-credentials flow send a POST request
 endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows:
 
 For example to log-in as Alice the Admin:
-* The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`. 
+* The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`.
   This means that the Client ID itself cannot contain a colon.
-* The resulting string is encoded using a variant of Base64. For your convenience you can use the following 
+* The resulting string is encoded using a variant of Base64. For your convenience you can use the following
   command line instruction:
   
   ```bash
@@ -1364,7 +1364,7 @@ The response returns an access code to identify the user:
 ```
 
 This can also be done by entering the Tutorial Application on http:/localhost and logging in using any of the OAuth2
-grants on the page. A successful log-in will return an access token. For the next step, we export a TOKEN variable 
+grants on the page. A successful log-in will return an access token. For the next step, we export a TOKEN variable
 to keep the information of the oAuth token.
 
 ```bash
@@ -1882,7 +1882,6 @@ X-Powered-By: Express
 User access-token not authorized
 
 ```
-
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
