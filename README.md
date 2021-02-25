@@ -8,9 +8,9 @@
 [![Documentation](https://img.shields.io/readthedocs/fiware-tutorials.svg)](https://fiware-tutorials.rtfd.io)
 
 This tutorial uses the FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy combined with **Keyrock** to secure
-access to Orion-LD endpoints exposed by FIWARE generic enablers. Users (or other actors) must log-in and use a token 
-to gain access to services. The application code created in the [previous tutorial](https://github.com/FIWARE/tutorials.Securing-Access) 
-is expanded to authenticate users throughout a distributed system. The design of FIWARE Wilma - a PEP Proxy is 
+access to Orion-LD endpoints exposed by FIWARE generic enablers. Users (or other actors) must log-in and use a token
+to gain access to services. The application code created in the [previous tutorial](https://github.com/FIWARE/tutorials.Securing-Access)
+is expanded to authenticate users throughout a distributed system. The design of FIWARE Wilma - a PEP Proxy is
 discussed, and the parts of the Keyrock GUI and REST API relevant to authenticating other services are described in detail.
 
 [http](https://httpie.io) commands are used throughout to access the **Keyrock** and **Wilma** REST APIs -
@@ -68,7 +68,7 @@ discussed, and the parts of the Keyrock GUI and REST API relevant to authenticat
   - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-eg-ole)
   - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-eg-eve)
 - [Integration with eIDAS](#integration-with-eidas)
-  - [Architecture of the integration](#architecture-of-the-integration) 
+  - [Architecture of the integration](#architecture-of-the-integration)
   - [IdM server configuration](#idm-server-configuration)
   - [Registering an application as an eIDAS Service Provider](#registering-an-application-as-an-eidas-service-provider)
   - [User authentication](#user-authentication)
@@ -107,23 +107,23 @@ Unauthorized users are simply returned a **401 - Unauthorized** response.
 
 The following common objects are found with the **Keyrock** Identity Management database:
 
-- **User** - Any signed up user able to identify themselves with an eMail and password. Users can be assigned rights
+- **User**, any signed up user able to identify themselves with an eMail and password. Users can be assigned rights
   individually or as a group.
-- **Application** - Any securable FIWARE application consisting of a series of microservices.
-- **Organization** - A group of users who can be assigned a series of rights. Altering the rights of the organization
+- **Application**, any securable FIWARE application consisting of a series of microservices.
+- **Organization**, a group of users who can be assigned a series of rights. Altering the rights of the organization
   effects the access of all users of that organization.
-- **OrganizationRole** - Users can either be members or admins of an organization - Admins are able to add and remove
+- **OrganizationRole**, users can either be members or admins of an organization - Admins are able to add and remove
   users from their organization, members merely gain the roles and permissions of an organization. This allows each
   organization to be responsible for their members and removes the need for a super-admin to administer all rights.
-- **Role** - A role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
+- **Role**, a role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
   or an organization. A signed-in user gains all the permissions from all of their own roles plus all of the roles
   associated to their organization.
-- **Permission** - An ability to do something on a resource within the system.
+- **Permission**, an ability to do something on a resource within the system.
 
 Additionally, two further non-human application objects can be secured within a FIWARE application:
 
-- **IoTAgent** - a proxy between IoT Sensors and the Context Broker.
-- **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
+- **IoTAgent**, a proxy between IoT Sensors and the Context Broker.
+- **PEPProxy**, a middleware for use between generic enablers challenging the rights of a user.
 
 The relationship between the objects can be seen below - the entities marked in red are used directly within this
 tutorial:
@@ -176,13 +176,13 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 
 ## Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="30" width="30">
 
-Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and 
-streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions 
+Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and
+streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions
 [here](https://www.postman.com/downloads).
 
 ## http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30">
 
-This a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions, 
+This a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions,
 and wget-like downloads with ab expressive and intuitive syntax. `http` can be installed on each operating system. Follow
 the instructions described [here](https://httpie.io/docs#installation).
 
@@ -208,19 +208,19 @@ of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql
 Therefore the overall architecture will consist of the following elements:
 
 - The FIWARE [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-  [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json)
+  [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json).
 - FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
   including:
-  - An OAuth2 authentication system for Applications and Users
-  - A site graphical frontend for Identity Management Administration
-  - An equivalent REST API for Identity Management via HTTP requests
+  - An OAuth2 authentication system for Applications and Users.
+  - A site graphical frontend for Identity Management Administration.
+  - An equivalent REST API for Identity Management via HTTP requests.
 - FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** microservice.
-- The underlying [MongoDB](https://www.mongodb.com/) database :
+- The underlying [MongoDB](https://www.mongodb.com/) database:
   - Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions and
-    registrations
-  - Used by the **IoT Agent** to hold device information such as device URLs and Keys
-- A [MySQL](https://www.mysql.com/) database :
-  - Used to persist user identities, applications, roles and permissions
+    registrations.
+  - Used by the **IoT Agent** to hold device information such as device URLs and Keys.
+- A [MySQL](https://www.mysql.com/) database:
+  - Used to persist user identities, applications, roles and permissions.
 
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
