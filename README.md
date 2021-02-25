@@ -202,7 +202,7 @@ by **Keyrock**. It will make use of four FIWARE components - the
 [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Generic enabler and adds one or two instances
 [Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured.
 
-The Orion-LD Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence 
+The Orion-LD Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence
 of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql.com/) database.
 
 Therefore the overall architecture will consist of the following elements:
@@ -242,7 +242,7 @@ git checkout NGSI-v2
 > **Note** The initial creation of Docker images can take up to three minutes
 
 Thereafter, all services can be initialized from the command-line by running the
-[services](https://github.com/flopezag/tutorials.secured-OrionLD/blob/main/services) 
+[services](https://github.com/flopezag/tutorials.secured-OrionLD/blob/main/services)
 Bash script provided within the repository:
 
 ```console
@@ -261,7 +261,7 @@ Where `<command>` will be help, start, stop or create.
 
 The following people at `test.com` legitimately have accounts within the Application
 
-- Alice, she will be the Administrator of the **Identity Management** Application. The account is created in the 
+- Alice, she will be the Administrator of the **Identity Management** Application. The account is created in the
   initialization process of the Identity Management.
 - Bob, administrator of the application, he has access to read and write the Personal Data store in the application.
 - Charlie, he is an application's user. He needs to read the Personal Data of the users but cannot modify them.
@@ -272,7 +272,7 @@ to the data
 - Eve - Eve the Eavesdropper.
 - Mallory - Mallory the malicious attacker.
 
-The following people at `xyz.foo` have signed up for accounts and can access to their Personal Data for reading 
+The following people at `xyz.foo` have signed up for accounts and can access to their Personal Data for reading
 and writing only:
 
 - Ole.
@@ -326,7 +326,7 @@ One application, with appropriate roles and permissions has also been created:
 ## Logging In to Keyrock using the REST API - Getting admin token
 
 Enter a username and password to enter the application. The default user has the values `alice-the-admin@test.com`
-and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for 
+and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
 the other users after their creation just change the proper name and password data in this request:
 
 ##### :one: Request
@@ -383,7 +383,7 @@ X-XSS-Protection: 0
 # Users management
 ## Creating Users
 
-In this section, we explain how to create the corresponding users, making use of the corresponding 
+In this section, we explain how to create the corresponding users, making use of the corresponding
 [Identity Management API](https://keyrock.docs.apiary.io).
 
 > **Note** - an eMail server must be configured to send out invites properly, otherwise the invitation may be deleted as
@@ -395,7 +395,7 @@ GET, PATCH and DELETE) under the `/v1/users` endpoint.
 
 To create a new user, send a POST request to the `/v1/users` endpoint containing the `username`, `email` and `password`
 along with the `X-Auth-Token` header from a previously logged in administrative user (see the previous section). Additional
-users can be added by making repeated POST requests with the proper information following the previous table. 
+users can be added by making repeated POST requests with the proper information following the previous table.
 For example to create additional accounts for Bob, the Application Manager we should execute the following request
 
 > **Note** You can take a look and execute the create-users script to automatically create all the users accounts.
@@ -493,33 +493,33 @@ to be able to delegate the responsibility of managing these group of users down 
 access.
 
 Consider our Personal Data management example, there could be a group of users (Application Managers) who can introduce
-new Personal Data into the system as well as modify existing data introduced previously. Another group of users 
+new Personal Data into the system as well as modify existing data introduced previously. Another group of users
 (Application Users) who need to access the Personal Data information to produce some report based on them but cannot
-modify them. Another group of users (Data Users) correspond to each of the persons that provide the Personal Data, 
-therefore they can access for reading and modifying their only own data. Finally, Another group of users (Others) 
-exist that are not related to this application and therefore they cannot access to the Personal Data for neither 
-reading or writing. Rather than give access to each individual account, it would be easier to assign the rights to 
+modify them. Another group of users (Data Users) correspond to each of the persons that provide the Personal Data,
+therefore they can access for reading and modifying their only own data. Finally, Another group of users (Others)
+exist that are not related to this application and therefore they cannot access to the Personal Data for neither
+reading or writing. Rather than give access to each individual account, it would be easier to assign the rights to
 an organization and then add users to these organizations.
 
-Furthermore, Alice, the **Identity Management** administrator does not need to explicitly add additional user 
-accounts to each organization herself - she could delegate that right to an owner within each organization. 
-For example Bob the Project Manager would be made the owner of the _Application Managers_ organization and could 
-add and remove addition manager accounts to that organization whereas Charlie the Head of _Application Users_ 
+Furthermore, Alice, the **Identity Management** administrator does not need to explicitly add additional user
+accounts to each organization herself - she could delegate that right to an owner within each organization.
+For example Bob the Project Manager would be made the owner of the _Application Managers_ organization and could
+add and remove addition manager accounts to that organization whereas Charlie the Head of _Application Users_
 could be handed an ownership role his organization and add additional application users to that organization.
 
-Note that Bob does not have the rights to alter the membership list of the _Users_ organization and Charlie 
-does not have the rights to alter the membership list of the _Managers_ organization. Furthermore, neither Bob 
-nor Charlie would be able to alter the permissions of the application themselves, merely add and remove existing 
+Note that Bob does not have the rights to alter the membership list of the _Users_ organization and Charlie
+does not have the rights to alter the membership list of the _Managers_ organization. Furthermore, neither Bob
+nor Charlie would be able to alter the permissions of the application themselves, merely add and remove existing
 user accounts to the organization they control.
 
-By the execution of this tutorial, alice will be the person in charge of the creation of all organizations for 
+By the execution of this tutorial, alice will be the person in charge of the creation of all organizations for
 management purposes. Therefore, Alice will be automatically assigned to all of these groups.
 
 ## Create an Organization
 
 The standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
-the `/v1/organizations` endpoint. To create a new organization, send a POST request to the `/v1/organizations` 
-endpoint containing the `name` and `description` along with the `X-Auth-token` header from a previously 
+the `/v1/organizations` endpoint. To create a new organization, send a POST request to the `/v1/organizations`
+endpoint containing the `name` and `description` along with the `X-Auth-token` header from a previously
 logged-in user.
 
 > **Note** You can take a look and execute the organization-mgmt script to automatically create all organizations
@@ -536,7 +536,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-The Organization is created, and the user who created it is automatically assigned as a user. The response returns 
+The Organization is created, and the user who created it is automatically assigned as a user. The response returns
 UUID to identify the new organization.
 
 ```json
@@ -649,7 +649,7 @@ The response lists the user's current role within the organization (i.e. `member
 
 ## List Users within an Organization
 
-Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing 
+Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing
 users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
 
 #### 16 Request
@@ -688,49 +688,49 @@ The response contains the users list.
 
 # Managing Roles and Permissions
 
-The next step consists in the creation of the proper application, and how to assign roles and permissions to them. 
-It takes the users and organizations created in the previous sections and ensures that only legitimate users will 
+The next step consists in the creation of the proper application, and how to assign roles and permissions to them.
+It takes the users and organizations created in the previous sections and ensures that only legitimate users will
 have access to resources.
 
-Authorization is the function of specifying access rights/privileges to resources related to information security. 
-More formally, "to authorize" is to define an access policy. With identity management controlled via the 
+Authorization is the function of specifying access rights/privileges to resources related to information security.
+More formally, "to authorize" is to define an access policy. With identity management controlled via the
 FIWARE Keyrock Generic Enabler, User access is granted based on permissions assigned to a role.
 
-Every application secured by the Keyrock generic enabler can define a set of permissions - i.e. a set of things 
+Every application secured by the Keyrock generic enabler can define a set of permissions - i.e. a set of things
 that can be done within the application. For example within the application, the ability to read and modify new
 Personal Data . Similarly, the ability to read and modify only your own Personal Data could be secured a proper
 defined permission.
 
-These permissions are grouped together in a series of roles - for example read and modify Personal Data could 
-both be assigned to the Managers role, meaning that Users who are subsequently given that role would gain both 
-permissions over Personal Data stored in the application. Permissions can overlap and be assigned to multiple 
+These permissions are grouped together in a series of roles - for example read and modify Personal Data could
+both be assigned to the Managers role, meaning that Users who are subsequently given that role would gain both
+permissions over Personal Data stored in the application. Permissions can overlap and be assigned to multiple
 roles - maybe read Personal Data is also assigned to the Users role.
 
-In turn users or organizations will be assigned to one of more roles - each user will gain the sum of all the 
-permissions for each role they have. For example if Alice is assigned to both Managers and Users roles, she 
+In turn users or organizations will be assigned to one of more roles - each user will gain the sum of all the
+permissions for each role they have. For example if Alice is assigned to both Managers and Users roles, she
 will gain all permissions for reading and modifying Personal Data.
 
-The concept of a role is unknown to a user - they only know the list of permissions they have been granted, 
+The concept of a role is unknown to a user - they only know the list of permissions they have been granted,
 not how the permissions are split up within the application.
 
-In summary, permissions are all the possible actions that can be done to resources within an application, whereas 
-roles are groups of actions which can be done by a type of user of that application. The relationship between the 
+In summary, permissions are all the possible actions that can be done to resources within an application, whereas
+roles are groups of actions which can be done by a type of user of that application. The relationship between the
 objects can be seen below.
 
 ![](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
 
 ## Create an Application
 
-Any FIWARE application can be broken down into a collection of microservices. These microservices connect together 
-to read and alter the state of the real world. Security can be added to these services by restricting actions on 
-these resources down to users how have appropriate permissions. It is therefore necessary to define an application 
-to offer a set of permissible actions and to hold a list of permitted users (or groups of users i.e. an Organization). 
+Any FIWARE application can be broken down into a collection of microservices. These microservices connect together
+to read and alter the state of the real world. Security can be added to these services by restricting actions on
+these resources down to users how have appropriate permissions. It is therefore necessary to define an application
+to offer a set of permissible actions and to hold a list of permitted users (or groups of users i.e. an Organization).
 Therefore, applications are therefore a conceptual bucket holding who can do what on which resource.
 
-To create a new application via the REST API, send a POST request to the `/v1/application` endpoint containing 
-details of the application such as `name` and `description`, along with OAuth information fields such as the 
-`url` of the webservice to be protected, and `redirect_uri` (where a user will be challenged for their credentials). 
-The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-token` 
+To create a new application via the REST API, send a POST request to the `/v1/application` endpoint containing
+details of the application such as `name` and `description`, along with OAuth information fields such as the
+`url` of the webservice to be protected, and `redirect_uri` (where a user will be challenged for their credentials).
+The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-token`
 from a previously logged in user will automatically be granted a provider role over the application.
 
 #### Request
@@ -784,22 +784,22 @@ Copy the Application Client ID to be used for all other application requests - i
 
 ## Create a Permission
 
-An application permission is an allowable action on a resource within that application. Each resource is defined 
-by a URL (e.g. `/entities`), and the action is any HTTP verb (e.g. GET). The combination will be used to ensure 
+An application permission is an allowable action on a resource within that application. Each resource is defined
+by a URL (e.g. `/entities`), and the action is any HTTP verb (e.g. GET). The combination will be used to ensure
 only permitted users are able to access the `/entities` resource.
 
-It should be emphasized that permissions are always found bound to an application - abstract permissions do not 
-exist on their own. The standard permission CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, 
-PATCH and DELETE) under the `/v1/applications/{{application-id}}/permissions` endpoint. As you can see the 
+It should be emphasized that permissions are always found bound to an application - abstract permissions do not
+exist on their own. The standard permission CRUD actions are assigned to the appropriate HTTP verbs (POST, GET,
+PATCH and DELETE) under the `/v1/applications/{{application-id}}/permissions` endpoint. As you can see the
 `<application-id>` itself is integral to the URL.
 
-Permissions are usually defined once and set-up when the application is created. If the design of your use-case 
-means that you find you need to alter the permissions regularly, then the definition has probably been defined 
-incorrectly or in the wrong layer - complex access control rules should be pushed down into the XACML definitions 
+Permissions are usually defined once and set-up when the application is created. If the design of your use-case
+means that you find you need to alter the permissions regularly, then the definition has probably been defined
+incorrectly or in the wrong layer - complex access control rules should be pushed down into the XACML definitions
 or moved into the business logic of the application - they should not be dealt with within **Keyrock**.
 
 To create a new permission via the REST API, send a POST request to the `/applications/{{application-id}}/permissions`
-endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged in 
+endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged in
 user (Alice).
 
 #### 8 Request
@@ -848,7 +848,7 @@ look in the following table to see the different permissions to be created:
 | #5         | PATCH | /entities/{{entityID}}/attrs | Update the information associated to an entity (one entity)   | DATA            |
 
 We have to mention that the permission #1 include the permission #2, and the permission #2 in generated after
-we have the upload the Personal Data associated to a person (e.g. Ole's Personal Data has the entityID 
+we have the upload the Personal Data associated to a person (e.g. Ole's Personal Data has the entityID
 `urn:ngsi-ld:Person:person001`).
 
 > Note: We should manage all the permissions related to the OrionLD API but for this document we will center only
@@ -967,8 +967,8 @@ We need to repeat the process for _Users_, _Data_ or _Others_, changing the valu
 ## Assigning Permissions to each Role
 
 Having created a set of application permissions, and a series of application roles, the next step is to assign the
-relevant permissions to each role - in other words defining _Who can do What_. To add a permission using the REST 
-API makes a PUT request as shown, including the `<application-id>`, `<role-id>` and `<permission-id>` in the URL 
+relevant permissions to each role - in other words defining _Who can do What_. To add a permission using the REST
+API makes a PUT request as shown, including the `<application-id>`, `<role-id>` and `<permission-id>` in the URL
 path and identifying themselves using an `X-Auth-Token` in the header.
 
 The following table summarize the relationship of each *Role* with the different *Permissions*
