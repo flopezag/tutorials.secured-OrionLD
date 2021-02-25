@@ -103,7 +103,7 @@ to the resource behind the **PEP proxy**, the PEP will describe the user's attri
 for authorized users - the response received is the same as if they had accessed the secured service directly.
 Unauthorized users are simply returned a **401 - Unauthorized** response.
 
-## Standard Concepts of Identity Management
+### Standard Concepts of Identity Management
 
 The following common objects are found with the **Keyrock** Identity Management database:
 
@@ -130,21 +130,21 @@ tutorial:
 
 ![](https://fiware.github.io/tutorials.PEP-Proxy/img/entities.png)
 
-## :arrow_forward: Video: Introduction to Keyrock
+### :arrow_forward: Video: Introduction to Keyrock
 
 [![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
 
 Click on the image above to watch an introductory video
 
-## :arrow_forward: Video: Introduction to Wilma PEP Proxy
+### :arrow_forward: Video: Introduction to Wilma PEP Proxy
 
 [![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
 
 Click on the image above to see an introductory video
 
-# Prerequisites
+## Prerequisites
 
-## Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30">
+### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30">
 
 To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
@@ -169,31 +169,31 @@ docker version
 Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
 necessary.
 
-## Cygwin (for Windows) <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+### Cygwin (for Windows) <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 We will start up our services using a simple bash script. Windows users should download [cygwin](http://www.cygwin.com/)
 to provide a command-line functionality similar to a Linux distribution on Windows.
 
-## Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="30" width="30">
+### Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="30" width="30">
 
 Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and
 streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions
 [here](https://www.postman.com/downloads).
 
-## http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30">
+### http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30">
 
 This a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions,
 and wget-like downloads with ab expressive and intuitive syntax. `http` can be installed on each operating system. Follow
 the instructions described [here](https://httpie.io/docs#installation).
 
-## jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35">
+### jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35">
 
 This is a program to slice, filter and map the content of JSON data. This is a very useful tool to extract certain
 information automatically from the HTTP responses. `jq` is written in C with no dependencies, therefore can be use
 on nearly any platform. Prebuilt binaries are available for Linux, OS X and Windows. For more details how to install
 the tool you can go [here](https://stedolan.github.io/jq/download).
 
-# Architecture
+## Architecture
 
 This application protects access to the existing Stock Management and Sensors-based application by adding PEP Proxy
 instances around the services created in previous tutorials and uses data pre-populated into the **MySQL** database used
@@ -227,7 +227,7 @@ from exposed ports.
 
 The specific architecture of each section of the tutorial is discussed below.
 
-# Start Up
+## Start Up
 
 To start the installation, do the following:
 
@@ -257,7 +257,7 @@ Where `<command>` will be help, start, stop or create.
 > ./services stop
 > ```
 
-## Dramatis Personae
+### Dramatis Personae
 
 The following people at `test.com` legitimately have accounts within the Application
 
@@ -323,7 +323,7 @@ One application, with appropriate roles and permissions has also been created:
 | URL           | `http://localhost:3000`                |
 | RedirectURL   | `http://localhost:3000/login`          |
 
-## Logging In to Keyrock using the REST API - Getting admin token
+### Logging In to Keyrock using the REST API - Getting admin token
 
 Enter a username and password to enter the application. The default user has the values `alice-the-admin@test.com`
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
@@ -380,8 +380,8 @@ X-XSS-Protection: 0
 }
 ```
 
-# Users management
-## Creating Users
+## Users management
+### Creating Users
 
 In this section, we explain how to create the corresponding users, making use of the corresponding
 [Identity Management API](https://keyrock.docs.apiary.io).
@@ -435,7 +435,7 @@ The response contains details about the creation of this account:
 }
 ```
 
-## List all Users
+### List all Users
 
 Obtaining a complete list of all users is a super-admin permission requiring the `X-Auth-token` - most users will only
 be permitted to return users within their own organization. Listing users can be done by making a GET request to the
@@ -485,7 +485,7 @@ The response contains basic details of all accounts:
 ```
 
 
-# Grouping User Accounts under Organizations
+## Grouping User Accounts under Organizations
 
 For any identity management system of a reasonable size, it is useful to be able to assign roles to groups of users,
 rather than setting them up individually. Since user administration is a time-consuming business, it is also necessary
@@ -515,7 +515,7 @@ user accounts to the organization they control.
 By the execution of this tutorial, alice will be the person in charge of the creation of all organizations for
 management purposes. Therefore, Alice will be automatically assigned to all of these groups.
 
-## Create an Organization
+### Create an Organization
 
 The standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
 the `/v1/organizations` endpoint. To create a new organization, send a POST request to the `/v1/organizations`
@@ -550,7 +550,7 @@ UUID to identify the new organization.
 }
 ```
 
-## List all Organizations
+### List all Organizations
 
 Obtaining a complete list of all organizations is a super-admin permission requiring the `X-Auth-token` - most users
 will only be permitted to return users within their own organization. Listing users can be done by making a GET request
@@ -611,7 +611,7 @@ The response returns the details of the visible organizations.
 ```
 
 
-## Assign users to organizations
+### Assign users to organizations
 
 Users within an Organization are assigned to one of types - `owner` or `member`. The members of an organization inherit
 all the roles and permissions assigned to the organization itself. In addition, owners of an organization are able to
@@ -647,7 +647,7 @@ The response lists the user's current role within the organization (i.e. `member
 }
 ```
 
-## List Users within an Organization
+### List Users within an Organization
 
 Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing
 users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
@@ -686,7 +686,7 @@ The response contains the users list.
 ```
 
 
-# Managing Roles and Permissions
+## Managing Roles and Permissions
 
 The next step consists in the creation of the proper application, and how to assign roles and permissions to them.
 It takes the users and organizations created in the previous sections and ensures that only legitimate users will
@@ -719,7 +719,7 @@ objects can be seen below.
 
 ![](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
 
-## Create an Application
+### Create an Application
 
 Any FIWARE application can be broken down into a collection of microservices. These microservices connect together
 to read and alter the state of the real world. Security can be added to these services by restricting actions on
@@ -782,7 +782,7 @@ The response includes a Client ID and Secret which can be used to secure the app
 Copy the Application Client ID to be used for all other application requests - in the case above the ID is
 `3fc4e897-a9b5-4b2e-bcce-98849c628972` (export APP=3fc4e897-a9b5-4b2e-bcce-98849c628972).
 
-## Create a Permission
+### Create a Permission
 
 An application permission is an allowable action on a resource within that application. Each resource is defined
 by a URL (e.g. `/entities`), and the action is any HTTP verb (e.g. GET). The combination will be used to ensure
@@ -856,7 +856,7 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 > 
 > Note: The script `mgmt-users-organizations` will create all the corresponding permissions for this example application.
 
-## List Permissions
+### List Permissions
 
 Listing the permissions with an application can be done by making a GET request to the
 `/v1/applications/{{application-id}}/permissions/` endpoint
@@ -907,7 +907,7 @@ which are avaiable by default
 }
 ```
 
-## Create a Role
+### Create a Role
 
 A permission is an allowable action on a resource, as noted above. A role consists of a group of permissions, in other
 words a series of permitted actions over a group of resources. Roles are usually given a description with a broad scope
@@ -964,7 +964,7 @@ The details of the created role are returned
 
 We need to repeat the process for _Users_, _Data_ or _Others_, changing the value `name` in the json payload.
 
-## Assigning Permissions to each Role
+### Assigning Permissions to each Role
 
 Having created a set of application permissions, and a series of application roles, the next step is to assign the
 relevant permissions to each role - in other words defining _Who can do What_. To add a permission using the REST
@@ -1007,7 +1007,7 @@ The response returns the permissions for the role
 > different permissions with the corresponding Roles.
 
 
-## List Permissions of a Role
+### List Permissions of a Role
 
 A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
 `/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint.
@@ -1089,9 +1089,9 @@ and the response:
 }
 ```
 
-# PEP Proxy
+## PEP Proxy
 
-## Create a PEP Proxy
+### Create a PEP Proxy
 
 By default, the docker-compose is created with default credentials to be used by the PEP Proxy, but it is not a good
 example to use in production environment, and it is recommended to create a new PEP Proxy account. To create a new PEP
@@ -1134,7 +1134,7 @@ X-Auth-Token:"$TOKEN"
 }
 ```
 
-## Read PEP Proxy details
+### Read PEP Proxy details
 
 Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint will return the details of the
 associated PEP Proxy Account. The `X-Auth-Token` must be supplied in the headers. It is important to see that if you
@@ -1163,7 +1163,7 @@ X-Auth-Token:"$TOKEN"
 > and *PEP_PROXY_USERNAME* in the docker-compose file and launch again the docker-compose. It automatically updates the
 > PEP Proxy container with the new data. For your convenience, the script application-management execute all the process.
 
-# Authorizing Application Access
+## Authorizing Application Access
 
 In the end, a user logs into an application, identifies himself and then is granted a list of permissions that the user
 is able to do. However, it should be emphasized that it is the application, not the user that holds and offers the
@@ -1183,7 +1183,7 @@ contain one member so there is no need to create an organization. This reduced t
 up the application, but any further changes (such as removing access rights when someone leaves) will need to be done
 by Alice herself - no delegation is possible.
 
-## Grant a Role to an Application
+### Grant a Role to an Application
 
 A role cannot be granted to an organization unless the role has already been defined within the application itself. A
 Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
@@ -1229,7 +1229,7 @@ The response lists the role assignment as shown:
 
 We need to do the same for $USERS and $ROLE_USER who it was described in the previous table.
 
-## Grant a Role to a User
+### Grant a Role to a User
 
 Using the REST API, the role can be granted making a PUT request as shown, including the `<application-id>`,
 `<role-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
@@ -1264,9 +1264,9 @@ X-Auth-Token:"$TOKEN"
 
 We have to do the same with the other users and roles how was described in the previous table.
 
-# Securing Orion-LD 
+## Securing Orion-LD 
 
-## PEP Proxy - No Access to Orion-LD without Access Token
+### PEP Proxy - No Access to Orion-LD without Access Token
 
 Secured Access can be ensured by requiring all requests to the secured service are made indirectly via a PEP Proxy (in
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
@@ -1303,7 +1303,7 @@ Auth-token not found in request header
 
 ```
 
-## Keyrock - User obtains Access Token
+### Keyrock - User obtains Access Token
 
 #### :one::three: Request
 
@@ -1371,7 +1371,7 @@ to keep the information of the oAuth token.
 export TOKEN={{access_token}}
 ```
 
-## PEP Proxy - Accessing Orion-LD with an Authorization - Alice user
+### PEP Proxy - Accessing Orion-LD with an Authorization - Alice user
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
 is permitted, and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
@@ -1405,7 +1405,7 @@ User access-token not authorized
 
 That is the expected response due to Alice is not included in any of the permissions to access the OrionLD.
 
-## PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1439,7 +1439,6 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
     "type": "Person"
 }
 ```
-
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -1553,7 +1552,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
 }
 ```
 
-## PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)
 
 For reminding, this group includes users that can access to all the data but cannot neither create new data or modify
 existing one.
@@ -1590,7 +1589,6 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
     "type": "Person"
 }
 ```
-
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -1699,7 +1697,7 @@ HTTP/1.1 404 Not Found
 }
 ```
 
-## PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)
 
 The users under this organization only had permissions to access and modify their own data.
 
@@ -1735,7 +1733,6 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
     "type": "Person"
 }
 ```
-
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -1849,7 +1846,7 @@ User access-token not authorized
 
 ```
 
-## PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -2006,54 +2003,54 @@ User access-token not authorized
 
 ```
 
-# Integration with eIDAS
+## Integration with eIDAS
 
-Secure electronic identification (eID) is one of the key enablers of data protection, privacy and the prevention of 
-online fraud, especially in new areas of application, like Smart Cities, where incorporating real identities into 
+Secure electronic identification (eID) is one of the key enablers of data protection, privacy and the prevention of
+online fraud, especially in new areas of application, like Smart Cities, where incorporating real identities into
 trustable infrastructures has a huge potential.
 
-eID can guarantee the unambiguous identification of a person and make it possible to get the service delivered 
-to the person who is really entitled to it. The Electronic Identification, Authentication and Trust Services 
-(eIDAS) Regulation provides a solution to European Member States for recognizing and accepting eIDs issued in 
+eID can guarantee the unambiguous identification of a person and make it possible to get the service delivered
+to the person who is really entitled to it. The Electronic Identification, Authentication and Trust Services
+(eIDAS) Regulation provides a solution to European Member States for recognizing and accepting eIDs issued in
 other Member States.
 
-Technical specifications and reference implementations of the interoperability nodes for the eID mechanisms were 
+Technical specifications and reference implementations of the interoperability nodes for the eID mechanisms were
 [published as open source](https://joinup.ec.europa.eu/solution/european-system-recognition-electronic-identities-eidas)
 on 26th November 2015 for the technological infrastructure under Connecting Europe Facility (CEF) program.
 
-The FIWARE identity - eIDAS authentication module that this GE offers allows CEF eID transnational authentication 
-of EU citizens by means of their national eID in FIWARE based OAuth2 authentication domains. Thus, every service 
-deployed according FIWARE security basis, is now accessible by european citizens using their eID and transparently 
+The FIWARE identity - eIDAS authentication module that this GE offers allows CEF eID transnational authentication
+of EU citizens by means of their national eID in FIWARE based OAuth2 authentication domains. Thus, every service
+deployed according FIWARE security basis, is now accessible by european citizens using their eID and transparently
 for service providers.
 
-## Architecture of the integration
+### Architecture of the integration
 
-The FIWARE identity - eIDAS authentication module allows users with valid eIDAS accounts (provided by its 
-national eID) to directly login in the IdM and obtain an OAuth2.0 access tokens that represent them in 
-terms of authorization. For enabling this, the service has to be registered in both IdM and eIDAS node. 
-The service is registered in the IdM as a regular *Application*, including some extra configuration 
+The FIWARE identity - eIDAS authentication module allows users with valid eIDAS accounts (provided by its
+national eID) to directly login in the IdM and obtain an OAuth2.0 access tokens that represent them in
+terms of authorization. For enabling this, the service has to be registered in both IdM and eIDAS node.
+The service is registered in the IdM as a regular *Application*, including some extra configuration
 parameters as explained in the next section. 
 
-On the other hand, the service has to be registered in the eIDAS node as a *Service Provider* following 
-the procedure of the specific Member State. Then, when the user is going to authenticate in the IdM it 
-will have the option of selecting a kind of *“Login with eID”* option that will redirect it to the 
-specific authentication gateway. Then, the IdM and the eIDAS node will interchange the needed SAML 
-requests to finally obtain the user eIDAS profile. With this profile, the IdM will create a local user 
-mapping the received attributes with the local ones and creating an authorization code. This code will 
+On the other hand, the service has to be registered in the eIDAS node as a *Service Provider* following
+the procedure of the specific Member State. Then, when the user is going to authenticate in the IdM it
+will have the option of selecting a kind of *“Login with eID”* option that will redirect it to the
+specific authentication gateway. Then, the IdM and the eIDAS node will interchange the needed SAML
+requests to finally obtain the user eIDAS profile. With this profile, the IdM will create a local user
+mapping the received attributes with the local ones and creating an authorization code. This code will
 be sent to the Service. Finally, the Service requests the Access Token to allow the OAuth2.0 flows.
 
-Once the service has the Access Token, it can use it as always to authorize requests to other services. 
-Furthermore, as the user is created in the IdM, permissions and roles could be managed in the same way 
-as a regular local user, how it was explained in the previous sections of this documentation. 
+Once the service has the Access Token, it can use it as always to authorize requests to other services.
+Furthermore, as the user is created in the IdM, permissions and roles could be managed in the same way
+as a regular local user, how it was explained in the previous sections of this documentation.
 Next figures show the architecture and exchanged data flows between the entities.
 
 ![eIDAS integration in FIWARE IAM model](./img/eIDAS_integration_in_FIWARE_IdM.png)
 
 ![FIWARE IdM - eIDAS data flow](./img/FIWARE_IdM-eIDAS_data_flow.png)
 
-## IdM server configuration
+### IdM server configuration
 
-For configuring IdM to allow users to login with their eID, the connection to an eIDAS node has to be 
+For configuring IdM to allow users to login with their eID, the connection to an eIDAS node has to be
 enabled in the configuration file:
 
 ```console
@@ -2080,10 +2077,10 @@ The meaning of the attributes is the following:
 - *node_host*: indicates the endpoint where the eIDAS node server is running.
 - *metadata_expiration*: expiration time for the service certificates.
 
-## Registering an application as an eIDAS Service Provider
+### Registering an application as an eIDAS Service Provider
 
-Once the IdM has be configured to support eID authentication, registered applications can enable this kind of 
-authentication individually. During the registration process a new checkbox is included as seen in the following 
+Once the IdM has be configured to support eID authentication, registered applications can enable this kind of
+authentication individually. During the registration process a new checkbox is included as seen in the following
 image:
 
 ![Enabling eIDAS in application registration](./img/Enabling_eIDAS_in_application_registration.png)
@@ -2093,44 +2090,44 @@ registered in the eIDAS node has to be filled.
 
 ![eIDAS Service Provider data](./img/eIDAS_Service_Provider_data.png)
 
-Once the application is registered, the metadata of the Service Provider is exposed in the endpoint 
-`/applications/{{application-id}}/saml2/metadata`. This metadata file is needed for registering 
+Once the application is registered, the metadata of the Service Provider is exposed in the endpoint
+`/applications/{{application-id}}/saml2/metadata`. This metadata file is needed for registering
 the Service Provider in the eIDAS node.
 
-> :Note: It is very important to register the Service Provider in the eIDAS node following the specific instructions 
-> of the node owner. These instructions depend on the Member State where the node is deployed. Testing nodes can be 
+> :Note: It is very important to register the Service Provider in the eIDAS node following the specific instructions
+> of the node owner. These instructions depend on the Member State where the node is deployed. Testing nodes can be
 > deployed following the 
 > [instructions provided by the EC]( https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eIDAS-Node+Integration+Package).
 
-## User authentication
+### User authentication
 
-When a user is going to authenticate in an application with eIDAS connection enabled, a new button that allows 
+When a user is going to authenticate in an application with eIDAS connection enabled, a new button that allows
 authentication with eID is included in the log in the panel:
  
 ![eIDAS application log in panel](./img/eIDAS_application_log_in_panel.png)
 
-When clicking in the option Sign with eID the user will be redirected to the eIDAS authentication gateway to login 
-using his/her national identifier and defined in the `node_host` attribute in the configuration file or with the 
-corresponding environment variable `IDM_EIDAS_NODE_HOST`. For instance, the spanish gateway has the following 
+When clicking in the option Sign with eID the user will be redirected to the eIDAS authentication gateway to login
+using his/her national identifier and defined in the `node_host` attribute in the configuration file or with the
+corresponding environment variable `IDM_EIDAS_NODE_HOST`. For instance, the spanish gateway has the following
 interface:
  
 ![Spanish_eIDAS_gateway 1](./img/Spanish_eIDAS_gateway.png)
 
-If the users select the option for authenticating european citizens, they are redirected to a new view in which, 
+If the users select the option for authenticating european citizens, they are redirected to a new view in which,
 selecting the specific country, they can authenticate using their national identifier:
  
 ![Spanish eIDAS gateway 2.png](./img/Spanish_eIDAS_gateway_2.png)
 
-Once the authentication is performed, the eIDAS node sends de SAML response back to the IdM. Then, IdM extracts the 
-user information from the response and proceeds with the creation of a local user for the first iteration. Once the 
-local user is created, Keyrock generates an OAuth 2.0 access token as for a regular user. Thus, the eIDAS user has 
-the same rights and features than every user registered in Keyrock. The user data is included in the token validation 
+Once the authentication is performed, the eIDAS node sends de SAML response back to the IdM. Then, IdM extracts the
+user information from the response and proceeds with the creation of a local user for the first iteration. Once the
+local user is created, Keyrock generates an OAuth 2.0 access token as for a regular user. Thus, the eIDAS user has
+the same rights and features than every user registered in Keyrock. The user data is included in the token validation
 information when it is checked, for instance, from a PEP Proxy.
 
-The next time the user wants to authenticate using eIDAS the process is the same one. However, after the eIDAS 
-authentication, IdM detects the user has been already created in its database, and it does simply create the 
+The next time the user wants to authenticate using eIDAS the process is the same one. However, after the eIDAS
+authentication, IdM detects the user has been already created in its database, and it does simply create the
 token without performing the user creation.
 
-# License
+## License
 
 [MIT](LICENSE) © 2018-2020 FIWARE Foundation e.V.
