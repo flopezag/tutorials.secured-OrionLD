@@ -381,6 +381,7 @@ X-XSS-Protection: 0
 ```
 
 ## Users management
+
 ### Creating Users
 
 In this section, we explain how to create the corresponding users, making use of the corresponding
@@ -483,7 +484,6 @@ The response contains basic details of all accounts:
     ]
 }
 ```
-
 
 ## Grouping User Accounts under Organizations
 
@@ -610,7 +610,6 @@ The response returns the details of the visible organizations.
 }
 ```
 
-
 ### Assign users to organizations
 
 Users within an Organization are assigned to one of types - `owner` or `member`. The members of an organization inherit
@@ -620,7 +619,7 @@ add and remove other members and owners.
 To add a user as a member of an organization, an owner must make a PUT request as shown, including the
 `<organization-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 
-##### 14 Request
+#### 14 Request
 
 ```bash
 http  PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organization_roles/member" \
@@ -633,7 +632,7 @@ We have to repeat this operation for all the users created previously.
 > Note: $MANAGERS corresponds to the organization id of the _Managers_ organization and $BOB correponds to the user id
 > of the Bob user. See the mgmt-users-organization script for more details
 
-##### Response
+#### Response
 
 The response lists the user's current role within the organization (i.e. `member`)
 
@@ -684,7 +683,6 @@ The response contains the users list.
     ]
 }
 ```
-
 
 ## Managing Roles and Permissions
 
@@ -853,7 +851,7 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 
 > Note: We should manage all the permissions related to the OrionLD API but for this document we will center only
 > on the previous resources.
-> 
+>
 > Note: The script `mgmt-users-organizations` will create all the corresponding permissions for this example application.
 
 ### List Permissions
@@ -1003,9 +1001,8 @@ The response returns the permissions for the role
 }
 ```
 
-> Note: take a look into the applications-roles script to see how we associated the 
+> Note: take a look into the applications-roles script to see how we associated the
 > different permissions with the corresponding Roles.
-
 
 ### List Permissions of a Role
 
@@ -1264,7 +1261,7 @@ X-Auth-Token:"$TOKEN"
 
 We have to do the same with the other users and roles how was described in the previous table.
 
-## Securing Orion-LD 
+## Securing Orion-LD
 
 ### PEP Proxy - No Access to Orion-LD without Access Token
 
@@ -1335,7 +1332,7 @@ http --form POST 'http://localhost:3005/oauth2/token' \
 ```
 
 > :Note: you can execute the following command to automatically export the value of the TOKEN
-> 
+>
 > ```bash
 > export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 > 'username'='alice-the-admin@test.com' \
@@ -2103,19 +2100,19 @@ the Service Provider in the eIDAS node.
 
 When a user is going to authenticate in an application with eIDAS connection enabled, a new button that allows
 authentication with eID is included in the log in the panel:
- 
+
 ![eIDAS application log in panel](./img/eIDAS_application_log_in_panel.png)
 
 When clicking in the option Sign with eID the user will be redirected to the eIDAS authentication gateway to login
 using his/her national identifier and defined in the `node_host` attribute in the configuration file or with the
 corresponding environment variable `IDM_EIDAS_NODE_HOST`. For instance, the spanish gateway has the following
 interface:
- 
+
 ![Spanish_eIDAS_gateway 1](./img/Spanish_eIDAS_gateway.png)
 
 If the users select the option for authenticating european citizens, they are redirected to a new view in which,
 selecting the specific country, they can authenticate using their national identifier:
- 
+
 ![Spanish eIDAS gateway 2.png](./img/Spanish_eIDAS_gateway_2.png)
 
 Once the authentication is performed, the eIDAS node sends de SAML response back to the IdM. Then, IdM extracts the

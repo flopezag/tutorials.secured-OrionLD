@@ -16,8 +16,7 @@ jobs:
       - name: Lint changelog file
         uses: docker://avtodev/markdown-lint:v1 # fastest way
         with:
-          rules: '/lint/rules/changelog.js'
-          config: '/lint/config/changelog.yml'
+          rules: './markdownlint.json'
           args: './README.md'
 
   lint-shell:
