@@ -22,7 +22,7 @@ loadData () {
   echo -e "\n⏳ Uploading some data into the \033[1;34mOrionLD\033[0m\n"
 	docker run --rm -v "$(pwd)/import-data":"/import-data" \
 		--network fiware_default \
-		-e CONTEXT_BROKER=${CONTEXT_BROKER} \
+		-e CONTEXT_BROKER="${CONTEXT_BROKER}" \
 		-e TUTORIAL_DATA_MODELS_CONTEXT="https://schema.lab.fiware.org/ld/context" \
 		--entrypoint /bin/ash curlimages/curl import-data
 }
@@ -30,10 +30,12 @@ loadData () {
 waitForKeyrock () {
 	echo -e "\n⏳ Waiting for \033[1;31mIdM\033[0m to be available"
 
-	while [ `curl -s -o /dev/null -w %{http_code} 'http://localhost:3005/version'` -eq 000 ]
+  status=$(http -h http://localhost:3005/version 2>/dev/null | grep HTTP/ | awk '{print $2}')
+	while (( status != '200' ))
 	do
-		echo -e "IdM HTTP state: " `curl -s -o /dev/null -w %{http_code} 'http://localhost:3005/version'` " (waiting for 200)"
+		echo -e "IdM HTTP state: $status (waiting for 200)"
 		sleep 5
+    status=$(http -h http://localhost:3005/version 2>/dev/null | grep HTTP/ | awk '{print $2}')
 	done
 
 	echo -e " \033[1;32mdone\033[0m"
@@ -41,10 +43,13 @@ waitForKeyrock () {
 
 waitForOrion () {
 	echo -e "\n⏳ Waiting for \033[1;34mOrionLD\033[0m to be available"
-	while [ `docker run --network fiware_default --rm curlimages/curl -s -o /dev/null -w %{http_code} 'http://orionld:1026/version'` -eq 000 ]
+
+	status=$(docker run --network fiware_default --rm curlimages/curl -s -o /dev/null -w %{http_code} 'http://orionld:1026/version')
+	while (( status != '200' ))
 	do
-	  echo -e "Context Broker HTTP state: " `curl -s -o /dev/null -w %{http_code} 'http://localhost:1026/version'` " (waiting for 200)"
+	  echo -e "Context Broker HTTP state: $status (waiting for 200)"
 	  sleep 1
+	  status=$(docker run --network fiware_default --rm curlimages/curl -s -o /dev/null -w %{http_code} 'http://orionld:1026/version')
 	done
 
   echo -e " \033[1;32mdone\033[0m"
@@ -132,5 +137,3 @@ case "${command}" in
 		exit 127;
 		;;
 esac
-
-
