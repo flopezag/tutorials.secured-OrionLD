@@ -25,10 +25,10 @@ relevant to authenticating other services are described in detail.
 <details>
 <summary><strong>Details</strong></summary>
 
--   [Securing Microservices with a PEP Proxy](#securing-microservices-with-a-pep-proxy)
+-   [Securing Microservices with an Identity Management and a PEP Proxy](#securing-microservices-with-an-identity-management-and-a-pep-proxy)
     - [Standard Concepts of Identity Management](#standard-concepts-of-identity-management)
-    - [Video: Introduction to Keyrock](#arrow_forward-video--introduction-to-keyrock)
-    - [Video: Introduction to Wilma PEP Proxy](#arrow_forward-video--introduction-to-wilma-pep-proxy)
+    - [Video: Introduction to Keyrock](#arrow_forward-video-introduction-to-keyrock)
+    - [Video: Introduction to Wilma PEP Proxy](#arrow_forward-video-introduction-to-wilma-pep-proxy)
 -   [Prerequisites](#prerequisites)
     - [Docker](#docker)
     - [Cygwin](#cygwin)
@@ -44,7 +44,7 @@ relevant to authenticating other services are described in detail.
     - [List all Users](#list-all-users)
 -   [Grouping User Accounts under Organizations](#grouping-user-accounts-under-organizations)
     - [Create an Organization](#create-an-organization)
-    - [List all Organizations](#list-all-organization)
+    - [List all Organizations](#list-all-organizations)
     - [Assign users to organizations](#assign-users-to-organizations)
     - [List Users within an Organization](#list-users-within-an-organization)
 -   [Managing Roles and Permissions](#managing-roles-and-permissions)
@@ -55,7 +55,6 @@ relevant to authenticating other services are described in detail.
     - [Assigning Permissions to each Role](#assigning-permissions-to-each-role)
     - [List Permissions of a Role](#list-permissions-of-a-role)
 -   [PEP Proxy](#pep-proxy)
-    - [Introduction](#introduction)
     - [Create a PEP Proxy](#create-a-pep-proxy)
     - [Read PEP Proxy details](#read-pep-proxy-details)
 -   [Authorizing Application Access](#authorizing-application-access)
@@ -65,20 +64,20 @@ relevant to authenticating other services are described in detail.
     - [PEP Proxy - No Access to Orion-LD without Access Token](#pep-proxy---no-access-to-orion-ld-without-access-token)
     - [Keyrock - User obtains Access Token](#keyrock---user-obtains-access-token)
     - [PEP Proxy - Accessing Orion-LD with an Authorization - Alice user](#pep-proxy---accessing-orion-ld-with-an-authorization---alice-user)
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---manager-users-(e.g.-bob))
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-users-(e.g.-charlie))
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-(e.g.-ole))
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-(e.g.-eve))
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---manager-users-eg-bob)
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-users-eg-charlie)
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-eg-ole)
+    - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-eg-eve)
 -   [Integration with eIDAS](#integration-with-eidas)
     - [Introduction](#introduction)
-    - [Architecture](#architecture) 
+    - [Architecture of the integration](#architecture-of-the-integration) 
     - [IdM server configuration](#idm-server-configuration)
     - [Registering an application as an eIDAS Service Provider](#registering-an-application-as-an-eidas-service-provider)
     - [User authentication](#user-authentication)
 
 </details>
 
-# Securing Microservices with a PEP Proxy
+# Securing Microservices with an Identity Management and a PEP Proxy
 
 > "Oh, it's quite simple. If you are a friend, you speak the password, and the doors will open."
 >
@@ -145,7 +144,7 @@ Click on the image above to see an introductory video
 
 # Prerequisites
 
-## Docker
+## Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30">
 
 To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
@@ -160,24 +159,34 @@ configure the required services for the application. This means all container se
 command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux users
 will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
 
-## Cygwin
+You can check your current **Docker** and **Docker Compose** versions using the following commands:
+
+```bash
+docker-compose -v
+docker version
+```
+
+Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
+necessary.
+
+## Cygwin (for Windows) <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 We will start up our services using a simple bash script. Windows users should download [cygwin](http://www.cygwin.com/)
 to provide a command-line functionality similar to a Linux distribution on Windows.
 
-## Postman
+## Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="30" width="30">
 
 Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and 
 streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions 
 [here](https://www.postman.com/downloads).
 
-## http
+## http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30">
 
 This a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions, 
 and wget-like downloads with ab expressive and intuitive syntax. `http` can be installed on each operating system. Follow
 the instructions described [here](https://httpie.io/docs#installation).
 
-## jq
+## jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35">
 
 This is a program to slice, filter and map the content of JSON data. This is a very useful tool to extract certain
 information automatically from the HTTP responses. `jq` is written in C with no dependencies, therefore can be use
@@ -1080,9 +1089,6 @@ and the response:
 
 # PEP Proxy
 
-## Introduction
-
-
 ## Create a PEP Proxy
 
 By default, the docker-compose is created with default credentials to be used by the PEP Proxy, but it is not a good
@@ -1279,7 +1285,20 @@ http GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001
 The response is a **401 Unauthorized** error code, with the following explanation:
 
 ```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 38
+Content-Type: text/html; charset=utf-8
+Date: Thu, 25 Feb 2021 08:39:51 GMT
+ETag: W/"26-6PTqI4/SMmDT0Dk1npz+5GhtqaQ"
+WWW-Authenticate: IDM uri = undefined
+X-Powered-By: Express
+
 Auth-token not found in request header
+
 ```
 
 ## Keyrock - User obtains Access Token
@@ -1353,7 +1372,7 @@ export TOKEN={{access_token}}
 ## PEP Proxy - Accessing Orion-LD with an Authorization - Alice user
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
-is permitted and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
+is permitted, and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
 expected.
 
 #### :one::five: Request:
@@ -1374,7 +1393,7 @@ Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
 Content-Type: text/html; charset=utf-8
-Date: Fri, 19 Feb 2021 11:08:51 GMT
+Date: Thu, 25 Feb 2021 08:41:06 GMT
 ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
 X-Powered-By: Express
 
@@ -1447,9 +1466,11 @@ Now trying to modify some attribute.
 
 ```bash
 printf '{
-    "type": "Property",
-    "value": "0049 2644 99999999"
-},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
+    "telephone": {
+      "type": "Property",
+      "value": "0049 2644 99999999"
+    }
+},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
@@ -1986,8 +2007,6 @@ User access-token not authorized
 
 # Integration with eIDAS
 
-## Introduction
-
 Secure electronic identification (eID) is one of the key enablers of data protection, privacy and the prevention of 
 online fraud, especially in new areas of application, like Smart Cities, where incorporating real identities into 
 trustable infrastructures has a huge potential.
@@ -2006,7 +2025,7 @@ of EU citizens by means of their national eID in FIWARE based OAuth2 authenticat
 deployed according FIWARE security basis, is now accessible by european citizens using their eID and transparently 
 for service providers.
 
-## Architecture
+## Architecture of the integration
 
 The FIWARE identity - eIDAS authentication module allows users with valid eIDAS accounts (provided by its 
 national eID) to directly login in the IdM and obtain an OAuth2.0 access tokens that represent them in 
