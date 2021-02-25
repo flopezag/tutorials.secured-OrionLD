@@ -31,7 +31,7 @@ waitForKeyrock () {
 	echo -e "\n⏳ Waiting for \033[1;31mIdM\033[0m to be available"
 
   status=$(http -h http://localhost:3005/version 2>/dev/null | grep HTTP/ | awk '{print $2}')
-	while (( status != '200' ))
+	while (( status != 200 ))
 	do
 		echo -e "IdM HTTP state: $status (waiting for 200)"
 		sleep 5
@@ -45,7 +45,7 @@ waitForOrion () {
 	echo -e "\n⏳ Waiting for \033[1;34mOrionLD\033[0m to be available"
 
 	status=$(http -h http://localhost:1026/version 2>/dev/null | grep HTTP/ | awk '{print $2}')
-	while (( status != '200' ))
+	while (( status != 200 ))
 	do
 	  echo -e "Context Broker HTTP state: $status (waiting for 200)"
 	  sleep 1

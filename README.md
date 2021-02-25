@@ -25,55 +25,55 @@ relevant to authenticating other services are described in detail.
 <details>
 <summary><strong>Details</strong></summary>
 
--   [Securing Microservices with an Identity Management and a PEP Proxy](#securing-microservices-with-an-identity-management-and-a-pep-proxy)
-    - [Introduction to the solution](#introduction-to-the-solution)
-    - [Standard Concepts of Identity Management](#standard-concepts-of-identity-management)
-    - [Video: Introduction to Keyrock](#arrow_forward-video-introduction-to-keyrock)
-    - [Video: Introduction to Wilma PEP Proxy](#arrow_forward-video-introduction-to-wilma-pep-proxy)
--   [Prerequisites](#prerequisites)
-    - [Docker and Docker Compose](#docker-and-docker-compose-)
-    - [Cygwin (for Windows)](#cygwin-for-windows-)
-    - [Postman](#postman-)
-    - [http](#http-)
-    - [jq](#jq-)
--   [Architecture](#architecture)
--   [Start Up](#start-up)
-    - [Dramatis Personae](#dramatis-personae)
-    - [Logging In to Keyrock using the REST API. Getting admin token](#logging-in-to-keyrock-using-the-rest-api-getting-admin-token)
--   [Users management](#users-management)
-    - [Creating Users](#creating-users)
-    - [List all Users](#list-all-users)
--   [Grouping User Accounts under Organizations](#grouping-user-accounts-under-organizations)
-    - [Create an Organization](#create-an-organization)
-    - [List all Organizations](#list-all-organizations)
-    - [Assign users to organizations](#assign-users-to-organizations)
-    - [List Users within an Organization](#list-users-within-an-organization)
--   [Managing Roles and Permissions](#managing-roles-and-permissions)
-    - [Create an Application](#create-an-application)
-    - [Create a Permission](#create-a-permission)
-    - [List Permissions](#list-permissions)
-    - [Create a Role](#create-a-role)
-    - [Assigning Permissions to each Role](#assigning-permissions-to-each-role)
-    - [List Permissions of a Role](#list-permissions-of-a-role)
--   [PEP Proxy](#pep-proxy)
-    - [Create a PEP Proxy](#create-a-pep-proxy)
-    - [Read PEP Proxy details](#read-pep-proxy-details)
--   [Authorizing Application Access](#authorizing-application-access)
-    - [Grant a Role to an Application](#grant-a-role-to-an-application)
-    - [Grant a Role to a User](#grant-a-role-to-a-user)
--   [Securing Orion-LD](#securing-orion-ld)
-    - [PEP Proxy - No Access to Orion-LD without Access Token](#pep-proxy---no-access-to-orion-ld-without-access-token)
-    - [Keyrock - User obtains Access Token](#keyrock---user-obtains-access-token)
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Alice user](#pep-proxy---accessing-orion-ld-with-an-authorization---alice-user)
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---manager-users-eg-bob)
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-users-eg-charlie)
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-eg-ole)
-    - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-eg-eve)
--   [Integration with eIDAS](#integration-with-eidas)
-    - [Architecture of the integration](#architecture-of-the-integration) 
-    - [IdM server configuration](#idm-server-configuration)
-    - [Registering an application as an eIDAS Service Provider](#registering-an-application-as-an-eidas-service-provider)
-    - [User authentication](#user-authentication)
+- [Securing Microservices with an Identity Management and a PEP Proxy](#securing-microservices-with-an-identity-management-and-a-pep-proxy)
+  - [Introduction to the solution](#introduction-to-the-solution)
+  - [Standard Concepts of Identity Management](#standard-concepts-of-identity-management)
+  - [Video: Introduction to Keyrock](#arrow_forward-video-introduction-to-keyrock)
+  - [Video: Introduction to Wilma PEP Proxy](#arrow_forward-video-introduction-to-wilma-pep-proxy)
+- [Prerequisites](#prerequisites)
+  - [Docker and Docker Compose](#docker-and-docker-compose-)
+  - [Cygwin (for Windows)](#cygwin-for-windows-)
+  - [Postman](#postman-)
+  - [http](#http-)
+  - [jq](#jq-)
+- [Architecture](#architecture)
+- [Start Up](#start-up)
+  - [Dramatis Personae](#dramatis-personae)
+  - [Logging In to Keyrock using the REST API. Getting admin token](#logging-in-to-keyrock-using-the-rest-api-getting-admin-token)
+- [Users management](#users-management)
+  - [Creating Users](#creating-users)
+  - [List all Users](#list-all-users)
+- [Grouping User Accounts under Organizations](#grouping-user-accounts-under-organizations)
+  - [Create an Organization](#create-an-organization)
+  - [List all Organizations](#list-all-organizations)
+  - [Assign users to organizations](#assign-users-to-organizations)
+  - [List Users within an Organization](#list-users-within-an-organization)
+- [Managing Roles and Permissions](#managing-roles-and-permissions)
+  - [Create an Application](#create-an-application)
+  - [Create a Permission](#create-a-permission)
+  - [List Permissions](#list-permissions)
+  - [Create a Role](#create-a-role)
+  - [Assigning Permissions to each Role](#assigning-permissions-to-each-role)
+  - [List Permissions of a Role](#list-permissions-of-a-role)
+- [PEP Proxy](#pep-proxy)
+  - [Create a PEP Proxy](#create-a-pep-proxy)
+  - [Read PEP Proxy details](#read-pep-proxy-details)
+- [Authorizing Application Access](#authorizing-application-access)
+  - [Grant a Role to an Application](#grant-a-role-to-an-application)
+  - [Grant a Role to a User](#grant-a-role-to-a-user)
+- [Securing Orion-LD](#securing-orion-ld)
+  - [PEP Proxy - No Access to Orion-LD without Access Token](#pep-proxy---no-access-to-orion-ld-without-access-token)
+  - [Keyrock - User obtains Access Token](#keyrock---user-obtains-access-token)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Alice user](#pep-proxy---accessing-orion-ld-with-an-authorization---alice-user)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---manager-users-eg-bob)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-users-eg-charlie)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-eg-ole)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-eg-eve)
+- [Integration with eIDAS](#integration-with-eidas)
+  - [Architecture of the integration](#architecture-of-the-integration) 
+  - [IdM server configuration](#idm-server-configuration)
+  - [Registering an application as an eIDAS Service Provider](#registering-an-application-as-an-eidas-service-provider)
+  - [User authentication](#user-authentication)
 
 </details>
 
@@ -107,23 +107,23 @@ Unauthorized users are simply returned a **401 - Unauthorized** response.
 
 The following common objects are found with the **Keyrock** Identity Management database:
 
--   **User** - Any signed up user able to identify themselves with an eMail and password. Users can be assigned rights
-    individually or as a group
--   **Application** - Any securable FIWARE application consisting of a series of microservices
--   **Organization** - A group of users who can be assigned a series of rights. Altering the rights of the organization
-    effects the access of all users of that organization
--   **OrganizationRole** - Users can either be members or admins of an organization - Admins are able to add and remove
-    users from their organization, members merely gain the roles and permissions of an organization. This allows each
-    organization to be responsible for their members and removes the need for a super-admin to administer all rights
--   **Role** - A role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
-    or an organization. A signed-in user gains all the permissions from all of their own roles plus all of the roles
-    associated to their organization
--   **Permission** - An ability to do something on a resource within the system
+- **User** - Any signed up user able to identify themselves with an eMail and password. Users can be assigned rights
+  individually or as a group
+- **Application** - Any securable FIWARE application consisting of a series of microservices
+- **Organization** - A group of users who can be assigned a series of rights. Altering the rights of the organization
+  effects the access of all users of that organization
+- **OrganizationRole** - Users can either be members or admins of an organization - Admins are able to add and remove
+  users from their organization, members merely gain the roles and permissions of an organization. This allows each
+  organization to be responsible for their members and removes the need for a super-admin to administer all rights
+- **Role** - A role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
+  or an organization. A signed-in user gains all the permissions from all of their own roles plus all of the roles
+  associated to their organization
+- **Permission** - An ability to do something on a resource within the system
 
 Additionally, two further non-human application objects can be secured within a FIWARE application:
 
--   **IoTAgent** - a proxy between IoT Sensors and the Context Broker
--   **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
+- **IoTAgent** - a proxy between IoT Sensors and the Context Broker
+- **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
 
 The relationship between the objects can be seen below - the entities marked in red are used directly within this
 tutorial:
@@ -149,9 +149,9 @@ Click on the image above to see an introductory video
 To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
 
--   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
--   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
--   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
+- To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
+- To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
+- To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
 
 **Docker Compose** is a tool for defining and running multi-container Docker applications. A
 [YAML file](https://raw.githubusercontent.com/Fiware/tutorials.Identity-Management/master/docker-compose.yml) is used
@@ -207,20 +207,20 @@ of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql
 
 Therefore the overall architecture will consist of the following elements:
 
--   The FIWARE [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json)
--   FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
-    including:
-    -   An OAuth2 authentication system for Applications and Users
-    -   A site graphical frontend for Identity Management Administration
-    -   An equivalent REST API for Identity Management via HTTP requests
--   FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** microservice.
--   The underlying [MongoDB](https://www.mongodb.com/) database :
-    -   Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions and
-        registrations
-    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
--   A [MySQL](https://www.mysql.com/) database :
-    -   Used to persist user identities, applications, roles and permissions
+- The FIWARE [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
+  [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json)
+- FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
+  including:
+  - An OAuth2 authentication system for Applications and Users
+  - A site graphical frontend for Identity Management Administration
+  - An equivalent REST API for Identity Management via HTTP requests
+- FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** microservice.
+- The underlying [MongoDB](https://www.mongodb.com/) database :
+  - Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions and
+    registrations
+  - Used by the **IoT Agent** to hold device information such as device URLs and Keys
+- A [MySQL](https://www.mysql.com/) database :
+  - Used to persist user identities, applications, roles and permissions
 
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
@@ -261,23 +261,23 @@ Where `<command>` will be help, start, stop or create.
 
 The following people at `test.com` legitimately have accounts within the Application
 
--   Alice, she will be the Administrator of the **Identity Management** Application. The account is created in the 
-    initialization process of the Identity Management.
--   Bob, administrator of the application, he has access to read and write the Personal Data store in the application.
--   Charlie, he is an application's user. He needs to read the Personal Data of the users but cannot modify them.
+- Alice, she will be the Administrator of the **Identity Management** Application. The account is created in the 
+  initialization process of the Identity Management.
+- Bob, administrator of the application, he has access to read and write the Personal Data store in the application.
+- Charlie, he is an application's user. He needs to read the Personal Data of the users but cannot modify them.
 
 The following people at `example.com` have signed up for accounts, but have no reason to be granted access
 to the data
 
--   Eve - Eve the Eavesdropper
--   Mallory - Mallory the malicious attacker
+- Eve - Eve the Eavesdropper
+- Mallory - Mallory the malicious attacker
 
 The following people at `xyz.foo` have signed up for accounts and can access to their Personal Data for reading 
 and writing only:
--   Ole
--   Torsten
--   Frank
--   Lothar
+- Ole
+- Torsten
+- Frank
+- Lothar
 
 <details>
   <summary>
@@ -915,15 +915,15 @@ access but not update a series of devices.
 
 There are two predefined roles with **Keyrock** :
 
--   a _Purchaser_ who can
-    -   Get and assign all public application roles
--   a _Provider_ who can:
-    -   Get and assign only public owned roles
-    -   Get and assign all public application roles
-    -   Manage authorizations
-    -   Manage roles
-    -   Manage the application
-    -   Get and assign all internal application roles
+- a _Purchaser_ who can
+  - Get and assign all public application roles
+- a _Provider_ who can:
+  - Get and assign only public owned roles
+  - Get and assign all public application roles
+  - Manage authorizations
+  - Manage roles
+  - Manage the application
+  - Get and assign all internal application roles
 
 Using our Personal Data Example, Alice the admin would be assigned the _Provider_ role, she could then create any
 additional application-specific roles needed (such as _Manager_, _Users_, _Data_ or _Others_).
@@ -2074,10 +2074,10 @@ IDM_EIDAS_METADATA_LIFETIME=31536000                 # Lifetime of metadata of a
 ```
 
 The meaning of the attributes is the following:
--	*enabled*: set to true enables the connection to the eIDAS node.
--	*gateway_host*: indicates the DNS of the IdM service.
--	*node_host*: indicates the endpoint where the eIDAS node server is running.
--	*metadata_expiration*: expiration time for the service certificates.
+- *enabled*: set to true enables the connection to the eIDAS node.
+- *gateway_host*: indicates the DNS of the IdM service.
+- *node_host*: indicates the endpoint where the eIDAS node server is running.
+- *metadata_expiration*: expiration time for the service certificates.
 
 ## Registering an application as an eIDAS Service Provider
 
