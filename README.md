@@ -1,10 +1,12 @@
-[![FIWARE Banner](https://fiware.github.io/tutorials.Working-with-Linked-Data/img/fiware.png)](https://www.fiware.org/developers)
-[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
+# Securing Microservices with an Identity Management and a PEP Proxy
 
+[![FIWARE Banner](https://fiware.github.io/tutorials.Working-with-Linked-Data/img/fiware.png)](https://www.fiware.org/developers)
+
+[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 [![FIWARE Security](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/security.svg)](https://github.com/FIWARE/catalogue/blob/master/security/README.md)
 [![License: MIT](https://img.shields.io/github/license/fiware/tutorials.PEP-Proxy.svg)](https://opensource.org/licenses/MIT)
 [![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
-[![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
+[![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 [![Documentation](https://img.shields.io/readthedocs/fiware-tutorials.svg)](https://fiware-tutorials.rtfd.io)
 
 
@@ -26,6 +28,7 @@ relevant to authenticating other services are described in detail.
 <summary><strong>Details</strong></summary>
 
 -   [Securing Microservices with an Identity Management and a PEP Proxy](#securing-microservices-with-an-identity-management-and-a-pep-proxy)
+    - [Introduction to the solution](#introduction-to-the-solution)
     - [Standard Concepts of Identity Management](#standard-concepts-of-identity-management)
     - [Video: Introduction to Keyrock](#arrow_forward-video-introduction-to-keyrock)
     - [Video: Introduction to Wilma PEP Proxy](#arrow_forward-video-introduction-to-wilma-pep-proxy)
@@ -76,7 +79,7 @@ relevant to authenticating other services are described in detail.
 
 </details>
 
-# Securing Microservices with an Identity Management and a PEP Proxy
+## Introduction to the solution
 
 > "Oh, it's quite simple. If you are a friend, you speak the password, and the doors will open."
 >
@@ -899,7 +902,7 @@ which are avaiable by default
       "xml": null
     },
     
-  ...
+  etc...
   
   ]
 }
