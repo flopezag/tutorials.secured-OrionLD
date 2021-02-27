@@ -28,12 +28,18 @@ jobs:
         repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
         allow-repeats: false # This is the default
 
-  lint-markdown:
+  lint-changelog:
+    name: Lint readme file
     runs-on: ubuntu-latest
     steps:
-    - name: markdownlint
-      uses: logansquirel/action-markdownlint@v0.1
-      
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Lint changelog file
+      uses: docker://avtodev/markdown-lint:v1 # fastest way
+      with:
+        args: './README.md'
+
   lint-shell:
     runs-on: ubuntu-latest
     steps:
