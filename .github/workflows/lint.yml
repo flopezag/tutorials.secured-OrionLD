@@ -1,4 +1,4 @@
-name: CI
+name: Lint
 'on':
   push:
     branches:
@@ -9,7 +9,7 @@ name: CI
 jobs:
   write-good:
     runs-on: ubuntu-latest
-    name: A job to lint Markdown files
+    name: A job to write good documents
     steps:
     - uses: actions/checkout@v2
     - name: write-good action step
@@ -38,7 +38,7 @@ jobs:
     - name: Lint changelog file
       uses: docker://avtodev/markdown-lint:v1 # fastest way
       with:
-        rules: './.markdownlint.json'
+        config: '.github/workflows/.markdownlint.json'
         args: './README.md'
 
   lint-shell:
