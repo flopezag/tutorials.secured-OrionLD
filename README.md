@@ -8,8 +8,8 @@
 [![Documentation](https://img.shields.io/readthedocs/fiware-tutorials.svg)](https://fiware-tutorials.rtfd.io)
 
 This tutorial uses the [FIWARE Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy combined with
-[FIWARE Keyrock](https://fiware-idm.readthedocs.io/en/latest/) to secure access to 
-[FIWARE Orion-LD](https://github.com/FIWARE/context.Orion-LD) endpoints exposed by FIWARE generic 
+[FIWARE Keyrock](https://fiware-idm.readthedocs.io/en/latest/) to secure access to
+[FIWARE Orion-LD](https://github.com/FIWARE/context.Orion-LD) endpoints exposed by FIWARE generic
 enablers. Users (or other actors) must log-in and use a token to gain access to the services.
 
 [Postman documentation](https://fiware.github.io/tutorials.PEP-Proxy/) for these calls is also available.
