@@ -104,7 +104,8 @@ do
   "permission": {
     "name": "Permission to Update the Personal Data information associated to an entity (%s)",
     "action": "PATCH",
-    "resource": "/ngsi-ld/v1/entities/%s"
+    "resource": "/ngsi-ld/v1/entities/%s/attrs/.*",
+    "is_regex": true
   }
 }' $a $a  | http POST "http://localhost:3005/v1/applications/$APP/permissions" \
  Content-Type:'application/json' \
@@ -129,7 +130,7 @@ PERM_UPDATE_ALL=$(printf '{
   "permission": {
     "name": "Permission to update the information associated to an entity (all entities)",
     "action": "PATCH",
-    "resource": "/ngsi-ld/v1/entities/*/attrs",
+    "resource": "/ngsi-ld/v1/entities/.*/attrs/.*",
     "is_regex": true
   }
 }' | http POST "http://localhost:3005/v1/applications/$APP/permissions" \

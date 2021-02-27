@@ -1464,18 +1464,46 @@ Now trying to modify some attribute.
 
 ```bash
 printf '{
-    "telephone": {
       "type": "Property",
       "value": "0049 2644 99999999"
-    }
-},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs \
+},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 204 No Content
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
+Access-Control-Allow-Origin: *
+ETag: W/"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"
+X-Powered-By: Express
+connection: close
+date: Thu, 25 Feb 2021 22:52:11 GMT
+
+```
+
+```bash
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
 
 ```json
-ERROR...
-User access-token not authorized, Wow maybe it is the Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+{
+    "@context": "https://schema.lab.fiware.org/ld/context",
+    "address": {
+        "addressLocality": "Berlin",
+        "addressRegion": "Berlin",
+        "postalCode": "10997",
+        "streetAddress": "Eisenbahnstraße 42/43"
+    },
+    "email": "torsten-kuehl@xyz.foo",
+    "id": "urn:ngsi-ld:Person:person002",
+    "name": "Torsten Kühl",
+    "telephone": "0049 2644 99999999",
+    "type": "Person"
+}
 ```
 
 Finally, check if we can upload a new Personal Data information:
@@ -1615,15 +1643,26 @@ Now trying to modify some attribute.
 ```bash
 printf '{
     "type": "Property",
-    "value": "0049 2644 99999999"
+    "value": "0049 3755 00000000"
 },'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
 
 ```json
-ERROR...
-User access-token not authorized, Wow maybe it is the Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Thu, 25 Feb 2021 22:59:17 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
 ```
 
 Finally, check if we can upload a new Personal Data information:
@@ -1753,20 +1792,53 @@ User access-token not authorized
 
 ```
 
-Now trying to modify some attribute.
+Now trying to modify some attribute. (falla)
 
 ```bash
 printf '{
     "type": "Property",
     "value": "0049 2644 99999999"
-},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001/attrs/telephone \
+}'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001/attrs/telephone \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
 
-```json
-ERROR...
-User access-token not authorized, Wow maybe it is the Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+```bash
+HTTP/1.1 204 No Content
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
+Access-Control-Allow-Origin: *
+ETag: W/"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"
+X-Powered-By: Express
+connection: close
+date: Fri, 26 Feb 2021 06:34:22 GMT
+
+
+```
+
+```bash
+printf '{
+    "type": "Property",
+    "value": "00000"
+},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
+ Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
+```
+
+```bash
+HTTP/1.1 401 Unauthorized
+Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
+Access-Control-Allow-Origin: *
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Thu, 25 Feb 2021 23:02:06 GMT
+ETag: W/"20-MyuDimjuU2vQEHt1V4UkUjtT+Ks"
+X-Powered-By: Express
+
+User access-token not authorized
+
 ```
 
 Finally, check if we can upload a new Personal Data information:
@@ -1905,7 +1977,7 @@ Now trying to modify some attribute.
 printf '{
     "type": "Property",
     "value": "0049 2644 99999999"
-},'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
+}'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
