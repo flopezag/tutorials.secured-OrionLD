@@ -121,7 +121,7 @@ echo -e "      Creating the organizations (Managers, Users, Data, Others)"
 MANAGERS=$(printf '{
   "organization": {
     "name": "Managers",
-    "description": "This group is for the Project Managers of the Personal Data application with full control access"
+    "description": "Project Managers of the Personal Data application with full control access"
   }
 }'| http  POST http://localhost:3005/v1/organizations \
  Content-Type:'application/json' \
@@ -130,7 +130,7 @@ MANAGERS=$(printf '{
 USERS=$(printf '{
   "organization": {
     "name": "Users",
-    "description": "This group is for the Project Users of the Personal Data application with read control access"
+    "description": "Project Users of the Personal Data application with read control access"
   }
 }'| http  POST http://localhost:3005/v1/organizations \
  Content-Type:'application/json' \
@@ -139,7 +139,7 @@ USERS=$(printf '{
 DATA=$(printf '{
   "organization": {
     "name": "Data",
-    "description": "This group is for the Personal Data owners who can read and modify only their own data"
+    "description": "Personal Data owners who can read and modify only their own data"
   }
 }'| http  POST http://localhost:3005/v1/organizations \
  Content-Type:'application/json' \
@@ -148,7 +148,7 @@ DATA=$(printf '{
 OTHERS=$(printf '{
   "organization": {
     "name": "Others",
-    "description": "This group is for the rest of IdM registered users not authorized to access the Personal Data Application"
+    "description": "Rest of IdM registered users not authorized to access the Personal Data Application"
   }
 }'| http  POST http://localhost:3005/v1/organizations \
  Content-Type:'application/json' \

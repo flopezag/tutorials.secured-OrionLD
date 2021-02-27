@@ -7,13 +7,11 @@
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 [![Documentation](https://img.shields.io/readthedocs/fiware-tutorials.svg)](https://fiware-tutorials.rtfd.io)
 
-This tutorial uses the FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy combined with **Keyrock** to secure
-access to Orion-LD endpoints exposed by FIWARE generic enablers. Users (or other actors) must log-in and use a token
-to gain access to services. The application code created in the [previous tutorial](https://github.com/FIWARE/tutorials.Securing-Access)
-is expanded to authenticate users throughout a distributed system. The design of FIWARE Wilma - a PEP Proxy is
-discussed, and the parts of the Keyrock GUI and REST API relevant to authenticating other services are described in detail.
+This tutorial uses the [FIWARE Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy combined with
+[FIWARE Keyrock](https://fiware-idm.readthedocs.io/en/latest/) to secure access to 
+[FIWARE Orion-LD](https://github.com/FIWARE/context.Orion-LD) endpoints exposed by FIWARE generic 
+enablers. Users (or other actors) must log-in and use a token to gain access to the services.
 
-[http](https://httpie.io) commands are used throughout to access the **Keyrock** and **Wilma** REST APIs -
 [Postman documentation](https://fiware.github.io/tutorials.PEP-Proxy/) for these calls is also available.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/6b143a6b3ad8bcba69cf)
@@ -171,8 +169,9 @@ necessary.
 
 ### Cygwin (for Windows) <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-We will start up our services using a simple bash script. Windows users should download [cygwin](http://www.cygwin.com/)
-to provide a command-line functionality similar to a Linux distribution on Windows.
+We will start up our services using a simple bash script. Windows users should download
+[cygwin](http://www.cygwin.com/) to provide a command-line functionality similar to a Linux
+distribution on Windows.
 
 ### Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="30" width="30">
 
@@ -309,10 +308,10 @@ Three organizations have also been set up by Alice:
 
 | Name       | Description                          |
 | ---------- | ------------------------------------ |
-| Managers   | This group is for the Project Managers of the Personal Data application with full control access.          |
-| Users      | This group is for the Project Users of the Personal Data application with read control access.             |
-| Data       | This group is for the Personal Data owners who can read and modify only their own data.                    |
-| Others     | This group is for the rest of IdM registered users not authorized to access the Personal Data Application. |
+| Managers   | Project Managers of the Personal Data application with full control access.          |
+| Users      | Project Users of the Personal Data application with read control access.             |
+| Data       | Personal Data owners who can read and modify only their own data.                    |
+| Others     | Rest of IdM registered users not authorized to access the Personal Data Application. |
 
 One application, with appropriate roles and permissions has also been created:
 
@@ -329,7 +328,7 @@ Enter a username and password to enter the application. The default user has the
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
 the other users after their creation just change the proper name and password data in this request:
 
-##### :one: Request
+#### :one: Request
 
 ```console
 http POST http://localhost:3005/v1/auth/tokens \
@@ -337,7 +336,7 @@ http POST http://localhost:3005/v1/auth/tokens \
   password=test
 ```
 
-##### Response
+#### :one: Response
 
 The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
 required in all subsequent requests to gain access
@@ -347,7 +346,7 @@ HTTP/1.1 201 Created
 Cache-Control: no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0
 Connection: keep-alive
 Content-Length: 138
-Content-Security-Policy: default-src 'self' img-src 'self' data:;script-src 'self' 'unsafe-inline';style-src 'self' https: 'unsafe-inline'
+Content-Security-Policy: default-src 'self' img-src 'self' data:;script-src 'self' 'unsafe-inline'; ...
 Content-Type: application/json; charset=utf-8
 Date: Wed, 10 Feb 2021 08:31:27 GMT
 ETag: W/"8a-SCtuhPlCxvhqNChN4qFnlyzMINs"
@@ -568,7 +567,7 @@ The response returns the details of the visible organizations.
     "organizations": [
         {
             "Organization": {
-                "description": "This group is for the Personal Data owners who can read and modify only their own data",
+                "description": "Personal Data owners who can read and modify only their own data",
                 "id": "1d157e87-32e3-4812-bde2-c0d1e3967170",
                 "image": "default",
                 "name": "Data",
@@ -578,7 +577,7 @@ The response returns the details of the visible organizations.
         },
         {
             "Organization": {
-                "description": "This group is for the Project Users of the Personal Data application with read control access",
+                "description": "Project Users of the Personal Data application with read control access",
                 "id": "531f0f5c-a7c4-4826-96b2-31988caefc11",
                 "image": "default",
                 "name": "Users",
@@ -588,7 +587,7 @@ The response returns the details of the visible organizations.
         },
         {
             "Organization": {
-                "description": "This group is for the rest of IdM registered users not authorized to access the Personal Data Application",
+                "description": "Rest of IdM registered users not authorized to access the Personal Data Application",
                 "id": "df58f9d2-443a-4375-abf7-00a88677e7b5",
                 "image": "default",
                 "name": "Others",
@@ -598,7 +597,7 @@ The response returns the details of the visible organizations.
         },
         {
             "Organization": {
-                "description": "This group is for the Project Managers of the Personal Data application with full control access",
+                "description": "Project Managers of the Personal Data application with full control access",
                 "id": "e3980d68-4f0e-4f7b-b1d5-d3bbc7125fb1",
                 "image": "default",
                 "name": "Managers",
@@ -715,7 +714,7 @@ In summary, permissions are all the possible actions that can be done to resourc
 roles are groups of actions which can be done by a type of user of that application. The relationship between the
 objects can be seen below.
 
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
+![Roles and Permissions of an Application](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
 
 ### Create an Application
 
@@ -837,13 +836,13 @@ We need to repeat this procedure for the rest of resources from which we want to
 we wanted to control the access to OrionLD regarding the creation of entities, creation of several entities. Take a
 look in the following table to see the different permissions to be created:
 
-| Permission | Verb  | Resource                     | Description                                                   | Organizations   |
-| ---------- | ----- | ---------------------------- | ------------------------------------------------------------- | --------------- |
-| #1         | GET   | /entities/*                  | Get detailed information of an entity (all entities)          | MANAGERS, USERS |
-| #2         | GET   | /entities/{{entityID}}       | Get detailed information of an entity (one entity)            | DATA            |
-| #3         | POST  | /entityOperations/upsert     | Add some entities                                             | MANAGERS        |
-| #4         | PATCH | /entities/*/attrs            | Update the information associated to an entity (all entities) | MANAGERS        |
-| #5         | PATCH | /entities/{{entityID}}/attrs | Update the information associated to an entity (one entity)   | DATA            |
+| Perm. | Verb  | Resource                 | Description                                        | Organizations   |
+| ----- | ----- | ------------------------ | -------------------------------------------------- | --------------- |
+| #1    | GET   | /entities/*              | Get information of an entity (all entities)        | MANAGERS, USERS |
+| #2    | GET   | /entities/{{entityID}}   | Get information of an entity (one entity)          | DATA            |
+| #3    | POST  | /entityOperations/upsert | Add some entities                                  | MANAGERS        |
+| #4    | PATCH | /entities/*/attrs/*      | Update data associated to an entity (all entities) | MANAGERS        |
+| #5    | PATCH | /entities/{{ID}}/attrs/* | Update data associated to an entity (one entity)   | DATA            |
 
 We have to mention that the permission #1 include the permission #2, and the permission #2 in generated after
 we have the upload the Personal Data associated to a person (e.g. Ole's Personal Data has the entityID
@@ -2141,6 +2140,7 @@ IDM_EIDAS_METADATA_LIFETIME=31536000                 # Lifetime of metadata of a
 ```
 
 The meaning of the attributes is the following:
+
 - *enabled*: set to true enables the connection to the eIDAS node.
 - *gateway_host*: indicates the DNS of the IdM service.
 - *node_host*: indicates the endpoint where the eIDAS node server is running.
@@ -2165,8 +2165,7 @@ the Service Provider in the eIDAS node.
 
 > :Note: It is very important to register the Service Provider in the eIDAS node following the specific instructions
 > of the node owner. These instructions depend on the Member State where the node is deployed. Testing nodes can be
-> deployed following the 
-> [instructions provided by the EC]( https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eIDAS-Node+Integration+Package).
+> deployed following the [instructions provided by the EC](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eIDAS-Node+Integration+Package).
 
 ### User authentication
 
