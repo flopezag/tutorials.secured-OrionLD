@@ -7,7 +7,7 @@ name: CI
     branches:
       - master
 jobs:
-  lint-markdown:
+  write-good:
     runs-on: ubuntu-latest
     name: A job to lint Markdown files
     steps:
@@ -28,6 +28,12 @@ jobs:
         repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
         allow-repeats: false # This is the default
 
+  lint-markdown:
+    runs-on: ubuntu-latest
+    steps:
+    - name: markdownlint
+      uses: logansquirel/action-markdownlint@v0.1
+      
   lint-shell:
     runs-on: ubuntu-latest
     steps:
