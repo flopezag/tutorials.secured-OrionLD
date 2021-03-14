@@ -18,7 +18,7 @@ jobs:
       uses: docker://avtodev/markdown-lint:v1 # fastest way
       with:
         config: '.github/workflows/.markdownlint.json'
-        args: './README.md'
+        args: './index.md'
 
   lint-shell:
     runs-on: ubuntu-latest
