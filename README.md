@@ -2239,10 +2239,12 @@ config.eidas = {
 Or using the environment variables in the deployment of the corresponding instance:
 
 ```yaml
-IDM_EIDAS_ENABLED=true                               # Enable IdM to allow user authentication in services using their eID (true,false)
+IDM_EIDAS_ENABLED=true                               # Enable IdM to allow user authentication in services using their 
+                                                     # eID (true,false)
 IDM_EIDAS_GATEWAY_HOST=localhost                     # Name of the host in which IdM is running
 IDM_EIDAS_NODE_HOST=https://eidas.node.es/EidasNode  # Name of the host in which is running node eIDAS Service
-IDM_EIDAS_METADATA_LIFETIME=31536000                 # Lifetime of metadata of a service with eIDAS authentication enabled in seconds (1 year)
+IDM_EIDAS_METADATA_LIFETIME=31536000                 # Lifetime of metadata of a service with eIDAS authentication 
+                                                     # enabled in seconds (1 year)
 ```
 
 The meaning of the attributes is the following:
