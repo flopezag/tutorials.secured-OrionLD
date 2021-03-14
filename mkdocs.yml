@@ -8,6 +8,6 @@ use_directory_urls: false
 theme: readthedocs
 extra_css: ["https://www.fiware.org/style/fiware_readthedocs.css",
             "https://www.fiware.org/style/fiware_readthedocs_neutral.css",
-            "https://github.com/flopezag/tutorials.secured-OrionLD/develop/_static/css/custom.css"]
+            "https://github.com/flopezag/tutorials.secured-OrionLD/blob/master/_static/css/custom.css"]
 pages:
   - Home: "index.md"
