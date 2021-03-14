@@ -1,7 +1,7 @@
 site_name: "Step-by-Step <br/>for <span style='color:#d6604d'>Secure Orion-LD</span>"
 site_url: https://fiware-secure-orion-ld.readthedocs.io
 repo_url: https://github.com/flopezag/tutorials.secured-OrionLD
-site_description: GDPR management of security accesse to Orion-LD
+site_description: GDPR management of Context Broker
 docs_dir: docs
 site_dir: html
 use_directory_urls: false
