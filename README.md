@@ -167,7 +167,7 @@ docker version
 Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
 necessary.
 
-### Cygwin (for Windows) <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+### Cygwin (for Windows) <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30">
 
 We will start up our services using a simple bash script. Windows users should download
 [cygwin](http://www.cygwin.com/) to provide a command-line functionality similar to a Linux
@@ -181,9 +181,9 @@ streamline collaboration, therefore you can create better APIs—faster. To inst
 
 ### http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30">
 
-This is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions,
-and wget-like downloads with an expressive and intuitive syntax. `http` can be installed on each operating system. Follow
-the instructions described [here](https://httpie.io/docs#installation).
+This is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent
+sessions, and wget-like downloads with an expressive and intuitive syntax. `http` can be installed on each
+operating system. Follow the instructions described [here](https://httpie.io/docs#installation).
 
 ### jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35">
 
@@ -195,14 +195,14 @@ the tool you can go [here](https://stedolan.github.io/jq/download).
 ## Architecture
 
 This application protects access to the existing Stock Management and Sensors-based application by adding PEP Proxy
-instances around the services created in previous tutorials and uses data pre-populated into the **MySQL** database used
-by **Keyrock**. It will make use of four FIWARE components - the
+instances around the services created in previous tutorials and uses data pre-populated into the **MySQL** database
+used by **Keyrock**. It will make use of four FIWARE components - the
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/), the
 [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Generic enabler and adds one or two instances
 [Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured.
 
 The Orion-LD Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence
-of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql.com/) database. The architecture 
+of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql.com/) database. The architecture
 consists of the following elements:
 
 - The FIWARE [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
@@ -855,8 +855,8 @@ We have to mention that the permission #1 include the permission #2, and the per
 we have the upload the Personal Data associated to a person (e.g. Ole's Personal Data has the entityID
 `urn:ngsi-ld:Person:person001`).
 
-> Note: We should manage all the permissions related to the OrionLD API but for this document we will center only
-> on the previous resources.
+> Note: We should manage all the permissions related to the OrionLD API but for this document we will focused on
+> the previous resources.
 >
 > Note: The script `mgmt-users-organizations` will create all the corresponding permissions for this example application.
 
@@ -865,17 +865,17 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 Listing the permissions with an application can be done by making a GET request to the
 `/v1/applications/{{application-id}}/permissions/` endpoint
 
-#### :ten: Request
+#### :one::zero: Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/permissions" \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :ten: Response
+#### :one::zero: Response
 
-The complete list of permissions includes any custom permissions created previously plus all the standard permissions
-which are avaiable by default
+The complete list of permissions includes any custom permission previously created plus all the standard permissions
+which are available by default
 
 ```json
 {
@@ -914,7 +914,7 @@ which are avaiable by default
 ### Create a Role
 
 A permission is an allowable action on a resource, as noted above. A role consists of a group of permissions, in other
-words a series of permitted actions over a group of resources. Roles are usually given a description with a broad scope
+words a series of permitted actions over a group of resources. Roles have a description with a broad scope
 so that they can be assigned to a wide range of users or organizations for example a _Reader_ role could be able to
 access but not update a series of devices.
 
@@ -923,7 +923,7 @@ There are two predefined roles with **Keyrock** :
 - a _Purchaser_ who can
   - Get and assign all public application roles
 - a _Provider_ who can:
-  - Get and assign only public owned roles
+  - Get and assign public owned roles
   - Get and assign all public application roles
   - Manage authorizations
   - Manage roles
@@ -938,7 +938,7 @@ CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DE
 `/v1/applications/{{application-id}}/roles` endpoint.
 
 To create a new role via the REST API, send a POST request to the `/applications/{{application-id}}/roles` endpoint
-containing the `name` of the new role, with the `X-Auth-token` header from a previously logged in user.
+containing the `name` of the new role, with the `X-Auth-token` header from a previously logged-in user.
 
 #### :eleven: Request
 
@@ -1098,10 +1098,10 @@ http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions
 
 ### Create a PEP Proxy
 
-By default, the docker-compose is created with default credentials to be used by the PEP Proxy, but it is not a good
-example to use in production environment, and it is recommended to create a new PEP Proxy account. To create a new PEP
-Proxy account within an application, send a POST request to the `/v1/applications/{{application-id}}/pep_proxies`
-endpoint along with the `X-Auth-Token` header from a previously logged in administrative user.
+By default, the docker-compose is created with default credentials. It is a security issue in production environments
+and it is recommended to create a new PEP Proxy account. To create a new PEP Proxy account within an application,
+send a POST request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint along with the `X-Auth-Token`
+header from a previously logged in administrative user.
 
 Provided there is no previously existing PEP Proxy account associated with the application, a new account will be
 created with a unique id and password and the values will be returned to the response. The first two data are obtained
@@ -1310,23 +1310,23 @@ Auth-token not found in request header
 
 ### Keyrock - User obtains Access Token
 
-#### :two::zero: Request
-
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
 endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows:
 
 For example to log-in as Alice the Admin:
 
-* The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`.
+- The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`.
   This means that the Client ID itself cannot contain a colon.
-* The resulting string is encoded using a variant of Base64. For your convenience you can use the following
+- The resulting string is encoded using a variant of Base64. For your convenience you can use the following
   command line instruction:
   
   ```bash
   echo -n "<Client ID>:<Client Secret>" | base64
   ```
   
-* The authorization method and a space (e.g. "Basic ") is then prepended to the encoded string.
+- The authorization method and a space (e.g. "Basic ") is then prepended to the encoded string.
+
+#### :two::zero: Request
 
 For example to log-in as Alice the Admin:
 
@@ -1351,7 +1351,6 @@ http --form POST 'http://localhost:3005/oauth2/token' \
 > Authorization:"Basic $BASE64" \
 > Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 > ```
-
 
 #### :two::zero: Response
 
@@ -1383,7 +1382,7 @@ The standard `Authorization: Bearer` header can also be used to identity the use
 is permitted, and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
 expected.
 
-#### #### :two::one: Request
+#### :two::one: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -1391,7 +1390,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :two:one: Response
+#### :two::one: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1425,7 +1424,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
-#### :two::thee: Request
+#### :two::three: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -2013,7 +2012,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
-#### :four::two: Request
+#### :four::three: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -2021,7 +2020,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::two: Response
+#### :four::three: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2039,7 +2038,7 @@ User access-token not authorized
 
 ```
 
-#### :four::three: Request
+#### :four::four: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -2047,7 +2046,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::three: Response
+#### :four::four: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2065,7 +2064,7 @@ User access-token not authorized
 
 ```
 
-#### :four::four: Request
+#### :four::five: Request
 
 Now trying to modify some attribute.
 
@@ -2078,7 +2077,7 @@ printf '{
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::four: Response
+#### :four::five: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2096,7 +2095,7 @@ User access-token not authorized
 
 ```
 
-#### :four::five: Request
+#### :four::six: Request
 
 Finally, check if we can upload a new Personal Data information:
 
@@ -2132,7 +2131,7 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::five: Response
+#### :four::six: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2150,7 +2149,7 @@ User access-token not authorized
 
 ```
 
-#### :four::six: Request
+#### :four::seven: Request
 
 Now, we check if we can access to the new data:
 
@@ -2160,7 +2159,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::six: Response
+#### :four::seven: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
