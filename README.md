@@ -451,7 +451,7 @@ http GET 'http://localhost:3005/v1/users' \
 
 The response contains basic details of all accounts:
 
-```json
+```bash
 {
     "users": [
         {
@@ -496,7 +496,7 @@ new Personal Data into the system as well as modify existing data introduced pre
 modify them. Another group of users (Data Users) correspond to each of the persons that provide the Personal Data,
 therefore they can access for reading and modifying their only own data. Finally, Another group of users (Others)
 exist that are not related to this application and therefore they cannot access to the Personal Data for neither
-reading or writing. Rather than give access to each individual account, it would be easier to assign the rights to
+reading nor writing. Rather than give access to each individual account, it would be easier to assign the rights to
 an organization and then add users to these organizations.
 
 Furthermore, Alice, the **Identity Management** administrator does not need to explicitly add additional user
@@ -735,7 +735,7 @@ To create a new application via the REST API, send a POST request to the `/v1/ap
 details of the application such as `name` and `description`, along with OAuth information fields such as the
 `url` of the webservice to be protected, and `redirect_uri` (where a user will be challenged for their credentials).
 The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-token`
-from a previously logged in user will automatically be granted a provider role over the application.
+from a previously logged-in user will automatically be granted a provider role over the application.
 
 #### :eight: Request
 
@@ -803,7 +803,7 @@ incorrectly or in the wrong layer - complex access control rules should be pushe
 or moved into the business logic of the application - they should not be dealt with within **Keyrock**.
 
 To create a new permission via the REST API, send a POST request to the `/applications/{{application-id}}/permissions`
-endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged in
+endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged-in
 user (Alice).
 
 #### :nine: Request
@@ -855,7 +855,7 @@ We have to mention that the permission #1 include the permission #2, and the per
 we have the upload the Personal Data associated to a person (e.g. Ole's Personal Data has the entityID
 `urn:ngsi-ld:Person:person001`).
 
-> Note: We should manage all the permissions related to the OrionLD API but for this document we will focused on
+> Note: We should manage all the permissions related to the OrionLD API but for this document we will focus on
 > the previous resources.
 >
 > Note: The script `mgmt-users-organizations` will create all the corresponding permissions for this example application.
@@ -877,7 +877,7 @@ http GET "http://localhost:3005/v1/applications/$APP/permissions" \
 The complete list of permissions includes any custom permission previously created plus all the standard permissions
 which are available by default
 
-```json
+```bash
 {
   "permissions": [
     {
@@ -1098,7 +1098,7 @@ http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions
 
 ### Create a PEP Proxy
 
-By default, the docker-compose is created with default credentials. It is a security issue in production environments
+By default, the docker-compose is created with default credentials. It is a security issue in production environments,
 and it is recommended to create a new PEP Proxy account. To create a new PEP Proxy account within an application,
 send a POST request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint along with the `X-Auth-Token`
 header from a previously logged in administrative user.
@@ -1283,7 +1283,7 @@ If a request to the PEP Proxy is made without any access token as shown:
 
 ```bash
 http GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues' \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Content-Type:'application/json'
 ```
 
@@ -1386,7 +1386,7 @@ expected.
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1456,7 +1456,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1488,7 +1488,7 @@ printf '{
       "type": "Property",
       "value": "0049 2644 99999999"
 },'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1510,7 +1510,7 @@ date: Thu, 25 Feb 2021 22:52:11 GMT
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1565,7 +1565,7 @@ printf '[
   }
 }]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
   Content-Type:application/json \
-  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Link:'<https://schema.lab.fiware.org/ld/context>' \
   Authorization:"Bearer $TOKEN"
 ```
 
@@ -1589,7 +1589,7 @@ Now, we check if we can access to the new data:
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1633,10 +1633,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
- Authorization:"Bearer $TOKEN"
-http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1663,7 +1660,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1695,13 +1692,13 @@ printf '{
     "type": "Property",
     "value": "0049 3755 00000000"
 },'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
 #### :three::two: Response
 
-```json
+```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
 Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
@@ -1749,7 +1746,7 @@ printf '[
   }
 }]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
   Content-Type:application/json \
-  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Link:'<https://schema.lab.fiware.org/ld/context>' \
   Authorization:"Bearer $TOKEN"
 ```
 
@@ -1777,7 +1774,7 @@ Now, we check if we can access to the new data:
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person011?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1813,7 +1810,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1840,7 +1837,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1871,7 +1868,7 @@ printf '{
     "type": "Property",
     "value": "0049 2644 99999999"
 }'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001/attrs/telephone \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1897,7 +1894,7 @@ printf '{
     "type": "Property",
     "value": "00000"
 },'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1951,7 +1948,7 @@ printf '[
   }
 }]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
   Content-Type:application/json \
-  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Link:'<https://schema.lab.fiware.org/ld/context>' \
   Authorization:"Bearer $TOKEN"
 ```
 
@@ -1979,7 +1976,7 @@ Now, we check if we can access to the new data:
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person012?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -2019,7 +2016,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -2045,7 +2042,7 @@ User access-token not authorized
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -2076,7 +2073,7 @@ printf '{
     "type": "Property",
     "value": "0049 2644 99999999"
 }'| http PATCH http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002/attrs/telephone \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -2130,7 +2127,7 @@ printf '[
   }
 }]' | http POST http://localhost:1027/ngsi-ld/v1/entityOperations/upsert \
   Content-Type:application/json \
-  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  Link:'<https://schema.lab.fiware.org/ld/context>' \
   Authorization:"Bearer $TOKEN"
 ```
 
@@ -2158,7 +2155,7 @@ Now, we check if we can access to the new data:
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
