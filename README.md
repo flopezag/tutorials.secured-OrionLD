@@ -328,7 +328,7 @@ Enter a username and password to enter the application. The default user has the
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
 the other users after their creation just change the proper name and password data in this request:
 
-#### :one: Request
+**:one: Request**
 
 ```console
 http POST http://localhost:3005/v1/auth/tokens \
@@ -336,7 +336,7 @@ http POST http://localhost:3005/v1/auth/tokens \
   password=test
 ```
 
-#### :one: Response
+**:one: Response**
 
 The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
 required in all subsequent requests to gain access
@@ -400,7 +400,7 @@ For example to create additional accounts for Bob, the Application Manager we sh
 
 > **Note** You can take a look and execute the create-users script to automatically create all the users accounts.
 
-#### 5 Request
+**:five:Request**
 
 ```bash
 echo '{
@@ -413,7 +413,7 @@ echo '{
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The response contains details about the creation of this account:
 
@@ -441,14 +441,14 @@ Obtaining a complete list of all users is a super-admin permission requiring the
 be permitted to return users within their own organization. Listing users can be done by making a GET request to the
 `/v1/users` endpoint
 
-#### 6 Request
+**:six:Request**
 
 ```bash
 http GET 'http://localhost:3005/v1/users' \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The response contains basic details of all accounts:
 
@@ -618,7 +618,7 @@ add and remove other members and owners.
 To add a user as a member of an organization, an owner must make a PUT request as shown, including the
 `<organization-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 
-#### 14 Request
+**14 Request**
 
 ```bash
 http  PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organization_roles/member" \
@@ -631,7 +631,7 @@ We have to repeat this operation for all the users created previously.
 > Note: $MANAGERS corresponds to the organization id of the _Managers_ organization and $BOB correponds to the user id
 > of the Bob user. See the mgmt-users-organization script for more details
 
-#### Response
+**Response**
 
 The response lists the user's current role within the organization (i.e. `member`)
 
@@ -650,14 +650,14 @@ The response lists the user's current role within the organization (i.e. `member
 Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing
 users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
 
-#### 16 Request
+**16 Request**
 
 ```bash
 http GET "http://localhost:3005/v1/organizations/$OTHERS/users" \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The response contains the users list.
 
@@ -730,7 +730,7 @@ details of the application such as `name` and `description`, along with OAuth in
 The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-token`
 from a previously logged in user will automatically be granted a provider role over the application.
 
-#### Request
+**Request**
 
 In the example below, Alice (who holds `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
 application which accepts three different grant types
@@ -753,7 +753,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The response includes a Client ID and Secret which can be used to secure the application.
 
@@ -799,7 +799,7 @@ To create a new permission via the REST API, send a POST request to the `/applic
 endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged in
 user (Alice).
 
-#### 8 Request
+**8 Request**
 
 ```bash
 printf '{
@@ -814,7 +814,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The response returns the details of the newly created permission.
 
@@ -858,14 +858,14 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 Listing the permissions with an application can be done by making a GET request to the
 `/v1/applications/{{application-id}}/permissions/` endpoint
 
-#### 10 Request
+**10 Request**
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/permissions" \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The complete list of permissions includes any custom permissions created previously plus all the standard permissions
 which are avaiable by default
@@ -933,7 +933,7 @@ CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DE
 To create a new role via the REST API, send a POST request to the `/applications/{{application-id}}/roles` endpoint
 containing the `name` of the new role, with the `X-Auth-token` header from a previously logged in user.
 
-#### 13 Request
+**13 Request**
 
 ```bash
 printf '{
@@ -944,7 +944,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The details of the created role are returned
 
@@ -980,14 +980,14 @@ The following table summarize the relationship of each *Role* with the different
 Due to the roles are associated to the application, the Role _Others_ does not have any permission assigned in the
 application, therefore the users under the Role Others should be rejected.
 
-#### 18 Request
+**18 Request**
 
 ```bash
 http PUT "http://localhost:3005/v1/applications/$APP/roles/$MANAGER_ROLE/permissions/$PERMID' \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The response returns the permissions for the role
 
@@ -1008,14 +1008,14 @@ The response returns the permissions for the role
 A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
 `/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint.
 
-#### 19 Request
+**19 Request**
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions" \
   X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 ```json
 {
@@ -1111,7 +1111,7 @@ parameters in PEP Proxy associated to this value.
 Finally, there will be only one credential associated to an application for a PEP Proxy, therefore a subsequent request
 will produce a 409 Conflict with the message `Pep Proxy already registered`.
 
-#### Request
+**Request**
 
 ```bash
 http POST "http://localhost:3005/v1/applications/$APP/pep_proxies" \
@@ -1119,7 +1119,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 ```json
 {
@@ -1136,7 +1136,7 @@ Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` en
 associated PEP Proxy Account. The `X-Auth-Token` must be supplied in the headers. It is important to see that if you
 want to obtain the `oauth_client_id`, you need to request this information with the API.
 
-#### Request
+**Request**
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/pep_proxies" \
@@ -1144,7 +1144,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 ```json
 {
@@ -1197,7 +1197,7 @@ the roles to the organizations inside the corresponding Personal Data Applicatio
 The Data Users, how we saw in the previous section, has concrete roles to access concrete information, therefore, they
 are not associated to an organization and will be managed as grant a role to a user.
 
-#### 21 Request
+**21 Request**
 
 This example adds the role to all members of the organization:
 
@@ -1208,7 +1208,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 The response lists the role assignment as shown:
 
@@ -1238,7 +1238,7 @@ In our case, the tabla bellow shows us the correspondent values.
 | $APP           | $ROLE_PERSON003 | $FRANK          |
 | $APP           | $ROLE_PERSON004 | $LOTHAR         |
 
-#### 24 Request
+**24 Request**
 
 ```bash
 http PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
@@ -1246,7 +1246,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-#### Response
+**Response**
 
 ```json
 {
@@ -1268,7 +1268,7 @@ Secured Access can be ensured by requiring all requests to the secured service a
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
 present a valid token results in a denial of access.
 
-#### :one::two: Request
+**:one::two: Request**
 
 If a request to the PEP Proxy is made without any access token as shown:
 
@@ -1278,7 +1278,7 @@ http GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001
  Content-Type:'application/json'
 ```
 
-#### Response
+**Response**
 
 The response is a **401 Unauthorized** error code, with the following explanation:
 
@@ -1301,7 +1301,7 @@ Auth-token not found in request header
 
 ### Keyrock - User obtains Access Token
 
-#### :one::three: Request
+**:one::three: Request**
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
 endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows:
@@ -1343,7 +1343,7 @@ http --form POST 'http://localhost:3005/oauth2/token' \
 > ```
 
 
-#### Response
+**Response**
 
 The response returns an access code to identify the user:
 
@@ -1373,7 +1373,7 @@ The standard `Authorization: Bearer` header can also be used to identity the use
 is permitted, and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
 expected.
 
-#### :one::five: Request
+**:one::five: Request**
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -1381,7 +1381,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### Response
+**Response**
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1415,7 +1415,8 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>; 
+ rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
 
