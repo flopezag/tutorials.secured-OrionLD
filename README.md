@@ -89,8 +89,8 @@ Authorization_). The same method of securing access can be applied by placing a 
 of other services within a FIWARE-based Smart Solution.
 
 A **PEP Proxy** lies in front of a secured resource and is an endpoint found at "well-known" public location. It serves
-as a gatekeeper for resource access. Users or other actors must supply information to the **PEP Proxy** to allow 
-their request to succeed and pass through the **PEP proxy**. The **PEP proxy** then passes the request on to the real 
+as a gatekeeper for resource access. Users or other actors must supply information to the **PEP Proxy** to allow
+their request to succeed and pass through the **PEP proxy**. The **PEP proxy** then passes the request on to the real
 location of the secured resource itself - the actual location of the secured resource is unknown to the outside
 user - it could be held in a private network behind the **PEP proxy** or found on a different machine altogether.
 
@@ -114,7 +114,7 @@ The following common objects are found with the **Keyrock** Identity Management 
   users from their organization, members merely gain the roles and permissions of an organization. This allows each
   organization to be responsible for their members and removes the need for a super-admin to administer all rights.
 - **Role**, a role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
-  or an organization. A signed-in user gains all the permissions from their own roles plus the roles associated to 
+  or an organization. A signed-in user gains all the permissions from their own roles plus the roles associated to
   their organization.
 - **Permission**, an ability to do something on a resource within the system.
 
@@ -126,17 +126,17 @@ Additionally, two further non-human application objects can be secured within a 
 The relationship between the objects can be seen below - the entities marked in red are used directly within this
 tutorial:
 
-![](https://fiware.github.io/tutorials.PEP-Proxy/img/entities.png)
+![Definition of entities](https://fiware.github.io/tutorials.PEP-Proxy/img/entities.png)
 
 ### :arrow_forward: Video: Introduction to Keyrock
 
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
+[![Introduction to Keyrock - Identity Management](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
 
 Click on the image above to watch an introductory video
 
 ### :arrow_forward: Video: Introduction to Wilma PEP Proxy
 
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
+[![Introduction to Wilma - PEP Proxy](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
 
 Click on the image above to see an introductory video
 
@@ -440,14 +440,14 @@ Obtaining a complete list of all users is a super-admin permission requiring the
 be permitted to return users within their own organization. Listing users can be done by making a GET request to the
 `/v1/users` endpoint
 
-**:six:Request**
+#### :three: Request
 
 ```bash
 http GET 'http://localhost:3005/v1/users' \
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :three: Response
 
 The response contains basic details of all accounts:
 
@@ -523,6 +523,8 @@ logged-in user.
 > **Note** You can take a look and execute the organization-mgmt script to automatically create all organizations
 > and assign the users to each organization.
 
+#### :four: Request
+
 ```bash
 printf '{
   "organization": {
@@ -536,6 +538,8 @@ printf '{
 
 The Organization is created, and the user who created it is automatically assigned as a user. The response returns
 UUID to identify the new organization.
+
+#### :four: Response
 
 ```json
 {
@@ -554,10 +558,14 @@ Obtaining a complete list of all organizations is a super-admin permission requi
 will only be permitted to return users within their own organization. Listing users can be done by making a GET request
 to the `/v1/organizations` endpoint.
 
+#### :five: Request
+
 ```bash
 http GET http://localhost:3005/v1/organizations \
  X-Auth-Token:"$TOKEN"
 ```
+
+#### :five: Response
 
 The response returns the details of the visible organizations.
 
@@ -617,7 +625,7 @@ add and remove other members and owners.
 To add a user as a member of an organization, an owner must make a PUT request as shown, including the
 `<organization-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 
-**14 Request**
+#### :six: Request
 
 ```bash
 http  PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organization_roles/member" \
@@ -630,7 +638,7 @@ We have to repeat this operation for all the users created previously.
 > Note: $MANAGERS corresponds to the organization id of the _Managers_ organization and $BOB correponds to the user id
 > of the Bob user. See the mgmt-users-organization script for more details
 
-**Response**
+#### :six: Response
 
 The response lists the user's current role within the organization (i.e. `member`)
 
@@ -649,14 +657,14 @@ The response lists the user's current role within the organization (i.e. `member
 Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing
 users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
 
-**16 Request**
+#### :seven: Request
 
 ```bash
 http GET "http://localhost:3005/v1/organizations/$OTHERS/users" \
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :seven: Response
 
 The response contains the users list.
 
@@ -729,7 +737,7 @@ details of the application such as `name` and `description`, along with OAuth in
 The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-token`
 from a previously logged in user will automatically be granted a provider role over the application.
 
-**Request**
+#### :eight: Request
 
 In the example below, Alice (who holds `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
 application which accepts three different grant types
@@ -752,7 +760,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :eight: Response
 
 The response includes a Client ID and Secret which can be used to secure the application.
 
@@ -798,7 +806,7 @@ To create a new permission via the REST API, send a POST request to the `/applic
 endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged in
 user (Alice).
 
-**8 Request**
+#### :nine: Request
 
 ```bash
 printf '{
@@ -813,7 +821,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :nine: Response
 
 The response returns the details of the newly created permission.
 
@@ -857,14 +865,14 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 Listing the permissions with an application can be done by making a GET request to the
 `/v1/applications/{{application-id}}/permissions/` endpoint
 
-**10 Request**
+#### :ten: Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/permissions" \
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :ten: Response
 
 The complete list of permissions includes any custom permissions created previously plus all the standard permissions
 which are avaiable by default
@@ -932,7 +940,7 @@ CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DE
 To create a new role via the REST API, send a POST request to the `/applications/{{application-id}}/roles` endpoint
 containing the `name` of the new role, with the `X-Auth-token` header from a previously logged in user.
 
-**13 Request**
+#### :eleven: Request
 
 ```bash
 printf '{
@@ -943,7 +951,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :eleven: Response
 
 The details of the created role are returned
 
@@ -979,14 +987,14 @@ The following table summarize the relationship of each *Role* with the different
 Due to the roles are associated to the application, the Role _Others_ does not have any permission assigned in the
 application, therefore the users under the Role Others should be rejected.
 
-**18 Request**
+#### :twelve: Request
 
 ```bash
 http PUT "http://localhost:3005/v1/applications/$APP/roles/$MANAGER_ROLE/permissions/$PERMID' \
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :twelve: Response
 
 The response returns the permissions for the role
 
@@ -1007,14 +1015,14 @@ The response returns the permissions for the role
 A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
 `/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint.
 
-**19 Request**
+#### :one::three: Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions" \
   X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :one::three: Response
 
 ```json
 {
@@ -1052,12 +1060,14 @@ http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions
 
 In case of the Roles associated to the Person001, the request would be:
 
+#### :one::four: Request
+
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions" \
   X-Auth-Token:"$TOKEN"
 ```
 
-and the response:
+#### :one::four: Response
 
 ```json
 {
@@ -1110,7 +1120,7 @@ parameters in PEP Proxy associated to this value.
 Finally, there will be only one credential associated to an application for a PEP Proxy, therefore a subsequent request
 will produce a 409 Conflict with the message `Pep Proxy already registered`.
 
-**Request**
+#### :one::five: Request
 
 ```bash
 http POST "http://localhost:3005/v1/applications/$APP/pep_proxies" \
@@ -1118,7 +1128,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :one::five: Response
 
 ```json
 {
@@ -1135,7 +1145,7 @@ Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` en
 associated PEP Proxy Account. The `X-Auth-Token` must be supplied in the headers. It is important to see that if you
 want to obtain the `oauth_client_id`, you need to request this information with the API.
 
-**Request**
+#### :one::six: Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/pep_proxies" \
@@ -1143,7 +1153,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :one::six: Response
 
 ```json
 {
@@ -1196,7 +1206,7 @@ the roles to the organizations inside the corresponding Personal Data Applicatio
 The Data Users, how we saw in the previous section, has concrete roles to access concrete information, therefore, they
 are not associated to an organization and will be managed as grant a role to a user.
 
-**21 Request**
+#### :one::seven: Request
 
 This example adds the role to all members of the organization:
 
@@ -1207,7 +1217,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :one::seven: Response
 
 The response lists the role assignment as shown:
 
@@ -1237,7 +1247,7 @@ In our case, the tabla bellow shows us the correspondent values.
 | $APP           | $ROLE_PERSON003 | $FRANK          |
 | $APP           | $ROLE_PERSON004 | $LOTHAR         |
 
-**24 Request**
+#### :one::eight: Request
 
 ```bash
 http PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
@@ -1245,7 +1255,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :one::eight: Response
 
 ```json
 {
@@ -1267,7 +1277,7 @@ Secured Access can be ensured by requiring all requests to the secured service a
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
 present a valid token results in a denial of access.
 
-**:one::two: Request**
+#### :one::nine: Request
 
 If a request to the PEP Proxy is made without any access token as shown:
 
@@ -1277,7 +1287,7 @@ http GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001
  Content-Type:'application/json'
 ```
 
-**Response**
+#### :one::nine: Response
 
 The response is a **401 Unauthorized** error code, with the following explanation:
 
@@ -1300,7 +1310,7 @@ Auth-token not found in request header
 
 ### Keyrock - User obtains Access Token
 
-**:one::three: Request**
+#### :two::zero: Request
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
 endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows:
@@ -1343,7 +1353,7 @@ http --form POST 'http://localhost:3005/oauth2/token' \
 > ```
 
 
-**Response**
+#### :two::zero: Response
 
 The response returns an access code to identify the user:
 
@@ -1373,7 +1383,7 @@ The standard `Authorization: Bearer` header can also be used to identity the use
 is permitted, and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
 expected.
 
-**:one::five: Request**
+#### #### :two::one: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -1381,7 +1391,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
-**Response**
+#### :two:one: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1403,6 +1413,8 @@ That is the expected response due to Alice is not included in any of the permiss
 
 ### PEP Proxy - Accessing Orion-LD with an Authorization - Managers (e.g. Bob)
 
+#### :two::two: Request
+
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  'username'='bob-the-appmanager@test.com' \
@@ -1413,12 +1425,16 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
+#### :two::thee: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; 
  rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :two::three: Response
 
 ```json
 {
@@ -1437,11 +1453,15 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 }
 ```
 
+#### :two::four: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :two::four: Response
 
 ```json
 {
@@ -1460,6 +1480,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 }
 ```
 
+#### :two::five: Request
+
 Now trying to modify some attribute.
 
 ```bash
@@ -1470,6 +1492,8 @@ printf '{
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :two::five: Response
 
 ```bash
 HTTP/1.1 204 No Content
@@ -1483,11 +1507,15 @@ date: Thu, 25 Feb 2021 22:52:11 GMT
 
 ```
 
+#### :two::six: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :two::six: Response
 
 ```json
 {
@@ -1505,6 +1533,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
     "type": "Person"
 }
 ```
+
+#### :two::seven: Request
 
 Finally, check if we can upload a new Personal Data information:
 
@@ -1540,6 +1570,8 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
+#### :two::seven: Response
+
 ```bash
 HTTP/1.1 204 No Content
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
@@ -1552,6 +1584,8 @@ date: Mon, 22 Feb 2021 14:44:40 GMT
 
 ```
 
+#### :two::eight: Request
+
 Now, we check if we can access to the new data:
 
 ```bash
@@ -1559,6 +1593,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :two::eight: Response
 
 ```json
 {
@@ -1582,6 +1618,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
 For reminding, this group includes users that can access to all the data but cannot neither create new data or modify
 existing one.
 
+#### :two::nine: Request
+
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  'username'='charlie-the-appuser@test.com' \
@@ -1592,11 +1630,15 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
+#### :three::zero: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::zero: Response
 
 ```json
 {
@@ -1615,11 +1657,15 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 }
 ```
 
+#### :three::one: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::one: Response
 
 ```json
 {
@@ -1638,6 +1684,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 }
 ```
 
+#### :three::two: Request
+
 Now trying to modify some attribute.
 
 ```bash
@@ -1648,6 +1696,8 @@ printf '{
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::two: Response
 
 ```json
 HTTP/1.1 401 Unauthorized
@@ -1664,6 +1714,8 @@ X-Powered-By: Express
 User access-token not authorized
 
 ```
+
+#### :three::three: Request
 
 Finally, check if we can upload a new Personal Data information:
 
@@ -1699,6 +1751,8 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
+#### :three::three: Response
+
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
@@ -1715,6 +1769,8 @@ User access-token not authorized
 
 ```
 
+#### :three::four: Request
+
 Now, we check if we can access to the new data:
 
 ```bash
@@ -1722,6 +1778,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person011?
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::four: Response
 
 ```bash
 HTTP/1.1 404 Not Found
@@ -1735,6 +1793,8 @@ HTTP/1.1 404 Not Found
 
 ### PEP Proxy - Accessing Orion-LD with an Authorization - Data owners (e.g. Ole)
 
+#### :three::five: Request
+
 The users under this organization only had permissions to access and modify their own data.
 
 ```bash
@@ -1747,11 +1807,15 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
+#### :three::six: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::six: Response
 
 ```json
 {
@@ -1770,11 +1834,15 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 }
 ```
 
+#### :three::seven: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::seven: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1792,6 +1860,8 @@ User access-token not authorized
 
 ```
 
+#### :three::eight: Request
+
 Now trying to modify some attribute. (falla)
 
 ```bash
@@ -1802,6 +1872,8 @@ printf '{
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::eight: Response
 
 ```bash
 HTTP/1.1 204 No Content
@@ -1816,6 +1888,8 @@ date: Fri, 26 Feb 2021 06:34:22 GMT
 
 ```
 
+#### :three::nine: Request
+
 ```bash
 printf '{
     "type": "Property",
@@ -1824,6 +1898,8 @@ printf '{
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :three::nine: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1840,6 +1916,8 @@ X-Powered-By: Express
 User access-token not authorized
 
 ```
+
+#### :four::zero: Request
 
 Finally, check if we can upload a new Personal Data information:
 
@@ -1875,6 +1953,8 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
+#### :four::zero: Response
+
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
@@ -1891,6 +1971,8 @@ User access-token not authorized
 
 ```
 
+#### :four::one: Request
+
 Now, we check if we can access to the new data:
 
 ```bash
@@ -1898,6 +1980,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person012?
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :four::one: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1917,6 +2001,8 @@ User access-token not authorized
 
 ### PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
 
+#### :four::two: Request
+
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  'username'='eve@example.com' \
@@ -1927,11 +2013,15 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
+#### :four::two: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :four::two: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1949,11 +2039,15 @@ User access-token not authorized
 
 ```
 
+#### :four::three: Request
+
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :four::three: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1971,6 +2065,8 @@ User access-token not authorized
 
 ```
 
+#### :four::four: Request
+
 Now trying to modify some attribute.
 
 ```bash
@@ -1981,6 +2077,8 @@ printf '{
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :four::four: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1997,6 +2095,8 @@ X-Powered-By: Express
 User access-token not authorized
 
 ```
+
+#### :four::five: Request
 
 Finally, check if we can upload a new Personal Data information:
 
@@ -2032,6 +2132,8 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
+#### :four::five: Response
+
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
@@ -2048,6 +2150,8 @@ User access-token not authorized
 
 ```
 
+#### :four::six: Request
+
 Now, we check if we can access to the new data:
 
 ```bash
@@ -2055,6 +2159,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
 ```
+
+#### :four::six: Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
