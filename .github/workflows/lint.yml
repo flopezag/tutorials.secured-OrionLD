@@ -19,6 +19,16 @@ jobs:
     - name: Get the write-good output
       run: echo "${{ steps.write-good.outputs.result }}"
 
+  docker-example:
+    runs-on: ubuntu-latest
+    name: other lint job
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run box version docker run -it --rm -v "$(pwd)":/srv/app -w /srv/app btford/write-good:latest *.md
+      uses: docker://btford/write-good:latest
+      with:
+        args: './README.md'
+
   lint-markdown:
     name: Lint readme file
     runs-on: ubuntu-latest

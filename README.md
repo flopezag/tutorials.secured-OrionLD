@@ -1635,6 +1635,9 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
  Link:'<https://schema.lab.fiware.org/ld/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
  Authorization:"Bearer $TOKEN"
+http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
+ Link:'<https://schema.lab.fiware.org/ld/context>; type="application/ld+json"' \
+ Authorization:"Bearer $TOKEN"
 ```
 
 #### :three::zero: Response
