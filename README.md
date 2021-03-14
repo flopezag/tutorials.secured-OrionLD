@@ -61,9 +61,9 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
   - [PEP Proxy - No Access to Orion-LD without Access Token](#pep-proxy---no-access-to-orion-ld-without-access-token)
   - [Keyrock - User obtains Access Token](#keyrock---user-obtains-access-token)
   - [PEP Proxy - Accessing Orion-LD with an Authorization - Alice user](#pep-proxy---accessing-orion-ld-with-an-authorization---alice-user)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---manager-users-eg-bob)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-users-eg-charlie)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-users-eg-ole)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Managers (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---managers-eg-bob)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-eg-charlie)
+  - [PEP Proxy - Accessing Orion-LD with an Authorization - Data owners (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-owners-eg-ole)
   - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-eg-eve)
 - [Integration with eIDAS](#integration-with-eidas)
   - [Architecture of the integration](#architecture-of-the-integration)
@@ -81,17 +81,17 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
 >
 > — Gandalf (The Fellowship of the Ring by J.R.R Tolkien)
 
-The [previous tutorial](https://github.com/FIWARE/tutorials.Securing-Access) demonstrated that it is possible to Permit
-or Deny access to resources based on an authenticated user identifying themselves within an application. It was simply a
+The [previous tutorial](https://github.com/FIWARE/tutorials.Securing-Access) demonstrated that is possible to Permit
+or Deny access to resources based on an authenticated user identifying themselves within an application. It is a
 matter of the code following a different line of execution if the `access_token` was not found (Level 1 -
 _Authentication Access_), or confirming that a given `access_token` had appropriate rights (Level 2 - _Basic
 Authorization_). The same method of securing access can be applied by placing a Policy Enforcement Point (PEP) in front
 of other services within a FIWARE-based Smart Solution.
 
 A **PEP Proxy** lies in front of a secured resource and is an endpoint found at "well-known" public location. It serves
-as a gatekeeper for resource access. Users or other actors must supply sufficient information to the **PEP Proxy** to
-allow their request to succeed and pass through the **PEP proxy**. The **PEP proxy** then passes the request on to the
-real location of the secured resource itself - the actual location of the secured resource is unknown to the outside
+as a gatekeeper for resource access. Users or other actors must supply information to the **PEP Proxy** to allow 
+their request to succeed and pass through the **PEP proxy**. The **PEP proxy** then passes the request on to the real 
+location of the secured resource itself - the actual location of the secured resource is unknown to the outside
 user - it could be held in a private network behind the **PEP proxy** or found on a different machine altogether.
 
 FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a simple implementation of a **PEP proxy** designed to work with
@@ -99,13 +99,13 @@ the FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Generic Enabl
 to the resource behind the **PEP proxy**, the PEP will describe the user's attributes to the Policy Decision Point
 (PDP), request a security decision, and enforce the decision. (Permit or Deny). There is minimal disruption of access
 for authorized users - the response received is the same as if they had accessed the secured service directly.
-Unauthorized users are simply returned a **401 - Unauthorized** response.
+Unauthorized users are answered with a **401 - Unauthorized** response.
 
 ### Standard Concepts of Identity Management
 
 The following common objects are found with the **Keyrock** Identity Management database:
 
-- **User**, any signed up user able to identify themselves with an eMail and password. Users can be assigned rights
+- **User**, any signed-up user able to identify themselves with an eMail and password. Users can be assigned rights
   individually or as a group.
 - **Application**, any securable FIWARE application consisting of a series of microservices.
 - **Organization**, a group of users who can be assigned a series of rights. Altering the rights of the organization
@@ -114,8 +114,8 @@ The following common objects are found with the **Keyrock** Identity Management 
   users from their organization, members merely gain the roles and permissions of an organization. This allows each
   organization to be responsible for their members and removes the need for a super-admin to administer all rights.
 - **Role**, a role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
-  or an organization. A signed-in user gains all the permissions from all of their own roles plus all of the roles
-  associated to their organization.
+  or an organization. A signed-in user gains all the permissions from their own roles plus the roles associated to 
+  their organization.
 - **Permission**, an ability to do something on a resource within the system.
 
 Additionally, two further non-human application objects can be secured within a FIWARE application:
@@ -181,14 +181,14 @@ streamline collaboration, therefore you can create better APIs—faster. To inst
 
 ### http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30">
 
-This a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions,
-and wget-like downloads with ab expressive and intuitive syntax. `http` can be installed on each operating system. Follow
+This is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent sessions,
+and wget-like downloads with an expressive and intuitive syntax. `http` can be installed on each operating system. Follow
 the instructions described [here](https://httpie.io/docs#installation).
 
 ### jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35">
 
-This is a program to slice, filter and map the content of JSON data. This is a very useful tool to extract certain
-information automatically from the HTTP responses. `jq` is written in C with no dependencies, therefore can be use
+This is a program to slice, filter and map the content of JSON data. This is a useful tool to extract certain
+information automatically from the HTTP responses. `jq` is written in C with no dependencies and can be use
 on nearly any platform. Prebuilt binaries are available for Linux, OS X and Windows. For more details how to install
 the tool you can go [here](https://stedolan.github.io/jq/download).
 
@@ -202,9 +202,8 @@ by **Keyrock**. It will make use of four FIWARE components - the
 [Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured.
 
 The Orion-LD Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence
-of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql.com/) database.
-
-Therefore the overall architecture will consist of the following elements:
+of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql.com/) database. The architecture 
+consists of the following elements:
 
 - The FIWARE [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
   [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json).
@@ -212,7 +211,7 @@ Therefore the overall architecture will consist of the following elements:
   including:
   - An OAuth2 authentication system for Applications and Users.
   - A site graphical frontend for Identity Management Administration.
-  - An equivalent REST API for Identity Management via HTTP requests.
+  - A REST API for Identity Management via HTTP requests.
 - FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** microservice.
 - The underlying [MongoDB](https://www.mongodb.com/) database:
   - Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions and
@@ -328,7 +327,7 @@ Enter a username and password to enter the application. The default user has the
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
 the other users after their creation just change the proper name and password data in this request:
 
-**:one: Request**
+#### :one: Request
 
 ```console
 http POST http://localhost:3005/v1/auth/tokens \
@@ -336,7 +335,7 @@ http POST http://localhost:3005/v1/auth/tokens \
   password=test
 ```
 
-**:one: Response**
+#### :one: Response
 
 The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
 required in all subsequent requests to gain access
@@ -400,7 +399,7 @@ For example to create additional accounts for Bob, the Application Manager we sh
 
 > **Note** You can take a look and execute the create-users script to automatically create all the users accounts.
 
-**:five:Request**
+#### :two: Request
 
 ```bash
 echo '{
@@ -413,7 +412,7 @@ echo '{
  X-Auth-Token:"$TOKEN"
 ```
 
-**Response**
+#### :two: Response
 
 The response contains details about the creation of this account:
 
@@ -1307,6 +1306,7 @@ To log in to the application using the user-credentials flow send a POST request
 endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows:
 
 For example to log-in as Alice the Admin:
+
 * The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`.
   This means that the Client ID itself cannot contain a colon.
 * The resulting string is encoded using a variant of Base64. For your convenience you can use the following
@@ -1401,7 +1401,7 @@ User access-token not authorized
 
 That is the expected response due to Alice is not included in any of the permissions to access the OrionLD.
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Manager users (e.g. Bob)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Managers (e.g. Bob)
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1577,7 +1577,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
 }
 ```
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Users users (e.g. Charlie)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Users (e.g. Charlie)
 
 For reminding, this group includes users that can access to all the data but cannot neither create new data or modify
 existing one.
@@ -1733,7 +1733,7 @@ HTTP/1.1 404 Not Found
 }
 ```
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Data users (e.g. Ole)
+### PEP Proxy - Accessing Orion-LD with an Authorization - Data owners (e.g. Ole)
 
 The users under this organization only had permissions to access and modify their own data.
 
@@ -2098,7 +2098,7 @@ The FIWARE identity - eIDAS authentication module allows users with valid eIDAS 
 national eID) to directly login in the IdM and obtain an OAuth2.0 access tokens that represent them in
 terms of authorization. For enabling this, the service has to be registered in both IdM and eIDAS node.
 The service is registered in the IdM as a regular *Application*, including some extra configuration
-parameters as explained in the next section. 
+parameters as explained in the next section.
 
 On the other hand, the service has to be registered in the eIDAS node as a *Service Provider* following
 the procedure of the specific Member State. Then, when the user is going to authenticate in the IdM it
