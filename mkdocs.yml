@@ -1,0 +1,12 @@
+site_name: "Step-by-Step <br/>for <span style='color:#d6604d'>Secure Orion-LD</span>"
+site_url: https://fiware-secure-orion-ld.readthedocs.io
+repo_url: https://github.com/flopezag/tutorials.secured-OrionLD
+site_description: GDPR management of security accesse to Orion-LD
+docs_dir: .
+site_dir: html
+use_directory_urls: false
+theme: readthedocs
+extra_css: ["https://www.fiware.org/style/fiware_readthedocs.css",
+            "https://www.fiware.org/style/fiware_readthedocs_neutral.css"]
+pages:
+  - Legal: "README.md"
