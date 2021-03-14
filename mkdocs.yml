@@ -9,4 +9,4 @@ theme: readthedocs
 extra_css: ["https://www.fiware.org/style/fiware_readthedocs.css",
             "https://www.fiware.org/style/fiware_readthedocs_neutral.css"]
 pages:
-  - Introduction: "index.md"
+  - Home: "index.md"
