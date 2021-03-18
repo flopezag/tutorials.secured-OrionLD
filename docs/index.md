@@ -226,11 +226,11 @@ The specific architecture of each section of the tutorial is discussed below.
 To start the installation, do the following:
 
 ```console
-git clone https://github.com/FIWARE/tutorials.PEP-Proxy.git
-cd tutorials.PEP-Proxy
-git checkout NGSI-v2
+git clone https://github.com/flopezag/tutorials.secured-OrionLD.git
+cd tutorials.secured-OrionLD 
 
 ./services create
+
 ```
 
 > **Note** The initial creation of Docker images can take up to three minutes
@@ -299,7 +299,7 @@ and writing only:
 
 </details>
 
-Three organizations have also been set up by Alice:
+Four organizations have also been set up by Alice:
 
 | Name       | Description                          |
 | ---------- | ------------------------------------ |
@@ -631,8 +631,8 @@ http  PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organizat
 
 We have to repeat this operation for all the users created previously.
 
-> Note: $MANAGERS corresponds to the organization id of the _Managers_ organization and $BOB correponds to the user id
-> of the Bob user. See the mgmt-users-organization script for more details
+> Note: $MANAGERS corresponds to the organization id of the Managers' organization and $BOB corresponds to the user
+> id of the Bob user. See the users-organizations script for more details
 
 #### :six: Response
 
@@ -780,7 +780,11 @@ The response includes a Client ID and Secret which can be used to secure the app
 ```
 
 Copy the Application Client ID to be used for all other application requests - in the case above the ID is
-`3fc4e897-a9b5-4b2e-bcce-98849c628972` (export APP=3fc4e897-a9b5-4b2e-bcce-98849c628972).
+`3fc4e897-a9b5-4b2e-bcce-98849c628972` 
+
+```bash
+export APP=3fc4e897-a9b5-4b2e-bcce-98849c628972
+```
 
 ### Create a Permission
 
@@ -852,9 +856,8 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 `urn:ngsi-ld:Person:person001`).
 
 > Note: We should manage all the permissions related to the OrionLD API but for this document we will focus on
-> the previous resources.
->
-> Note: The script `mgmt-users-organizations` will create all the corresponding permissions for this example application.
+> the previous resources. The script `mgmt-users-organizations` will create all the corresponding permissions for 
+> this example application.
 
 ### List Permissions
 
@@ -973,12 +976,12 @@ path and identifying themselves using an `X-Auth-Token` in the header.
 
 The following table summarize the relationship of each *Role* with the different *Permissions*
 
-| *Role*    | *Permissions*                                                                 |
-| --------- | ----------------------------------------------------------------------------- |
-| Manager   | #1(GET:/entities/*), #3(POST:/entityOperations/upsert), #4(PATCH:/entities/*) |
-| Users     | #1(GET:/entities/*)                                                           |
-| Data(n)   | #2(GET:/entities/{{entityID}}), #5(PATCH:/entities/{{entityID}})              |
-| Others    |                                                                               |
+| *Role*         | *Permissions*                                                                 |
+| -------------- | ----------------------------------------------------------------------------- |
+| ROLE_MANAGER   | #1(GET:/entities/*), #3(POST:/entityOperations/upsert), #4(PATCH:/entities/*) |
+| ROLE_USER      | #1(GET:/entities/*)                                                           |
+| ROLE_PERSON(n) | #2(GET:/entities/{{entityID}}), #5(PATCH:/entities/{{entityID}})              |
+| OTHERS         | &empty;                                                                              |
 
 Due to the roles are associated to the application, the Role _Others_ does not have any permission assigned in the
 application, therefore the users under the Role Others should be rejected.
@@ -986,13 +989,13 @@ application, therefore the users under the Role Others should be rejected.
 #### :twelve: Request
 
 ```bash
-http PUT "http://localhost:3005/v1/applications/$APP/roles/$MANAGER_ROLE/permissions/$PERMID' \
+http PUT "http://localhost:3005/v1/applications/$APP/roles/$ROLE_MANAGER/permissions/$PERMID' \
  X-Auth-Token:"$TOKEN"
 ```
 
 #### :twelve: Response
 
-The response returns the permissions for the role
+The response returns the permissions for the role:
 
 ```json
 {
@@ -1003,7 +1006,7 @@ The response returns the permissions for the role
 }
 ```
 
-> Note: take a look into the applications-roles script to see how we associated the
+> Note: Take a look into the applications-roles script to see how we associated the
 > different permissions with the corresponding Roles.
 
 ### List Permissions of a Role
@@ -1014,7 +1017,7 @@ A full list of all permissions assigned to an application role can be retrieved 
 #### :one::three: Request
 
 ```bash
-http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions" \
+http GET "http://localhost:3005/v1/applications/$APP/roles/$ROLE_MANAGER/permissions" \
   X-Auth-Token:"$TOKEN"
 ```
 
@@ -1059,7 +1062,7 @@ In case of the Roles associated to the Person001, the request would be:
 #### :one::four: Request
 
 ```bash
-http GET "http://localhost:3005/v1/applications/$APP/roles/$MANAGERS/permissions" \
+http GET "http://localhost:3005/v1/applications/$APP/roles/$ROLE_PERSON001/permissions" \
   X-Auth-Token:"$TOKEN"
 ```
 
@@ -1104,7 +1107,7 @@ created with a unique id and password and the values will be returned to the res
 in the creation of the PEP Proxy, the Application Id is obtained after the creation if you request the PEP Proxy
 details associated to the application.
 
-The following table summarize the Data that are needed, where you can find them and which are the configuration
+The following table summarize the Data that are needed, where you can find them, and which are the configuration
 parameters in PEP Proxy associated to this value.
 
 | Data               | Request response          | Configuration parameter |
@@ -1228,13 +1231,13 @@ The response lists the role assignment as shown:
 }
 ```
 
-We need to do the same for $USERS and $ROLE_USER who it was described in the previous table.
+We need to do the same for $USERS and $ROLE_USER how it was described in the previous table.
 
 ### Grant a Role to a User
 
 Using the REST API, the role can be granted making a PUT request as shown, including the `<application-id>`,
 `<role-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-In our case, the tabla bellow shows us the correspondent values.
+In our case, the table below shows us the correspondent values.
 
 | Application Id | Role Id         | Person Id       |
 | -------------- | --------------- | --------------- |
@@ -1290,7 +1293,7 @@ The response is a **401 Unauthorized** error code, with the following explanatio
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 38
@@ -1307,9 +1310,8 @@ Auth-token not found in request header
 ### Keyrock - User obtains Access Token
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
-endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows:
-
-For example to log-in as Alice the Admin:
+endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows, for example 
+to log-in as Alice the Admin:
 
 - The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`.
   This means that the Client ID itself cannot contain a colon.
@@ -1391,7 +1393,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -1424,8 +1426,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
- Link:'<https://schema.lab.fiware.org/ld/context>; 
- rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+ Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
 
@@ -1502,6 +1503,8 @@ date: Thu, 25 Feb 2021 22:52:11 GMT
 
 ```
 
+Let's see if we can get the new updated data from OrionLD.
+
 #### :two::six: Request
 
 ```bash
@@ -1529,9 +1532,9 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 }
 ```
 
-#### :two::seven: Request
-
 Finally, check if we can upload a new Personal Data information:
+
+#### :two::seven: Request
 
 ```bash
 printf '[
@@ -1570,7 +1573,7 @@ printf '[
 ```bash
 HTTP/1.1 204 No Content
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 ETag: W/"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"
 X-Powered-By: Express
@@ -1579,9 +1582,9 @@ date: Mon, 22 Feb 2021 14:44:40 GMT
 
 ```
 
-#### :two::eight: Request
-
 Now, we check if we can access to the new data:
+
+#### :two::eight: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?options=keyValues \
@@ -1610,7 +1613,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
 
 ### PEP Proxy - Accessing Orion-LD with an Authorization - Users (e.g. Charlie)
 
-For reminding, this group includes users that can access to all the data but cannot neither create new data or modify
+For reminding, this group includes users that can access to all the data but cannot neither create new data nor modify
 existing one.
 
 #### :two::nine: Request
@@ -1710,9 +1713,10 @@ User access-token not authorized
 
 ```
 
-#### :three::three: Request
+We could see that the user is unable to update the data associated to the Person002 (**401 Unauthorized**). Finally, check
+if we can upload a new Personal Data information:
 
-Finally, check if we can upload a new Personal Data information:
+#### :three::three: Request
 
 ```bash
 printf '[
@@ -1751,7 +1755,7 @@ printf '[
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -1764,9 +1768,10 @@ User access-token not authorized
 
 ```
 
-#### :three::four: Request
+We also see that this user cannot upload new Personal Data information into CEF Context Broker. Now, we check 
+if we can access to the new data:
 
-Now, we check if we can access to the new data:
+#### :three::four: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person011?options=keyValues \
@@ -1786,11 +1791,13 @@ HTTP/1.1 404 Not Found
 }
 ```
 
+Therefore, we can confirm that the Personal Data was not created into the CEF Context Broker.
+
 ### PEP Proxy - Accessing Orion-LD with an Authorization - Data owners (e.g. Ole)
 
-#### :three::five: Request
+The users under this organization only should have permissions to access and modify their own data.
 
-The users under this organization only had permissions to access and modify their own data.
+#### :three::five: Request
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1801,6 +1808,9 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Authorization:"Basic $BASE64" \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
+
+Once that we obtain the security token, let’s see what operations we can do with it. Let’s start with obtain 
+the Personal Data of the Person001.
 
 #### :three::six: Request
 
@@ -1829,6 +1839,9 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 }
 ```
 
+We see that the person can access to his own information stored in the CEF Context Broker. Let’s see if he can 
+access to the information related to another person (Person002).
+
 #### :three::seven: Request
 
 ```bash
@@ -1842,7 +1855,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -1855,9 +1868,10 @@ User access-token not authorized
 
 ```
 
-#### :three::eight: Request
+As it is expected, the system response with unauthorized access to the personal data corresponding to the person
+person002. Now trying to modify some own data (e.g. his telephone number).
 
-Now trying to modify some attribute. (falla)
+#### :three::eight: Request
 
 ```bash
 printf '{
@@ -1882,6 +1896,9 @@ date: Fri, 26 Feb 2021 06:34:22 GMT
 
 
 ```
+
+We see that the person could modify his personal data in the CEF Context Broker properly. Let’s see if this person
+can change the corresponding information (e.g. his telephone number) from another person, in this case person002.
 
 #### :three::nine: Request
 
@@ -1912,9 +1929,10 @@ User access-token not authorized
 
 ```
 
-#### :four::zero: Request
+We see that the user is unauthorized to modify the data corresponding to other persons in the system, as it is 
+expected. Finally, check if we can upload a new Personal Data information:
 
-Finally, check if we can upload a new Personal Data information:
+#### :four::zero: Request
 
 ```bash
 printf '[
@@ -1953,7 +1971,7 @@ printf '[
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -1965,6 +1983,9 @@ X-Powered-By: Express
 User access-token not authorized
 
 ```
+
+As expected response, the user cannot create new personal data inside the CEF Context Broker. Now, we check if we 
+can access to the new data:
 
 #### :four::one: Request
 
@@ -1981,7 +2002,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person012?
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -1993,6 +2014,8 @@ X-Powered-By: Express
 User access-token not authorized
 
 ```
+
+We can see that the system responses with unauthorized access before not found data.
 
 ### PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
 
@@ -2021,7 +2044,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -2047,7 +2070,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -2078,7 +2101,7 @@ printf '{
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -2132,7 +2155,7 @@ printf '[
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -2160,7 +2183,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?
 ```bash
 HTTP/1.1 401 Unauthorized
 Access-Control-Allow-Headers: origin, content-type, X-Auth-Token, Tenant-ID, Authorization, Fiware-Service, Fiware-ServicePath
-Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE
+Access-Control-Allow-Methods: HEAD, POST, PUT, GET, OPTIONS, DELETE, PATCH
 Access-Control-Allow-Origin: *
 Connection: keep-alive
 Content-Length: 32
@@ -2214,9 +2237,9 @@ Furthermore, as the user is created in the IdM, permissions and roles could be m
 as a regular local user, how it was explained in the previous sections of this documentation.
 Next figures show the architecture and exchanged data flows between the entities.
 
-![eIDAS integration in FIWARE IAM model](./img/eIDAS_integration_in_FIWARE_IdM.png)
+![eIDAS integration in FIWARE IAM model](img/eIDAS_integration_in_FIWARE_IdM.png)
 
-![FIWARE IdM - eIDAS data flow](./img/FIWARE_IdM-eIDAS_data_flow.png)
+![FIWARE IdM - eIDAS data flow](img/FIWARE_IdM-eIDAS_data_flow.png)
 
 ### IdM server configuration
 
@@ -2256,12 +2279,12 @@ Once the IdM has be configured to support eID authentication, registered applica
 authentication individually. During the registration process a new checkbox is included as seen in the following
 image:
 
-![Enabling eIDAS in application registration](./img/Enabling_eIDAS_in_application_registration.png)
+![Enabling eIDAS in application registration](img/Enabling_eIDAS_in_application_registration.png)
 
 Then, a new step in the registration process is included. In this new step the data regarding the Service Provider
 registered in the eIDAS node has to be filled.
 
-![eIDAS Service Provider data](./img/eIDAS_Service_Provider_data.png)
+![eIDAS Service Provider data](img/eIDAS_Service_Provider_data.png)
 
 Once the application is registered, the metadata of the Service Provider is exposed in the endpoint
 `/applications/{{application-id}}/saml2/metadata`. This metadata file is needed for registering
@@ -2276,19 +2299,19 @@ the Service Provider in the eIDAS node.
 When a user is going to authenticate in an application with eIDAS connection enabled, a new button that allows
 authentication with eID is included in the log in the panel:
 
-![eIDAS application log in panel](./img/eIDAS_application_log_in_panel.png)
+![eIDAS application log in panel](img/eIDAS_application_log_in_panel.png)
 
 When clicking in the option Sign with eID the user will be redirected to the eIDAS authentication gateway to login
 using his/her national identifier and defined in the `node_host` attribute in the configuration file or with the
 corresponding environment variable `IDM_EIDAS_NODE_HOST`. For instance, the spanish gateway has the following
 interface:
 
-![Spanish_eIDAS_gateway 1](./img/Spanish_eIDAS_gateway.png)
+![Spanish_eIDAS_gateway 1](img/Spanish_eIDAS_gateway.png)
 
 If the users select the option for authenticating european citizens, they are redirected to a new view in which,
 selecting the specific country, they can authenticate using their national identifier:
 
-![Spanish eIDAS gateway 2.png](./img/Spanish_eIDAS_gateway_2.png)
+![Spanish eIDAS gateway 2.png](img/Spanish_eIDAS_gateway_2.png)
 
 Once the authentication is performed, the eIDAS node sends de SAML response back to the IdM. Then, IdM extracts the
 user information from the response and proceeds with the creation of a local user for the first iteration. Once the
@@ -2302,4 +2325,4 @@ token without performing the user creation.
 
 ## License
 
-[MIT](LICENSE) © 2018-2020 FIWARE Foundation e.V.
+[MIT](LICENSE) © 2021 FIWARE Foundation e.V.
