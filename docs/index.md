@@ -1,4 +1,4 @@
-# How to deal with GDPR with Orion-LD
+# GDPR Management with CEF Context Broker
 
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 [![FIWARE Security](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/security.svg)](https://github.com/FIWARE/catalogue/blob/master/security/README.md)
@@ -11,10 +11,6 @@ This tutorial uses the [FIWARE Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Pro
 [FIWARE Keyrock](https://fiware-idm.readthedocs.io/en/latest/) to secure access to
 [FIWARE Orion-LD](https://github.com/FIWARE/context.Orion-LD) endpoints exposed by FIWARE generic
 enablers. Users (or other actors) must log-in and use a token to gain access to the services.
-
-[Postman documentation](https://fiware.github.io/tutorials.PEP-Proxy/) for these calls is also available.
-
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/6b143a6b3ad8bcba69cf)
 
 ## Contents
 
@@ -77,12 +73,47 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
 
 ### Introduction to the solution
 
-The [previous tutorial](https://github.com/FIWARE/tutorials.Securing-Access) demonstrated that is possible to Permit
-or Deny access to resources based on an authenticated user identifying themselves within an application. It is a
-matter of the code following a different line of execution if the `access_token` was not found (Level 1 -
-_Authentication Access_), or confirming that a given `access_token` had appropriate rights (Level 2 - _Basic
-Authorization_). The same method of securing access can be applied by placing a Policy Enforcement Point (PEP) in front
-of other services within a FIWARE-based Smart Solution.
+This tutorial secures access to a FIWARE application using the entities and **Personal Data** that have been created
+using the corresponding [import-data](https://github.com/flopezag/tutorials.secured-OrionLD/blob/master/import-data)
+script. Additionally, the creation of the corresponding users and configuration of the permissions, roles, and the
+relation between them into the corresponding [user-organizations](https://github.com/flopezag/tutorials.secured-OrionLD/blob/master/users-organizations)
+and [application-management](https://github.com/flopezag/tutorials.secured-OrionLD/blob/master/application-management)
+scripts.
+
+In order to secure access to application resources, it is necessary to know two things. Firstly, who is making the
+request and secondly is the requestor permitted to access the resource? The **FIWARE Keyrock** generic enabler uses
+**OAuth2** to enable third-party applications to obtain limited access to services. **OAuth2** is the open standard
+for access delegation to grant access rights. It allows notifying a resource provider (e.g. the **CEF Context Broker**)
+that the resource owner (e.g. you) grants permission to a third-party (e.g. a Personal Data Management System) access
+to their information (e.g. the list of entities).
+
+There are several common OAuth 2.0 grant flows, the details of which can be found below:
+- Authorization Code
+- Implicit
+- Password
+- Client Credentials
+- Device Code
+- Refresh Token
+
+The primary concept is that both Users and Applications must first identify themselves using a standard OAuth2
+Challenge-Response mechanism. Thereafter, a user is assigned a token which they append to every subsequent request.
+This token identifies the user, the application and the rights the user is able to exercise. **FIWARE Keyrock** can
+then be used with other services can be used to limit and lock-down access. The details of the access flows are
+discussed below. **FIWARE Wilma** can be used to check the incoming requests to CEF Context Broker to provide
+authentication and authorization. 
+
+The reasoning behind OAuth2 is that you never need to expose your own username and password to a third party to
+give them full access - you merely permit the relevant access which can be either Read-Only or Read-Write and
+such access can be defined down to a granular level. Furthermore, there is provision for revoking access at any
+time, leaving the resource owner in control of who can access what.
+
+Once the application is able to authenticate users, it is also possible to lock down access using access control
+mechanisms. Access control requires having an access policy - in other words defining who can do what. We have
+already defined roles and permissions in the corresponding user-organizations and application-management scripts.
+The present document demonstrates that is possible to Permit or Deny access to resources based on an authenticated
+user identifying themselves within an application. It is a matter of the code following a different line of
+execution if the `access_token` was not found (_Level 1 - Authentication Access_), or confirming that a given
+`access_token` had appropriate rights (_Level 2 - Basic Authorization_).
 
 A **PEP Proxy** lies in front of a secured resource and is an endpoint found at "well-known" public location. It serves
 as a gatekeeper for resource access. Users or other actors must supply information to the **PEP Proxy** to allow
@@ -99,7 +130,7 @@ Unauthorized users are answered with a **401 - Unauthorized** response.
 
 ### Standard Concepts of Identity Management
 
-The following common objects are found with the **Keyrock** Identity Management database:
+The following common objects are found with the **FIWARE Keyrock - Identity Management** database:
 
 - **User**, any signed-up user able to identify themselves with an eMail and password. Users can be assigned rights
   individually or as a group.
@@ -117,24 +148,25 @@ The following common objects are found with the **Keyrock** Identity Management 
 Additionally, two further non-human application objects can be secured within a FIWARE application:
 
 - **IoTAgent**, a proxy between IoT Sensors and the Context Broker.
-- **PEPProxy**, a middleware for use between generic enablers challenging the rights of a user.
 
 The relationship between the objects can be seen below - the entities marked in red are used directly within this
 tutorial:
 
-![Definition of entities](https://fiware.github.io/tutorials.PEP-Proxy/img/entities.png)
+![Definition of entities](img/Definition_of_entities.png)
 
 ### :arrow_forward: Video: Introduction to Keyrock
 
-[![Introduction to Keyrock - Identity Management](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
+Click on the image above to watch an introductory video.
 
-Click on the image above to watch an introductory video
+[![Introduction to Keyrock - Identity Management](img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
+
 
 ### :arrow_forward: Video: Introduction to Wilma PEP Proxy
 
-[![Introduction to Wilma - PEP Proxy](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
+Click on the image above to see an introductory video.
 
-Click on the image above to see an introductory video
+[![Introduction to Wilma - PEP Proxy](img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
+
 
 ## Prerequisites
 
@@ -148,7 +180,7 @@ technology which allows to different components isolated into their respective e
 - To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
 
 **Docker Compose** is a tool for defining and running multi-container Docker applications. A
-[YAML file](https://raw.githubusercontent.com/Fiware/tutorials.Identity-Management/master/docker-compose.yml) is used
+[YAML file](https://raw.githubusercontent.com/flopezag/tutorials.secured-OrionLD/master/docker-compose.yml) is used
 configure the required services for the application. This means all container services can be brought up in a single
 command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux users
 will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
@@ -166,38 +198,39 @@ necessary.
 ### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 We will start up our services using a simple bash script. Windows users should download
-[cygwin](http://www.cygwin.com/) to provide a command-line functionality similar to a Linux
+**[Cygwin](http://www.cygwin.com)** to provide a command-line functionality similar to a Linux
 distribution on Windows.
 
 ### Postman <img src="https://www.getpostman.com/favicon-32x32.png" align="left"  height="32" width="32" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-Postman is a collaboration platform for API development. Postman's features simplify each step of building an API and
+**Postman** is a collaboration platform for API development. Postman's features simplify each step of building an API and
 streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions
 [here](https://www.postman.com/downloads).
 
 ### http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-This is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent
+**http** is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent
 sessions, and wget-like downloads with an expressive and intuitive syntax. `http` can be installed on each
 operating system. Follow the instructions described [here](https://httpie.io/docs#installation).
 
 ### jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-This is a program to slice, filter and map the content of JSON data. This is a useful tool to extract certain
+**jq** is a program to slice, filter and map the content of JSON data. This is a useful tool to extract certain
 information automatically from the HTTP responses. `jq` is written in C with no dependencies and can be use
 on nearly any platform. Prebuilt binaries are available for Linux, OS X and Windows. For more details how to install
 the tool you can go [here](https://stedolan.github.io/jq/download).
 
 ## Architecture
 
-This application protects access to the existing Stock Management and Sensors-based application by adding PEP Proxy
-instances around the services created in previous tutorials and uses data pre-populated into the **MySQL** database
-used by **Keyrock**. It will make use of four FIWARE components - the
-[Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/), the
-[Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Generic enabler and adds one or two instances
-[Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured.
+This application protects access to the Personal Data by adding PEP Proxy instance in front of the CEF Context Broker
+and uses data created by the scripts (`import-data`, `users-organizations`, and `application-management`). It will 
+make use of three FIWARE components - the [Orion-LD Context Broker](https://fiware-orion.readthedocs.io), the
+[Keyrock - Identity Management](https://fiware-idm.readthedocs.io), and one instances
+[Wilma - PEP Proxy](https://fiware-pep-proxy.rtfd.io).
 
-The Orion-LD Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence
+![Architecture diagram of the solution implemented](img/Architecture_diagram.png)
+
+The CEF Context Broker rely on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence
 of the information they hold. **Keyrock** uses its own [MySQL](https://www.mysql.com/) database. The architecture
 consists of the following elements:
 
@@ -210,7 +243,7 @@ consists of the following elements:
   - A REST API for Identity Management via HTTP requests.
 - FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** microservice.
 - The underlying [MongoDB](https://www.mongodb.com/) database:
-  - Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions and
+  - Used by the **CEF Context Broker** to hold context data information such as data entities, subscriptions and
     registrations.
   - Used by the **IoT Agent** to hold device information such as device URLs and Keys.
 - A [MySQL](https://www.mysql.com/) database:
@@ -317,15 +350,15 @@ One application, with appropriate roles and permissions has also been created:
 | URL           | `http://localhost:3000`                |
 | RedirectURL   | `http://localhost:3000/login`          |
 
-### Logging In to Keyrock using the REST API - Getting admin token
+### Logging into Keyrock using the REST API - Getting admin token
 
 Enter a username and password to enter the application. The default user has the values `alice-the-admin@test.com`
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
-the other users after their creation just change the proper name and password data in this request:
+the other users after their creation, just change the proper name and password data in this request:
 
 #### :one: Request
 
-```console
+```bash
 http POST http://localhost:3005/v1/auth/tokens \
   name=alice-the-admin@test.com \
   password=test
@@ -333,7 +366,7 @@ http POST http://localhost:3005/v1/auth/tokens \
 
 #### :one: Response
 
-The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
+The response header returns an `X-Subject-Token` which identifies who has logged on the application. This token is
 required in all subsequent requests to gain access
 
 ```bash
@@ -384,16 +417,16 @@ In this section, we explain how to create the corresponding users, making use of
 > **Note** - an eMail server must be configured to send out invites properly, otherwise the invitation may be deleted as
 > spam. For testing purposes, it is easier to update the users table directly: `update user set enabled = 1;`
 
-All the CRUD actions for Users require an `X-Auth-token` header from a previously logged in administrative user to be
+All the CRUD actions for Users require an `X-Auth-Token` header from a previously logged in administrative user to be
 able to read or modify other user accounts. The standard CRUD actions are assigned to the appropriate HTTP verbs (POST,
 GET, PATCH and DELETE) under the `/v1/users` endpoint.
 
 To create a new user, send a POST request to the `/v1/users` endpoint containing the `username`, `email` and `password`
 along with the `X-Auth-Token` header from a previously logged in administrative user (see the previous section). Additional
 users can be added by making repeated POST requests with the proper information following the previous table.
-For example to create additional accounts for Bob, the Application Manager we should execute the following request
+For example to create additional accounts for Bob, the Application Manager, we should execute the following request
 
-> **Note** You can take a look and execute the create-users script to automatically create all the users accounts.
+> **Note** You can take a look and execute the user-organizations script to create automatically all the users accounts.
 
 #### :two: Request
 
@@ -432,7 +465,7 @@ The response contains details about the creation of this account:
 
 ### List all Users
 
-Obtaining a complete list of all users is a super-admin permission requiring the `X-Auth-token` - most users will only
+Obtaining a complete list of all users is a super-admin permission requiring the `X-Auth-Token` - most users will only
 be permitted to return users within their own organization. Listing users can be done by making a GET request to the
 `/v1/users` endpoint
 
@@ -482,38 +515,39 @@ The response contains basic details of all accounts:
 ## Grouping User Accounts under Organizations
 
 For any identity management system of a reasonable size, it is useful to be able to assign roles to groups of users,
-rather than setting them up individually. Since user administration is a time-consuming business, it is also necessary
+rather than setting them up individually. Since users' administration is a time-consuming business, it is also necessary
 to be able to delegate the responsibility of managing these group of users down to other accounts with a lower level of
 access.
 
-Consider our Personal Data management example, there could be a group of users (Application Managers) who can introduce
-new Personal Data into the system as well as modify existing data introduced previously. Another group of users
-(Application Users) who need to access the Personal Data information to produce some report based on them but cannot
-modify them. Another group of users (Data Users) correspond to each of the persons that provide the Personal Data,
-therefore they can access for reading and modifying their only own data. Finally, Another group of users (Others)
-exist that are not related to this application and therefore they cannot access to the Personal Data for neither
-reading nor writing. Rather than give access to each individual account, it would be easier to assign the rights to
-an organization and then add users to these organizations.
+Consider our Personal Data management example, there is a group of users, **Application Managers**, who can introduce
+new Personal Data into the system as well as modify existing data introduced previously. Another group of users,
+**Application Users**, who need to access the Personal Data information to produce some report based on them but cannot
+modify them. Another group of users, **Data Users**, correspond to each of the persons that provide the Personal Data,
+therefore they can access for reading and modifying their only own data. Finally, there is another group of users,
+**Others**, exist that are not related to this application and therefore they cannot access to the Personal Data
+for neither reading nor writing. Rather than give access to each individual account, it would be easier to assign
+the rights to an organization and then add users to these organizations.
 
-Furthermore, Alice, the **Identity Management** administrator does not need to explicitly add additional user
+Furthermore, **Alice**, the **Identity Management administrator** does not need to explicitly add additional user
 accounts to each organization herself - she could delegate that right to an owner within each organization.
-For example Bob the Project Manager would be made the owner of the _Application Managers_ organization and could
-add and remove addition manager accounts to that organization whereas Charlie the Head of _Application Users_
-could be handed an ownership role his organization and add additional application users to that organization.
+For example **Bob**, the **Project Manager**, would be made the owner of the _Application Managers_ organization 
+and could add and remove addition manager accounts to that organization whereas **Charlie** the
+**Head of Application Users** could be handed an ownership role his organization and add additional application
+users to that organization.
 
-Note that Bob does not have the rights to alter the membership list of the _Users_ organization and Charlie
-does not have the rights to alter the membership list of the _Managers_ organization. Furthermore, neither Bob
-nor Charlie would be able to alter the permissions of the application themselves, merely add and remove existing
+Note that **Bob** has no permissions to alter the membership list of the _Users_ organization and **Charlie**
+has no permissions to alter the membership list of the _Managers_ organization. Furthermore, **neither Bob
+nor Charlie** would be able to alter the permissions of the application themselves, merely add and remove existing
 user accounts to the organization they control.
 
-By the execution of this tutorial, alice will be the person in charge of the creation of all organizations for
-management purposes. Therefore, Alice will be automatically assigned to all of these groups.
+By the execution of this tutorial, **Alice** will be the person in charge of the creation of all organizations for
+management purposes. Therefore, **Alice** will be automatically assigned to all of these groups.
 
 ### Create an Organization
 
 The standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
 the `/v1/organizations` endpoint. To create a new organization, send a POST request to the `/v1/organizations`
-endpoint containing the `name` and `description` along with the `X-Auth-token` header from a previously
+endpoint containing the `name` and `description` along with the `X-Auth-Token` header from a previously
 logged-in user.
 
 > **Note** You can take a look and execute the organization-mgmt script to automatically create all organizations
@@ -532,9 +566,8 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-The Organization is created, and the user who created it is automatically assigned as a user. The response returns
-UUID to identify the new organization.
-
+The Organization is created, and the user who created it is automatically assigned as owner. The response returns
+a **Universally Unique Identifier (UUID)**, represented by `id field, to identify the new organization.
 #### :four: Response
 
 ```json
@@ -550,9 +583,9 @@ UUID to identify the new organization.
 
 ### List all Organizations
 
-Obtaining a complete list of all organizations is a super-admin permission requiring the `X-Auth-token` - most users
-will only be permitted to return users within their own organization. Listing users can be done by making a GET request
-to the `/v1/organizations` endpoint.
+Obtaining a complete list of all organizations is a super-admin permission requiring the `X-Auth-Token` - most users
+will only be permitted to return users' information within their own organization. Listing users can be done by
+making a GET request to the `/v1/organizations` endpoint.
 
 #### :five: Request
 
@@ -631,8 +664,8 @@ http  PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organizat
 
 We have to repeat this operation for all the users created previously.
 
-> Note: $MANAGERS corresponds to the organization id of the Managers' organization and $BOB corresponds to the user
-> id of the Bob user. See the users-organizations script for more details
+> Note: **$MANAGERS** corresponds to the organization id of the Managers' organization and **$BOB** corresponds
+> to the user id of the Bob user. See the users-organizations script for more details
 
 #### :six: Response
 
@@ -650,7 +683,7 @@ The response lists the user's current role within the organization (i.e. `member
 
 ### List Users within an Organization
 
-Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing
+Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-Token` Listing
 users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
 
 #### :seven: Request
@@ -730,12 +763,12 @@ Therefore, applications are therefore a conceptual bucket holding who can do wha
 To create a new application via the REST API, send a POST request to the `/v1/application` endpoint containing
 details of the application such as `name` and `description`, along with OAuth information fields such as the
 `url` of the webservice to be protected, and `redirect_uri` (where a user will be challenged for their credentials).
-The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-token`
+The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-Token`
 from a previously logged-in user will automatically be granted a provider role over the application.
 
 #### :eight: Request
 
-In the example below, Alice (who holds `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
+In the example below, Alice (who holds `X-Auth-Token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
 application which accepts three different grant types
 
 ```bash
@@ -840,8 +873,8 @@ The response returns the details of the newly created permission.
 ```
 
 We need to repeat this procedure for the rest of resources from which we want to control the access. In our example
-we wanted to control the access to OrionLD regarding the creation of entities, creation of several entities. Take a
-look in the following table to see the different permissions to be created:
+we wanted to control the access to the CEF Context Broker instance regarding the creation of entities, creation of 
+several entities. Take a look in the following table to see the different permissions to be created:
 
 | Perm. | Verb  | Resource                 | Description                                        | Organizations   |
 | ----- | ----- | ------------------------ | -------------------------------------------------- | --------------- |
@@ -855,7 +888,7 @@ We have to mention that the permission #1 include the permission #2, and the per
 we have the upload the Personal Data associated to a person (e.g. Ole's Personal Data has the entityID
 `urn:ngsi-ld:Person:person001`).
 
-> Note: We should manage all the permissions related to the OrionLD API but for this document we will focus on
+> Note: We should manage all the permissions related to the CEF Context Broker API but for this document we will focus on
 > the previous resources. The script `mgmt-users-organizations` will create all the corresponding permissions for 
 > this example application.
 
@@ -937,7 +970,7 @@ CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DE
 `/v1/applications/{{application-id}}/roles` endpoint.
 
 To create a new role via the REST API, send a POST request to the `/applications/{{application-id}}/roles` endpoint
-containing the `name` of the new role, with the `X-Auth-token` header from a previously logged-in user.
+containing the `name` of the new role, with the `X-Auth-Token` header from a previously logged-in user.
 
 #### :eleven: Request
 
@@ -1268,9 +1301,9 @@ X-Auth-Token:"$TOKEN"
 
 We have to do the same with the other users and roles how was described in the previous table.
 
-## Securing Orion-LD
+## Securing CEF Context Broker
 
-### PEP Proxy - No Access to Orion-LD without Access Token
+### PEP Proxy - Access to CEF Context Broker without Access Token
 
 Secured Access can be ensured by requiring all requests to the secured service are made indirectly via a PEP Proxy (in
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
@@ -1374,10 +1407,10 @@ to keep the information of the oAuth token.
 export TOKEN={{access_token}}
 ```
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Alice user
+### PEP Proxy - Access CEF Context Broker with an Authorization token - Alice user
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
-is permitted, and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
+is permitted, and the service behind the PEP Proxy, in this case the CEF Context Broker, will return the data as
 expected.
 
 #### :two::one: Request
@@ -1406,9 +1439,10 @@ User access-token not authorized
 
 ```
 
-That is the expected response due to Alice is not included in any of the permissions to access the OrionLD.
+That is the expected response due to Alice is not included in any of the permissions to access the CEF Context Broker 
+instance.
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Managers (e.g. Bob)
+### PEP Proxy - Access CEF Context Broker with an Authorization token - Managers (e.g. Bob)
 
 #### :two::two: Request
 
@@ -1503,7 +1537,7 @@ date: Thu, 25 Feb 2021 22:52:11 GMT
 
 ```
 
-Let's see if we can get the new updated data from OrionLD.
+Let's see if we can get the new updated data from the CEF Context Broker instance.
 
 #### :two::six: Request
 
@@ -1611,7 +1645,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
 }
 ```
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Users (e.g. Charlie)
+### PEP Proxy - Access CEF Context Broker with an Authorization token - Users (e.g. Charlie)
 
 For reminding, this group includes users that can access to all the data but cannot neither create new data nor modify
 existing one.
@@ -1793,7 +1827,7 @@ HTTP/1.1 404 Not Found
 
 Therefore, we can confirm that the Personal Data was not created into the CEF Context Broker.
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Data owners (e.g. Ole)
+### PEP Proxy - Access CEF Context Broker with an Authorization token - Data owners (e.g. Ole)
 
 The users under this organization only should have permissions to access and modify their own data.
 
@@ -2017,7 +2051,9 @@ User access-token not authorized
 
 We can see that the system responses with unauthorized access before not found data.
 
-### PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)
+### PEP Proxy - Access CEF Context Broker with an Authorization token - Other users (e.g. Eve)
+
+Let’s see now the different operations launched by an external users.
 
 #### :four::two: Request
 
@@ -2030,6 +2066,9 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Authorization:"Basic $BASE64" \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
+
+Once that we obtain the security token, let’s see what operations we can do with it. Let’s start with obtain
+the Personal Data of the Person001.
 
 #### :four::three: Request
 
@@ -2303,7 +2342,7 @@ authentication with eID is included in the log in the panel:
 
 When clicking in the option Sign with eID the user will be redirected to the eIDAS authentication gateway to login
 using his/her national identifier and defined in the `node_host` attribute in the configuration file or with the
-corresponding environment variable `IDM_EIDAS_NODE_HOST`. For instance, the spanish gateway has the following
+corresponding environment variable `IDM_EIDAS_NODE_HOST`. For instance, the Spanish gateway has the following
 interface:
 
 ![Spanish_eIDAS_gateway 1](img/Spanish_eIDAS_gateway.png)
