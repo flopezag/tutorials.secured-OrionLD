@@ -750,7 +750,7 @@ In summary, permissions are all the possible actions that can be done to resourc
 roles are groups of actions which can be done by a type of user of that application. The relationship between the
 objects can be seen below.
 
-![Roles and Permissions of an Application](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
+![Roles and Permissions of an Application](img/Roles_and_Permissions.png)
 
 ### Create an Application
 
@@ -768,8 +768,7 @@ from a previously logged-in user will automatically be granted a provider role o
 
 #### :eight: Request
 
-In the example below, Alice (who holds `X-Auth-Token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
-application which accepts three different grant types
+In the example below, Alice is creating a new application which accepts three different grant types
 
 ```bash
 printf '{
@@ -791,7 +790,8 @@ printf '{
 
 #### :eight: Response
 
-The response includes a Client ID and Secret which can be used to secure the application.
+The response includes a **Client ID (_id_)** and **Client Secret (_secret_)**  which can be used to secure the
+application.
 
 ```json
 {
@@ -812,7 +812,7 @@ The response includes a Client ID and Secret which can be used to secure the app
 }
 ```
 
-Copy the Application Client ID to be used for all other application requests - in the case above the ID is
+Copy the Application Client ID (_id_)to be used for all other application requests - in the case above the ID is
 `3fc4e897-a9b5-4b2e-bcce-98849c628972` 
 
 ```bash
@@ -836,8 +836,8 @@ incorrectly or in the wrong layer - complex access control rules should be pushe
 or moved into the business logic of the application - they should not be dealt with within **Keyrock**.
 
 To create a new permission via the REST API, send a POST request to the `/applications/{{application-id}}/permissions`
-endpoint containing the `action`and `resource` along with the `X-Auth-Token` header from a previously logged-in
-user (Alice).
+endpoint containing the `action` and `resource` along with the `X-Auth-Token` header from a previously logged-in
+user (**Alice**).
 
 #### :nine: Request
 
@@ -889,13 +889,13 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 `urn:ngsi-ld:Person:person001`).
 
 > Note: We should manage all the permissions related to the CEF Context Broker API but for this document we will focus on
-> the previous resources. The script `mgmt-users-organizations` will create all the corresponding permissions for 
+> the previous resources. The script `users-organizations` will create all the corresponding permissions for 
 > this example application.
 
 ### List Permissions
 
 Listing the permissions with an application can be done by making a GET request to the
-`/v1/applications/{{application-id}}/permissions/` endpoint
+`/v1/applications/{{application-id}}/permissions` endpoint
 
 #### :one::zero: Request
 
@@ -1009,11 +1009,11 @@ path and identifying themselves using an `X-Auth-Token` in the header.
 
 The following table summarize the relationship of each *Role* with the different *Permissions*
 
-| *Role*         | *Permissions*                                                                 |
-| -------------- | ----------------------------------------------------------------------------- |
-| ROLE_MANAGER   | #1(GET:/entities/*), #3(POST:/entityOperations/upsert), #4(PATCH:/entities/*) |
-| ROLE_USER      | #1(GET:/entities/*)                                                           |
-| ROLE_PERSON(n) | #2(GET:/entities/{{entityID}}), #5(PATCH:/entities/{{entityID}})              |
+| *Role*         | *Permissions*                                                                  |
+| -------------- | ------------------------------------------------------------------------------ |
+| ROLE_MANAGER   | #1 (GET:/entities/*), #3(POST:/entityOperations/upsert), #4(PATCH:/entities/*) |
+| ROLE_USER      | #1 (GET:/entities/*)                                                           |
+| ROLE_PERSON(n) | #2 (GET:/entities/{{entityID}}), #5(PATCH:/entities/{{entityID}})              |
 | OTHERS         | &empty;                                                                              |
 
 Due to the roles are associated to the application, the Role _Others_ does not have any permission assigned in the
@@ -1039,7 +1039,7 @@ The response returns the permissions for the role:
 }
 ```
 
-> Note: Take a look into the applications-roles script to see how we associated the
+> Note: Take a look into the applications-management script to see how we associated the
 > different permissions with the corresponding Roles.
 
 ### List Permissions of a Role
@@ -1149,8 +1149,8 @@ parameters in PEP Proxy associated to this value.
 | PEP Proxy Password | pep_proxy.password        | PEP_PASSWORD            |
 | Application Id     | pep_proxy.oauth_client_id | PEP_PROXY_APP_ID        |
 
-Finally, there will be only one credential associated to an application for a PEP Proxy, therefore a subsequent request
-will produce a 409 Conflict with the message `Pep Proxy already registered`.
+Finally, there is only one credential associated to an application for a PEP Proxy, therefore a subsequent request
+produces a **_409 Conflict_** with the message `Pep Proxy already registered`.
 
 #### :one::five: Request
 
@@ -1210,8 +1210,8 @@ granted.
 The application can grant roles to either Users or Organizations - the latter should always be preferred, as it allows
 the owners of the organization to add new users - delegating the responsibility for user maintenance to a wider group.
 
-For example, imagine the Personal Data Application Management gains another user data. Alice has already created
-role called _Users_ and assigned it to the Application Users' team. Charlie is the owner of the Application Users'
+For example, imagine the Personal Data Application Management gains another user data. **Alice** has already created
+role called _Users_ and assigned it to the Application Users' team. **Charlie** is the owner of the Application Users'
 team organization, and is able to add the new `user1` user to his team. `user1` can then inherit all the rights of
 his team without further input from Alice.
 
@@ -1224,7 +1224,7 @@ by Alice herself - no delegation is possible.
 
 A role cannot be granted to an organization unless the role has already been defined within the application itself. A
 Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
-making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<organzation-id>` in the URL path
+making a PUT request as shown, including the `<application-id>`, `<role-id>` and `<organization-id>` in the URL path
 and identifying themselves using an `X-Auth-Token` in the header.
 
 For your convenience, we show in the following table the corresponding environment variables that we will use to grant
@@ -1272,7 +1272,7 @@ Using the REST API, the role can be granted making a PUT request as shown, inclu
 `<role-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 In our case, the table below shows us the correspondent values.
 
-| Application Id | Role Id         | Person Id       |
+| Application Id | Role Id         | User Id       |
 | -------------- | --------------- | --------------- |
 | $APP           | $ROLE_PERSON001 | $OLE            |
 | $APP           | $ROLE_PERSON002 | $TORSTEN        |
@@ -1286,6 +1286,8 @@ http PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERS
 Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
+
+The response will confirm the relationship of all the actors.
 
 #### :one::eight: Response
 
@@ -1344,18 +1346,18 @@ Auth-token not found in request header
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
 endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows, for example 
-to log-in as Alice the Admin:
+to log-in as **Alice**, the Admin:
 
-- The Client ID and Client Secret created in the IDM for your application are combined with a single colon `(:)`.
-  This means that the Client ID itself cannot contain a colon.
-- The resulting string is encoded using a variant of Base64. For your convenience you can use the following
+- The **Client ID** and **Client Secret** created in the Keyrock - Identity Management for our application are
+  combined with a single colon `(:)`. This means that the Client ID itself cannot contain a colon.
+- The resulting string is encoded using a variant of **Base64**. For your convenience you can use the following
   command line instruction:
   
   ```bash
   echo -n "<Client ID>:<Client Secret>" | base64
   ```
   
-- The authorization method and a space (e.g. "Basic ") is then prepended to the encoded string.
+- The authorization method and a space (**"Basic "**) is then prepended to the encoded string.
 
 #### :two::zero: Request
 
@@ -1385,7 +1387,9 @@ http --form POST 'http://localhost:3005/oauth2/token' \
 
 #### :two::zero: Response
 
-The response returns an access code to identify the user:
+The response returns an access token to identify the user (_**access_token**_), the refresh token (_**refresh_token**_)
+used to refresh the expired access token, and the expiration time in seconds (**_expired_in_**). Additionally,
+we obtain the scope of this access token (**_scope_**) as well as the type of token (**_token_type_**):
 
 ```json
 {
@@ -1421,6 +1425,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
+And the response to this request will be the following:
+
 #### :two::one: Response
 
 ```bash
@@ -1439,10 +1445,18 @@ User access-token not authorized
 
 ```
 
-That is the expected response due to Alice is not included in any of the permissions to access the CEF Context Broker 
+That is the expected response due to **Alice** is not included in any of the permissions to access the CEF Context Broker 
 instance.
 
 ### PEP Proxy - Access CEF Context Broker with an Authorization token - Managers (e.g. Bob)
+
+It is the moment to really test the proper access to our data. The process is to select a user from the **Managers**
+group, in this case Bob, and check the different operations that we can do with it. Remind that Managers users are
+the ones that have full control over the application. They can create new personal data, update the information
+related to one personal data or get all the personal data stored in the system.
+
+The first step will be to obtain the appropriate security token, to do so, we need to send the credentials of the
+Bob user to the Keyrock – Identity Management instance to recover the proper **_access_token_**.
 
 #### :two::two: Request
 
@@ -1456,6 +1470,8 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
+The next step is to check if we can get the personal data of the `person001` using the previous token.
+
 #### :two::three: Request
 
 ```bash
@@ -1463,6 +1479,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
+
+And the response that we obtain is the following:
 
 #### :two::three: Response
 
@@ -1483,6 +1501,9 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 }
 ```
 
+As it was expected, we can get the personal information associated to that user. Now, we try to obtain the personal
+information associated to the person002:
+
 #### :two::four: Request
 
 ```bash
@@ -1490,6 +1511,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
+
+Again, we can obtain the personal data associated to the person002 how it was expected.
 
 #### :two::four: Response
 
@@ -1510,9 +1533,10 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 }
 ```
 
-#### :two::five: Request
+The next step consists of seeing if we can change the personal data associated to a user, in this case `person002`
+with this token. In this case, we try to change the telephone number of this user.
 
-Now trying to modify some attribute.
+#### :two::five: Request
 
 ```bash
 printf '{
@@ -1522,6 +1546,8 @@ printf '{
  Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
+
+The response is the confirmation of the proper execution of that modification with **204 No Content** message.
 
 #### :two::five: Response
 
@@ -1566,7 +1592,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 }
 ```
 
-Finally, check if we can upload a new Personal Data information:
+Finally, check if we can upload a new Personal Data information associated to the `person010`:
 
 #### :two::seven: Request
 
@@ -1601,6 +1627,8 @@ printf '[
   Link:'<https://schema.lab.fiware.org/ld/context>' \
   Authorization:"Bearer $TOKEN"
 ```
+
+The response is the confirmation of the proper execution of that modification with **204 No Content** message.
 
 #### :two::seven: Response
 
@@ -1645,10 +1673,18 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
 }
 ```
 
+Therefore, we have tested the operations that were granted to the organizations, **Managers**, in which the user
+**Bob** is registered.
+
 ### PEP Proxy - Access CEF Context Broker with an Authorization token - Users (e.g. Charlie)
 
 For reminding, this group includes users that can access to all the data but cannot neither create new data nor modify
 existing one.
+
+For reminding, the Users group includes users that can access to all the data but cannot neither create new data nor
+modify existing one. The first step will be to obtain the appropriate security token, associated the user **Charlie**.
+We need to send the credentials of the Charlie user to the Keyrock – Identity Management instance to recover the
+proper `access_token.
 
 #### :two::nine: Request
 
@@ -1662,6 +1698,8 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
+The next step is to check if we can get the personal data of the `person001` using the previous token.
+
 #### :three::zero: Request
 
 ```bash
@@ -1669,6 +1707,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
+
+And the response that we obtain is the following:
 
 #### :three::zero: Response
 
@@ -1689,6 +1729,9 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 }
 ```
 
+As it was expected, we can get the personal information associated to that user. Now, we try to obtain the personal
+information associated to the `person002:
+
 #### :three::one: Request
 
 ```bash
@@ -1696,6 +1739,8 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
+
+Again, how it was expected, we can obtain the personal data associated to the `person002.
 
 #### :three::one: Response
 
@@ -1716,9 +1761,13 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 }
 ```
 
+The next step consists of seeing if we can change the personal data associated to a user, in this case `person002`
+with this token. In this case, we try to change again the telephone number of this user.
+
 #### :three::two: Request
 
-Now trying to modify some attribute.
+The next step consists of seeing if we can change the personal data associated to a user, in this case `person002`
+with this token. In this case, we try to change again the telephone number of this user.
 
 ```bash
 printf '{
@@ -1728,6 +1777,9 @@ printf '{
  Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
+
+How we can see the system response with a **401 Unauthorized** message due to the User access token that we used
+has no permissions to update personal information from the system.
 
 #### :three::two: Response
 
@@ -1747,8 +1799,7 @@ User access-token not authorized
 
 ```
 
-We could see that the user is unable to update the data associated to the Person002 (**401 Unauthorized**). Finally, check
-if we can upload a new Personal Data information:
+Finally, check if we can upload a new Personal Data information:
 
 #### :three::three: Request
 
@@ -1784,6 +1835,9 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
+We can see that the system response with a **401 Unauthorized** message again due to the User access token that we
+used has no permissions to create new personal data information from the system.
+
 #### :three::three: Response
 
 ```bash
@@ -1802,8 +1856,7 @@ User access-token not authorized
 
 ```
 
-We also see that this user cannot upload new Personal Data information into CEF Context Broker. Now, we check 
-if we can access to the new data:
+Now, we check if we can access to the new data, just to confirm that the previous operation has working properly:
 
 #### :three::four: Request
 
@@ -1812,6 +1865,9 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person011?
  Link:'<https://schema.lab.fiware.org/ld/context>' \
  Authorization:"Bearer $TOKEN"
 ```
+
+As it was expected, the system cannot find any personal data associated to the user `person011` (**404 Not Found**).
+Therefore, we can confirm that the Personal Data was not created into the CEF Context Broker.
 
 #### :three::four: Response
 
@@ -1844,7 +1900,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 ```
 
 Once that we obtain the security token, let’s see what operations we can do with it. Let’s start with obtain 
-the Personal Data of the Person001.
+the Personal Data of the `person001.
 
 #### :three::six: Request
 
@@ -1874,7 +1930,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 ```
 
 We see that the person can access to his own information stored in the CEF Context Broker. Let’s see if he can 
-access to the information related to another person (Person002).
+access to the information related to another person (`person002`).
 
 #### :three::seven: Request
 
@@ -1903,7 +1959,7 @@ User access-token not authorized
 ```
 
 As it is expected, the system response with unauthorized access to the personal data corresponding to the person
-person002. Now trying to modify some own data (e.g. his telephone number).
+`person002`. Now trying to modify some own data (e.g. his telephone number).
 
 #### :three::eight: Request
 
@@ -1932,7 +1988,7 @@ date: Fri, 26 Feb 2021 06:34:22 GMT
 ```
 
 We see that the person could modify his personal data in the CEF Context Broker properly. Let’s see if this person
-can change the corresponding information (e.g. his telephone number) from another person, in this case person002.
+can change the corresponding information (e.g. his telephone number) from another person, in this case `person002.
 
 #### :three::nine: Request
 
@@ -2018,8 +2074,8 @@ User access-token not authorized
 
 ```
 
-As expected response, the user cannot create new personal data inside the CEF Context Broker. Now, we check if we 
-can access to the new data:
+As expected response, the user cannot create new personal data inside the CEF Context Broker because he has no
+permissions to do this operation. Now, we check if we can access to the new data:
 
 #### :four::one: Request
 
@@ -2053,7 +2109,10 @@ We can see that the system responses with unauthorized access before not found d
 
 ### PEP Proxy - Access CEF Context Broker with an Authorization token - Other users (e.g. Eve)
 
-Let’s see now the different operations launched by an external users.
+Let’s see now the different operations launched by an external users. Remind that **Eve** is a user registered in
+the system, but she has no permissions to manage the personal data stored in the **CEF Context Broker**. Therefore, we
+need to send the credentials of the Eve user to the Keyrock – Identity Management instance to recover the proper
+`access_tken`.
 
 #### :four::two: Request
 
@@ -2067,8 +2126,8 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
  Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 ```
 
-Once that we obtain the security token, let’s see what operations we can do with it. Let’s start with obtain
-the Personal Data of the Person001.
+Once that we obtain the access token, let’s see what operations we can do with it. Let’s start with obtain
+the Personal Data of the **_person001_**.
 
 #### :four::three: Request
 
@@ -2096,6 +2155,9 @@ User access-token not authorized
 
 ```
 
+As it was expected, we have no permissions, **401 Unauthorized**, to get personal information. Now, we try to
+access the personal data associated to the user `person002.
+
 #### :four::four: Request
 
 ```bash
@@ -2122,9 +2184,10 @@ User access-token not authorized
 
 ```
 
-#### :four::five: Request
+As it was expected, we have no permissions, **401 Unauthorized**, to get personal information. Now trying to modify
+some attributes.
 
-Now trying to modify some attribute.
+#### :four::five: Request
 
 ```bash
 printf '{
@@ -2153,9 +2216,10 @@ User access-token not authorized
 
 ```
 
-#### :four::six: Request
+We see that the request produces again a **401 Unauthorized** message as it was expected. Finally, check if we can
+upload a new Personal Data information:
 
-Finally, check if we can upload a new Personal Data information:
+#### :four::six: Request
 
 ```bash
 printf '[
@@ -2207,9 +2271,9 @@ User access-token not authorized
 
 ```
 
-#### :four::seven: Request
+And the response is again a 401 Unauthorized. Now, we check if we can access to the new data:
 
-Now, we check if we can access to the new data:
+#### :four::seven: Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?options=keyValues \
@@ -2234,6 +2298,8 @@ X-Powered-By: Express
 User access-token not authorized
 
 ```
+
+We can see that the response is **401 Unauthorized**, how it was expected.
 
 ## Integration with eIDAS
 

@@ -1,0 +1,53 @@
+@startuml
+' UML Diagram to represent the definition of Roles and Permissions related to the GDPR management
+' with CEF Context Broker (https://github.com/flopezag/tutorials.secured-OrionLD) using
+' PlanUML (http://www.plantuml.com).
+
+skinparam object {
+  BackgroundColor #f5f5f5
+  ArrowColor #4c4c4c
+  BorderColor #ff7059
+}
+
+
+
+object Application
+
+Application : id
+Application : name
+Application : description
+
+object Organization
+
+Organization : id
+Organization : name
+Organization : description
+
+object User
+
+User : id
+User : username
+User : email
+User : password
+
+object Permission
+
+Permission : id
+Permission : name
+Permission : description
+
+object Role
+
+Role : id
+Role : name
+Role : description
+
+
+Organization "1" o-- "*" Role : has >
+User "0 " --o " *" Application : uses >
+Application "0" o-- "*" Organization : uses <
+Application "1" o-- "*" Role : offers >
+User "1" o-- "*" Role : has >
+Role "1" o-- "*" Permission : has >
+User "0..*" - "0..*" Organization
+@enduml
