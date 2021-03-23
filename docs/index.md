@@ -260,7 +260,7 @@ sessions, and wget-like downloads with an expressive and intuitive syntax. `http
 operating system. Follow the instructions described [here](https://httpie.io/docs#installation).
 
 <!-- ### jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> -->
-### ![jq](img/jq1.png) jq
+### ![jq](img/jq2.png) jq
 
 **jq** is a program to slice, filter and map the content of JSON data. This is a useful tool to extract certain
 information automatically from the HTTP responses. `jq` is written in C with no dependencies and can be use
