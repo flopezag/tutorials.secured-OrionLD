@@ -1,10 +1,11 @@
-site_name: "Step-by-Step <br/>for <span style='color:#d6604d'>Secure Orion-LD</span>"
+site_name: "Step-by-Step <br/>for <span style='color:#d6604d'>GDPR CEF Context Broker</span>"
 site_url: https://fiware-secure-orion-ld.readthedocs.io
 repo_url: https://github.com/flopezag/tutorials.secured-OrionLD
-site_description: GDPR management of Context Broker
+site_description: GDPR management of CEF Context Broker
 docs_dir: docs
 site_dir: html
 use_directory_urls: false
+google_analytics: ['UA-192876922-1', 'fiware-secure-orion-ld.readthedocs.io']
 theme: readthedocs
 extra_css: ["https://www.fiware.org/style/fiware_readthedocs.css",
             "https://www.fiware.org/style/fiware_readthedocs_neutral.css",
