@@ -212,7 +212,10 @@ Click on the image above to see an introductory video.
 
 ## Prerequisites
 
-### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+<!-- ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> -->
+### ![Docker](img/docker.ico) Docker and Docker Compose
+
+![Docker](img/docker.ico)
 
 To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
