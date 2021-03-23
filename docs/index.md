@@ -15,57 +15,99 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
 ## Contents
 
 <details>
-<summary><strong>Details</strong></summary>
+  <summary><strong>Details</strong></summary>
 
-- [Securing Microservices with an Identity Management and a PEP Proxy](#securing-microservices-with-an-identity-management-and-a-pep-proxy)
-  - [Introduction to the solution](#introduction-to-the-solution)
-  - [Standard Concepts of Identity Management](#standard-concepts-of-identity-management)
-  - [Video: Introduction to Keyrock](#arrow_forward-video-introduction-to-keyrock)
-  - [Video: Introduction to Wilma PEP Proxy](#arrow_forward-video-introduction-to-wilma-pep-proxy)
-- [Prerequisites](#prerequisites)
-  - [Docker and Docker Compose](#docker-and-docker-compose-)
-  - [Cygwin (for Windows)](#cygwin-for-windows-)
-  - [Postman](#postman-)
-  - [http](#http-)
-  - [jq](#jq-)
-- [Architecture](#architecture)
-  - [Start Up](#start-up)
-  - [Dramatis Personae](#dramatis-personae)
-  - [Logging into Keyrock using the REST API - Getting admin token](#logging-into-keyrock-using-the-rest-api---getting-admin-token)
-- [Users management](#users-management)
-  - [Creating Users](#creating-users)
-  - [List all Users](#list-all-users)
-- [Grouping User Accounts under Organizations](#grouping-user-accounts-under-organizations)
-  - [Create an Organization](#create-an-organization)
-  - [List all Organizations](#list-all-organizations)
-  - [Assign users to organizations](#assign-users-to-organizations)
-  - [List Users within an Organization](#list-users-within-an-organization)
-- [Managing Roles and Permissions](#managing-roles-and-permissions)
-  - [Create an Application](#create-an-application)
-  - [Create a Permission](#create-a-permission)
-  - [List Permissions](#list-permissions)
-  - [Create a Role](#create-a-role)
-  - [Assigning Permissions to each Role](#assigning-permissions-to-each-role)
-  - [List Permissions of a Role](#list-permissions-of-a-role)
-- [PEP Proxy](#pep-proxy)
-  - [Create a PEP Proxy](#create-a-pep-proxy)
-  - [Read PEP Proxy details](#read-pep-proxy-details)
-- [Authorizing Application Access](#authorizing-application-access)
-  - [Grant a Role to an Application](#grant-a-role-to-an-application)
-  - [Grant a Role to a User](#grant-a-role-to-a-user)
-- [Securing CEF Context Broker](#securing-cef-context-broker)
-  - [PEP Proxy - Access to CEF Context Broker without Access Token](#pep-proxy---access-to-cef-context-broker-without-access-token)
-  - [Keyrock - User obtains Access Token](#keyrock---user-obtains-access-token)
-  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Alice user](#pep-proxy---access-cef-context-broker-with-an-authorization-token---alice-user)
-  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Managers (e.g. Bob)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---managers-eg-bob)
-  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Users (e.g. Charlie)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---users-eg-charlie)
-  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Data owners (e.g. Ole)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---data-owners-eg-ole)
-  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Other users (e.g. Eve)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---other-users-eg-eve)
-- [Integration with eIDAS](#integration-with-eidas)
-  - [Architecture of the integration](#architecture-of-the-integration)
-  - [IdM server configuration](#idm-server-configuration)
-  - [Registering an application as an eIDAS Service Provider](#registering-an-application-as-an-eidas-service-provider)
-  - [User authentication](#user-authentication)
+  <ul>
+    <li>
+      <a href="#securing-microservices-with-an-identity-management-and-a-pep-proxy">Securing Microservices with an Identity Management and a PEP Proxy</a>
+      <ul>
+        <li><a href="#introduction-to-the-solution">Introduction to the solution</a></li>
+        <li><a href="#standard-concepts-of-identity-management">Standard Concepts of Identity Management</a></li>
+        <li><a href="#arrow_forward-video-introduction-to-keyrock">Video: Introduction to Keyrock</a></li>
+        <li><a href="#arrow_forward-video-introduction-to-wilma-pep-proxy">Video: Introduction to Wilma PEP Proxy</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#prerequisites">Prerequisites</a>
+      <ul>
+        <li><a href="#docker-and-docker-compose-">Docker and Docker Compose</a></li>
+        <li><a href="#cygwin-for-windows-">Cygwin (for Windows)</a></li>
+        <li><a href="#postman-">Postman</a></li>
+        <li><a href="#http-">http</a></li>
+        <li><a href="#jq-">jq</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#architecture">Architecture</a>
+      <ul>
+        <li><a href="#start-up">Start Up</a></li>
+        <li><a href="#dramatis-personae">Dramatis Personae</a></li>
+        <li><a href="#logging-into-keyrock-using-the-rest-api---getting-admin-token">Logging into Keyrock using the REST API - Getting admin token</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#users-management">Users management</a>
+      <ul>
+        <li><a href="#creating-users">Creating Users</a></li>
+        <li><a href="#list-all-users">List all Users</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#grouping-user-accounts-under-organizations">Grouping User Accounts under Organizations</a>
+      <ul>
+        <li><a href="#create-an-organization">Create an Organization</a></li>
+        <li><a href="#list-all-organizations">List all Organizations</a></li>
+        <li><a href="#assign-users-to-organizations">Assign users to organizations</a></li>
+        <li><a href="#list-users-within-an-organization">List Users within an Organization</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#managing-roles-and-permissions">Managing Roles and Permissions</a>
+      <ul>
+        <li><a href="#create-an-application">Create an Application</a></li>
+        <li><a href="#create-a-permission">Create a Permission</a></li>
+        <li><a href="#list-permissions">List Permissions</a></li>
+        <li><a href="#create-a-role">Create a Role</a></li>
+        <li><a href="#assigning-permissions-to-each-role">Assigning Permissions to each Role</a></li>
+        <li><a href="#list-permissions-of-a-role">List Permissions of a Role</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#pep-proxy">PEP Proxy</a>
+      <ul>
+        <li><a href="#create-a-pep-proxy">Create a PEP Proxy</a></li>
+        <li><a href="#read-pep-proxy-details">Read PEP Proxy details</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#authorizing-application-access">Authorizing Application Access</a>
+      <ul>
+        <li><a href="#grant-a-role-to-an-application">Grant a Role to an Application</a></li>
+        <li><a href="#grant-a-role-to-a-user">Grant a Role to a User</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#securing-cef-context-broker">Securing CEF Context Broker</a>
+      <ul>
+        <li><a href="#pep-proxy---access-to-cef-context-broker-without-access-token">PEP Proxy - Access to CEF Context Broker without Access Token</a></li>
+        <li><a href="#keyrock---user-obtains-access-token">Keyrock - User obtains Access Token</a></li>
+        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---alice-user">PEP Proxy - Access CEF Context Broker with an Authorization token - Alice user</a></li>
+        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---managers-eg-bob">PEP Proxy - Access CEF Context Broker with an Authorization token - Managers (e.g. Bob)</a></li>
+        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---users-eg-charlie">PEP Proxy - Access CEF Context Broker with an Authorization token - Users (e.g. Charlie)</a></li>
+        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---data-owners-eg-ole">PEP Proxy - Access CEF Context Broker with an Authorization token - Data owners (e.g. Ole)</a></li>
+        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---other-users-eg-eve">PEP Proxy - Access CEF Context Broker with an Authorization token - Other users (e.g. Eve)</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#integration-with-eidas">Integration with eIDAS</a>
+      <ul>
+        <li><a href="#architecture-of-the-integration">Architecture of the integration</a></li>
+        <li><a href="#idm-server-configuration">IdM server configuration</a></li>
+        <li><a href="#registering-an-application-as-an-eidas-service-provider">Registering an application as an eIDAS Service Provider</a></li>
+        <li><a href="#user-authentication">User authentication</a></li>
+      </ul>
+    </li>
+  </ul>
 
 </details>
 
@@ -311,24 +353,84 @@ and writing only:
   <summary>
    For more details <b>(Click to expand)</b>
   </summary>
-
-   | Name       | eMail                          | Password |
-   | ---------- | ------------------------------ | -------- |
-   | Alice      | `alice-the-admin@test.com`     | `test`   |
-   | Bob        | `bob-the-appmanager@test.com`  | `test`   |
-   | Charlie    | `charlie-the-appuser@test.com` | `test`   |
-
-   | Name    | eMail                 | Password |
-   | ------- | --------------------- | -------- |
-   | Eve     | `eve@example.com`     | `test`   |
-   | Mallory | `mallory@example.com` | `test`   |
-
-   | Name    | eMail                     | Password |
-   | ------- | ------------------------- | -------- |
-   | Ole     | `ole-lahm@xyz.foo`        | `test`   |
-   | Torsten | `torsten-kuehl@xyz.foo`   | `test`   |
-   | Frank   | `frank-king@xyz.foo`      | `test`   |
-   | Lothar  | `lothar-lammich@xyz.foo`  | `test`   |
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>eMail</th>
+          <th>Password</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Alice</td>
+          <td><code>alice-the-admin@test.com</code></td>
+          <td><code>test</code></td>
+        </tr>
+        <tr>
+          <td>Bob</td>
+          <td><code>bob-the-appmanager@test.com</code></td>
+          <td><code>test</code></td>
+        </tr>
+        <tr>
+          <td>Charlie</td>
+          <td><code>charlie-the-appuser@test.com</code></td>
+          <td><code>test</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>eMail</th>
+          <th>Password</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Eve</td>
+          <td><code>eve@example.com</code></td>
+          <td><code>test</code></td>
+        </tr>
+        <tr>
+          <td>Mallory</td>
+          <td><code>mallory@example.com</code></td>
+          <td><code>test</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>eMail</th>
+          <th>Password</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ole</td>
+          <td><code>ole-lahm@xyz.foo</code></td>
+          <td><code>test</code></td>
+        </tr>
+        <tr>
+          <td>Torsten</td>
+          <td><code>torsten-kuehl@xyz.foo</code></td>
+          <td><code>test</code></td>
+        </tr>
+        <tr>
+          <td>Frank</td>
+          <td><code>frank-king@xyz.foo</code></td>
+          <td><code>test</code></td>
+        </tr>
+        <tr>
+          <td>Lothar</td>
+          <td><code>lothar-lammich@xyz.foo</code></td>
+          <td><code>test</code></td>
+        </tr>
+      </tbody>
+    </table>
 
 </details>
 
@@ -356,7 +458,7 @@ Enter a username and password to enter the application. The default user has the
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
 the other users after their creation, just change the proper name and password data in this request:
 
-#### :one: Request
+#### 1 Request
 
 ```bash
 http POST http://localhost:3005/v1/auth/tokens \
@@ -364,7 +466,7 @@ http POST http://localhost:3005/v1/auth/tokens \
   password=test
 ```
 
-#### :one: Response
+#### 1 Response
 
 The response header returns an `X-Subject-Token` which identifies who has logged on the application. This token is
 required in all subsequent requests to gain access
@@ -428,7 +530,7 @@ For example to create additional accounts for Bob, the Application Manager, we s
 
 > **Note** You can take a look and execute the user-organizations script to create automatically all the users accounts.
 
-#### :two: Request
+#### 2 Request
 
 ```bash
 echo '{
@@ -441,7 +543,7 @@ echo '{
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :two: Response
+#### 2 Response
 
 The response contains details about the creation of this account:
 
@@ -469,14 +571,14 @@ Obtaining a complete list of all users is a super-admin permission requiring the
 be permitted to return users within their own organization. Listing users can be done by making a GET request to the
 `/v1/users` endpoint
 
-#### :three: Request
+#### 3 Request
 
 ```bash
 http GET 'http://localhost:3005/v1/users' \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :three: Response
+#### 3 Response
 
 The response contains basic details of all accounts:
 
@@ -553,7 +655,7 @@ logged-in user.
 > **Note** You can take a look and execute the organization-mgmt script to automatically create all organizations
 > and assign the users to each organization.
 
-#### :four: Request
+#### 4 Request
 
 ```bash
 printf '{
@@ -568,7 +670,7 @@ printf '{
 
 The Organization is created, and the user who created it is automatically assigned as owner. The response returns
 a **Universally Unique Identifier (UUID)**, represented by `id field, to identify the new organization.
-#### :four: Response
+#### 4 Response
 
 ```json
 {
@@ -587,14 +689,14 @@ Obtaining a complete list of all organizations is a super-admin permission requi
 will only be permitted to return users' information within their own organization. Listing users can be done by
 making a GET request to the `/v1/organizations` endpoint.
 
-#### :five: Request
+#### 5 Request
 
 ```bash
 http GET http://localhost:3005/v1/organizations \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :five: Response
+#### 5 Response
 
 The response returns the details of the visible organizations.
 
@@ -654,7 +756,7 @@ add and remove other members and owners.
 To add a user as a member of an organization, an owner must make a PUT request as shown, including the
 `<organization-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 
-#### :six: Request
+#### 6 Request
 
 ```bash
 http  PUT "http://localhost:3005/v1/organizations/$MANAGERS/users/$BOB/organization_roles/member" \
@@ -667,7 +769,7 @@ We have to repeat this operation for all the users created previously.
 > Note: **$MANAGERS** corresponds to the organization id of the Managers' organization and **$BOB** corresponds
 > to the user id of the Bob user. See the users-organizations script for more details
 
-#### :six: Response
+#### 6 Response
 
 The response lists the user's current role within the organization (i.e. `member`)
 
@@ -686,14 +788,14 @@ The response lists the user's current role within the organization (i.e. `member
 Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-Token` Listing
 users can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
 
-#### :seven: Request
+#### 7 Request
 
 ```bash
 http GET "http://localhost:3005/v1/organizations/$OTHERS/users" \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :seven: Response
+#### 7 Response
 
 The response contains the users list.
 
@@ -766,7 +868,7 @@ details of the application such as `name` and `description`, along with OAuth in
 The `grant_types` are chosen from the available list of OAuth2 grant flows. The headers include the `X-Auth-Token`
 from a previously logged-in user will automatically be granted a provider role over the application.
 
-#### :eight: Request
+#### 8 Request
 
 In the example below, Alice is creating a new application which accepts three different grant types
 
@@ -788,7 +890,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :eight: Response
+#### 8 Response
 
 The response includes a **Client ID (_id_)** and **Client Secret (_secret_)**  which can be used to secure the
 application.
@@ -839,7 +941,7 @@ To create a new permission via the REST API, send a POST request to the `/applic
 endpoint containing the `action` and `resource` along with the `X-Auth-Token` header from a previously logged-in
 user (**Alice**).
 
-#### :nine: Request
+#### 9 Request
 
 ```bash
 printf '{
@@ -854,7 +956,7 @@ printf '{
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :nine: Response
+#### 9 Response
 
 The response returns the details of the newly created permission.
 
@@ -897,14 +999,14 @@ we have the upload the Personal Data associated to a person (e.g. Ole's Personal
 Listing the permissions with an application can be done by making a GET request to the
 `/v1/applications/{{application-id}}/permissions` endpoint
 
-#### :one::zero: Request
+#### 10 Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/permissions" \
  X-Auth-Token:"$TOKEN"
 ```
 
-#### :one::zero: Response
+#### 10 Response
 
 The complete list of permissions includes any custom permission previously created plus all the standard permissions
 which are available by default
@@ -1047,14 +1149,14 @@ The response returns the permissions for the role:
 A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
 `/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint.
 
-#### :one::three: Request
+#### 13 Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/roles/$ROLE_MANAGER/permissions" \
   X-Auth-Token:"$TOKEN"
 ```
 
-#### :one::three: Response
+#### 13 Response
 
 ```json
 {
@@ -1092,14 +1194,14 @@ http GET "http://localhost:3005/v1/applications/$APP/roles/$ROLE_MANAGER/permiss
 
 In case of the Roles associated to the Person001, the request would be:
 
-#### :one::four: Request
+#### 14 Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/roles/$ROLE_PERSON001/permissions" \
   X-Auth-Token:"$TOKEN"
 ```
 
-#### :one::four: Response
+#### 14 Response
 
 ```json
 {
@@ -1152,7 +1254,7 @@ parameters in PEP Proxy associated to this value.
 Finally, there is only one credential associated to an application for a PEP Proxy, therefore a subsequent request
 produces a **_409 Conflict_** with the message `Pep Proxy already registered`.
 
-#### :one::five: Request
+#### 15 Request
 
 ```bash
 http POST "http://localhost:3005/v1/applications/$APP/pep_proxies" \
@@ -1160,7 +1262,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-#### :one::five: Response
+#### 15 Response
 
 ```json
 {
@@ -1177,7 +1279,7 @@ Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` en
 associated PEP Proxy Account. The `X-Auth-Token` must be supplied in the headers. It is important to see that if you
 want to obtain the `oauth_client_id`, you need to request this information with the API.
 
-#### :one::six: Request
+#### 16 Request
 
 ```bash
 http GET "http://localhost:3005/v1/applications/$APP/pep_proxies" \
@@ -1185,7 +1287,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-#### :one::six: Response
+#### 16 Response
 
 ```json
 {
@@ -1238,7 +1340,7 @@ the roles to the organizations inside the corresponding Personal Data Applicatio
 The Data Users, how we saw in the previous section, has concrete roles to access concrete information, therefore, they
 are not associated to an organization and will be managed as grant a role to a user.
 
-#### :one::seven: Request
+#### 17 Request
 
 This example adds the role to all members of the organization:
 
@@ -1249,7 +1351,7 @@ Content-Type:application/json \
 X-Auth-Token:"$TOKEN"
 ```
 
-#### :one::seven: Response
+#### 17 Response
 
 The response lists the role assignment as shown:
 
@@ -1279,7 +1381,7 @@ In our case, the table below shows us the correspondent values.
 | $APP           | $ROLE_PERSON003 | $FRANK          |
 | $APP           | $ROLE_PERSON004 | $LOTHAR         |
 
-#### :one::eight: Request
+#### 18 Request
 
 ```bash
 http PUT "http://localhost:3005/v1/applications/$APP/users/$OLE/roles/$ROLE_PERSON001" \
@@ -1289,7 +1391,7 @@ X-Auth-Token:"$TOKEN"
 
 The response will confirm the relationship of all the actors.
 
-#### :one::eight: Response
+#### 18 Response
 
 ```json
 {
@@ -1311,7 +1413,7 @@ Secured Access can be ensured by requiring all requests to the secured service a
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
 present a valid token results in a denial of access.
 
-#### :one::nine: Request
+#### 19 Request
 
 If a request to the PEP Proxy is made without any access token as shown:
 
@@ -1321,7 +1423,7 @@ http GET 'http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001
  Content-Type:'application/json'
 ```
 
-#### :one::nine: Response
+#### 19 Response
 
 The response is a **401 Unauthorized** error code, with the following explanation:
 
@@ -1359,7 +1461,7 @@ to log-in as **Alice**, the Admin:
   
 - The authorization method and a space (**"Basic "**) is then prepended to the encoded string.
 
-#### :two::zero: Request
+#### 20 Request
 
 For example to log-in as Alice the Admin:
 
@@ -1385,7 +1487,7 @@ http --form POST 'http://localhost:3005/oauth2/token' \
 > Content-Type:'application/x-www-form-urlencoded' | jq -r .access_token)
 > ```
 
-#### :two::zero: Response
+#### 20 Response
 
 The response returns an access token to identify the user (_**access_token**_), the refresh token (_**refresh_token**_)
 used to refresh the expired access token, and the expiration time in seconds (**_expired_in_**). Additionally,
@@ -1417,7 +1519,7 @@ The standard `Authorization: Bearer` header can also be used to identity the use
 is permitted, and the service behind the PEP Proxy, in this case the CEF Context Broker, will return the data as
 expected.
 
-#### :two::one: Request
+#### 21 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -1427,7 +1529,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 And the response to this request will be the following:
 
-#### :two::one: Response
+#### 21 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1458,7 +1560,7 @@ related to one personal data or get all the personal data stored in the system.
 The first step will be to obtain the appropriate security token, to do so, we need to send the credentials of the
 Bob user to the Keyrock – Identity Management instance to recover the proper **_access_token_**.
 
-#### :two::two: Request
+#### 22 Request
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1472,7 +1574,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 
 The next step is to check if we can get the personal data of the `person001` using the previous token.
 
-#### :two::three: Request
+#### 23 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -1482,7 +1584,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 And the response that we obtain is the following:
 
-#### :two::three: Response
+#### 23 Response
 
 ```json
 {
@@ -1504,7 +1606,7 @@ And the response that we obtain is the following:
 As it was expected, we can get the personal information associated to that user. Now, we try to obtain the personal
 information associated to the person002:
 
-#### :two::four: Request
+#### 24 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -1514,7 +1616,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 
 Again, we can obtain the personal data associated to the person002 how it was expected.
 
-#### :two::four: Response
+#### 24 Response
 
 ```json
 {
@@ -1536,7 +1638,7 @@ Again, we can obtain the personal data associated to the person002 how it was ex
 The next step consists of seeing if we can change the personal data associated to a user, in this case `person002`
 with this token. In this case, we try to change the telephone number of this user.
 
-#### :two::five: Request
+#### 25 Request
 
 ```bash
 printf '{
@@ -1549,7 +1651,7 @@ printf '{
 
 The response is the confirmation of the proper execution of that modification with **204 No Content** message.
 
-#### :two::five: Response
+#### 25 Response
 
 ```bash
 HTTP/1.1 204 No Content
@@ -1565,7 +1667,7 @@ date: Thu, 25 Feb 2021 22:52:11 GMT
 
 Let's see if we can get the new updated data from the CEF Context Broker instance.
 
-#### :two::six: Request
+#### 26 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -1573,7 +1675,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :two::six: Response
+#### 26 Response
 
 ```json
 {
@@ -1594,7 +1696,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 
 Finally, check if we can upload a new Personal Data information associated to the `person010`:
 
-#### :two::seven: Request
+#### 27 Request
 
 ```bash
 printf '[
@@ -1630,7 +1732,7 @@ printf '[
 
 The response is the confirmation of the proper execution of that modification with **204 No Content** message.
 
-#### :two::seven: Response
+#### 27 Response
 
 ```bash
 HTTP/1.1 204 No Content
@@ -1646,7 +1748,7 @@ date: Mon, 22 Feb 2021 14:44:40 GMT
 
 Now, we check if we can access to the new data:
 
-#### :two::eight: Request
+#### 28 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?options=keyValues \
@@ -1654,7 +1756,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :two::eight: Response
+#### 28 Response
 
 ```json
 {
@@ -1686,7 +1788,7 @@ modify existing one. The first step will be to obtain the appropriate security t
 We need to send the credentials of the Charlie user to the Keyrock – Identity Management instance to recover the
 proper `access_token.
 
-#### :two::nine: Request
+#### 29 Request
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1700,7 +1802,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 
 The next step is to check if we can get the personal data of the `person001` using the previous token.
 
-#### :three::zero: Request
+#### 30 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -1710,7 +1812,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 
 And the response that we obtain is the following:
 
-#### :three::zero: Response
+#### 30 Response
 
 ```json
 {
@@ -1732,7 +1834,7 @@ And the response that we obtain is the following:
 As it was expected, we can get the personal information associated to that user. Now, we try to obtain the personal
 information associated to the `person002:
 
-#### :three::one: Request
+#### 31 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -1742,7 +1844,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
 
 Again, how it was expected, we can obtain the personal data associated to the `person002.
 
-#### :three::one: Response
+#### 31 Response
 
 ```json
 {
@@ -1764,7 +1866,7 @@ Again, how it was expected, we can obtain the personal data associated to the `p
 The next step consists of seeing if we can change the personal data associated to a user, in this case `person002`
 with this token. In this case, we try to change again the telephone number of this user.
 
-#### :three::two: Request
+#### 32 Request
 
 The next step consists of seeing if we can change the personal data associated to a user, in this case `person002`
 with this token. In this case, we try to change again the telephone number of this user.
@@ -1781,7 +1883,7 @@ printf '{
 How we can see the system response with a **401 Unauthorized** message due to the User access token that we used
 has no permissions to update personal information from the system.
 
-#### :three::two: Response
+#### 32 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1801,7 +1903,7 @@ User access-token not authorized
 
 Finally, check if we can upload a new Personal Data information:
 
-#### :three::three: Request
+#### 33 Request
 
 ```bash
 printf '[
@@ -1838,7 +1940,7 @@ printf '[
 We can see that the system response with a **401 Unauthorized** message again due to the User access token that we
 used has no permissions to create new personal data information from the system.
 
-#### :three::three: Response
+#### 33 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1858,7 +1960,7 @@ User access-token not authorized
 
 Now, we check if we can access to the new data, just to confirm that the previous operation has working properly:
 
-#### :three::four: Request
+#### 34 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person011?options=keyValues \
@@ -1869,7 +1971,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person011?
 As it was expected, the system cannot find any personal data associated to the user `person011` (**404 Not Found**).
 Therefore, we can confirm that the Personal Data was not created into the CEF Context Broker.
 
-#### :three::four: Response
+#### 34 Response
 
 ```bash
 HTTP/1.1 404 Not Found
@@ -1887,7 +1989,7 @@ Therefore, we can confirm that the Personal Data was not created into the CEF Co
 
 The users under this organization only should have permissions to access and modify their own data.
 
-#### :three::five: Request
+#### 35 Request
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -1902,7 +2004,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 Once that we obtain the security token, let’s see what operations we can do with it. Let’s start with obtain 
 the Personal Data of the `person001.
 
-#### :three::six: Request
+#### 36 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -1910,7 +2012,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :three::six: Response
+#### 36 Response
 
 ```json
 {
@@ -1932,7 +2034,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
 We see that the person can access to his own information stored in the CEF Context Broker. Let’s see if he can 
 access to the information related to another person (`person002`).
 
-#### :three::seven: Request
+#### 37 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -1940,7 +2042,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :three::seven: Response
+#### 37 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -1961,7 +2063,7 @@ User access-token not authorized
 As it is expected, the system response with unauthorized access to the personal data corresponding to the person
 `person002`. Now trying to modify some own data (e.g. his telephone number).
 
-#### :three::eight: Request
+#### 38 Request
 
 ```bash
 printf '{
@@ -1972,7 +2074,7 @@ printf '{
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :three::eight: Response
+#### 38 Response
 
 ```bash
 HTTP/1.1 204 No Content
@@ -1990,7 +2092,7 @@ date: Fri, 26 Feb 2021 06:34:22 GMT
 We see that the person could modify his personal data in the CEF Context Broker properly. Let’s see if this person
 can change the corresponding information (e.g. his telephone number) from another person, in this case `person002.
 
-#### :three::nine: Request
+#### 39 Request
 
 ```bash
 printf '{
@@ -2001,7 +2103,7 @@ printf '{
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :three::nine: Response
+#### 39 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2022,7 +2124,7 @@ User access-token not authorized
 We see that the user is unauthorized to modify the data corresponding to other persons in the system, as it is 
 expected. Finally, check if we can upload a new Personal Data information:
 
-#### :four::zero: Request
+#### 40 Request
 
 ```bash
 printf '[
@@ -2056,7 +2158,7 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::zero: Response
+#### 40 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2077,7 +2179,7 @@ User access-token not authorized
 As expected response, the user cannot create new personal data inside the CEF Context Broker because he has no
 permissions to do this operation. Now, we check if we can access to the new data:
 
-#### :four::one: Request
+#### 41 Request
 
 Now, we check if we can access to the new data:
 
@@ -2087,7 +2189,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person012?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::one: Response
+#### 41 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2114,7 +2216,7 @@ the system, but she has no permissions to manage the personal data stored in the
 need to send the credentials of the Eve user to the Keyrock – Identity Management instance to recover the proper
 `access_tken`.
 
-#### :four::two: Request
+#### 42 Request
 
 ```bash
 export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
@@ -2129,7 +2231,7 @@ export TOKEN=$(http --form POST 'http://localhost:3005/oauth2/token' \
 Once that we obtain the access token, let’s see what operations we can do with it. Let’s start with obtain
 the Personal Data of the **_person001_**.
 
-#### :four::three: Request
+#### 43 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?options=keyValues \
@@ -2137,7 +2239,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person001?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::three: Response
+#### 43 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2158,7 +2260,7 @@ User access-token not authorized
 As it was expected, we have no permissions, **401 Unauthorized**, to get personal information. Now, we try to
 access the personal data associated to the user `person002.
 
-#### :four::four: Request
+#### 44 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?options=keyValues \
@@ -2166,7 +2268,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person002?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::four: Response
+#### 44 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2187,7 +2289,7 @@ User access-token not authorized
 As it was expected, we have no permissions, **401 Unauthorized**, to get personal information. Now trying to modify
 some attributes.
 
-#### :four::five: Request
+#### 45 Request
 
 ```bash
 printf '{
@@ -2198,7 +2300,7 @@ printf '{
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::five: Response
+#### 45 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2219,7 +2321,7 @@ User access-token not authorized
 We see that the request produces again a **401 Unauthorized** message as it was expected. Finally, check if we can
 upload a new Personal Data information:
 
-#### :four::six: Request
+#### 46 Request
 
 ```bash
 printf '[
@@ -2253,7 +2355,7 @@ printf '[
   Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::six: Response
+#### 46 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
@@ -2273,7 +2375,7 @@ User access-token not authorized
 
 And the response is again a 401 Unauthorized. Now, we check if we can access to the new data:
 
-#### :four::seven: Request
+#### 47 Request
 
 ```bash
 http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?options=keyValues \
@@ -2281,7 +2383,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person014?
  Authorization:"Bearer $TOKEN"
 ```
 
-#### :four::seven: Response
+#### 47 Response
 
 ```bash
 HTTP/1.1 401 Unauthorized
