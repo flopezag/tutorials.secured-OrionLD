@@ -30,11 +30,11 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
     <li>
       <a href="#prerequisites">Prerequisites</a>
       <ul>
-        <li><a href="#-docker-and-docker-compose">Docker and Docker Compose</a></li>
-        <li><a href="#-cygwin-for-windows">Cygwin (for Windows)</a></li>
-        <li><a href="#-postman">Postman</a></li>
-        <li><a href="#-http">http</a></li>
-        <li><a href="#-jq">jq</a></li>
+        <li><a href="#docker-and-docker-compose">Docker and Docker Compose</a></li>
+        <li><a href="#cygwin-for-windows">Cygwin (for Windows)</a></li>
+        <li><a href="#postman">Postman</a></li>
+        <li><a href="#http">http</a></li>
+        <li><a href="#jq">jq</a></li>
       </ul>
     </li>
     <li>
@@ -212,17 +212,18 @@ Click on the image above to see an introductory video.
 
 ## Prerequisites
 
-### ![Docker](img/docker.ico) Docker and Docker Compose
+### Docker and Docker Compose
 
-To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
-technology which allows to different components isolated into their respective environments.
+![Docker](img/docker.ico) **Docker** is an open platform for developing, shipping, and running applications.
+**Docker Compose** is a tool for defining and running multi-container Docker applications. To keep things simple
+both components will be run using [Docker](https://www.docker.com). **Docker** is a container technology which
+allows to different components isolated into their respective environments.
 
 - To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
 - To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
 - To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
 
-**Docker Compose** is a tool for defining and running multi-container Docker applications. A
-[YAML file](https://raw.githubusercontent.com/flopezag/tutorials.secured-OrionLD/master/docker-compose.yml) is used
+A [YAML file](https://raw.githubusercontent.com/flopezag/tutorials.secured-OrionLD/master/docker-compose.yml) is used
 configure the required services for the application. This means all container services can be brought up in a single
 command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux users
 will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
@@ -237,27 +238,27 @@ docker version
 Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
 necessary.
 
-### ![Cygwin for Windows](img/cygwin.ico) Cygwin for Windows
+### Cygwin for Windows
 
-We will start up our services using a simple bash script. Windows users should download
-**[Cygwin](http://www.cygwin.com)** to provide a command-line functionality similar to a Linux
-distribution on Windows.
+![Cygwin for Windows](img/cygwin.ico) **Cygwin** is a Linux-like environment for Microsoft Windows. We will start
+up our services using a simple bash script. Windows users should download **[Cygwin](http://www.cygwin.com)**
+to provide a command-line functionality similar to a Linux distribution on Windows.
 
-### ![Postman](img/postman1.png) Postman
+### Postman
 
-**Postman** is a collaboration platform for API development. Postman's features simplify each step of building an API and
+![Postman](img/postman1.png) **Postman** is a collaboration platform for API development. Postman's features simplify each step of building an API and
 streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions
 [here](https://www.postman.com/downloads).
 
-### ![http](img/http.png) http
+### http
 
-**http** is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent
+![http](img/http.png) **http** is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent
 sessions, and wget-like downloads with an expressive and intuitive syntax. `http` can be installed on each
 operating system. Follow the instructions described [here](https://httpie.io/docs#installation).
 
-### ![jq](img/jq2.png) jq
+### jq
 
-**jq** is a program to slice, filter and map the content of JSON data. This is a useful tool to extract certain
+![jq](img/jq2.png) **jq** is a program to slice, filter and map the content of JSON data. This is a useful tool to extract certain
 information automatically from the HTTP responses. `jq` is written in C with no dependencies and can be use
 on nearly any platform. Prebuilt binaries are available for Linux, OS X and Windows. For more details how to install
 the tool you can go [here](https://stedolan.github.io/jq/download).
