@@ -42,7 +42,7 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
       <ul>
         <li><a href="#start-up">Start Up</a></li>
         <li><a href="#dramatis-personae">Dramatis Personae</a></li>
-        <li><a href="#logging-into-keyrock-using-the-rest-api---getting-admin-token">Logging into Keyrock using the REST API - Getting admin token</a></li>
+        <li><a href="#logging-into-keyrock-using-the-rest-api-getting-admin-token">Logging into Keyrock using the REST API: Getting admin token</a></li>
       </ul>
     </li>
     <li>
