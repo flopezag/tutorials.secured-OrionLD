@@ -30,11 +30,11 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
     <li>
       <a href="#prerequisites">Prerequisites</a>
       <ul>
-        <li><a href="#-docker-and-docker-compose">Docker and Docker Compose</a></li>
-        <li><a href="#cygwin-for-windows-">Cygwin (for Windows)</a></li>
-        <li><a href="#postman-">Postman</a></li>
-        <li><a href="#http-">http</a></li>
-        <li><a href="#jq-">jq</a></li>
+        <li><a href="#docker-and-docker-compose">Docker and Docker Compose</a></li>
+        <li><a href="#cygwin-for-windows">Cygwin (for Windows)</a></li>
+        <li><a href="#postman">Postman</a></li>
+        <li><a href="#http">http</a></li>
+        <li><a href="#jq">jq</a></li>
       </ul>
     </li>
     <li>
@@ -212,10 +212,8 @@ Click on the image above to see an introductory video.
 
 ## Prerequisites
 
-<!-- ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> -->
+<!-- ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 ### ![Docker](img/docker.ico) Docker and Docker Compose
-
-![Docker](img/docker.ico)
 
 To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
@@ -240,25 +238,29 @@ docker version
 Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
 necessary.
 
-### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+<!-- ### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> -->
+### ![Cygwin for Windows](img/cygwin.ico) Cygwin for Windows
 
 We will start up our services using a simple bash script. Windows users should download
 **[Cygwin](http://www.cygwin.com)** to provide a command-line functionality similar to a Linux
 distribution on Windows.
 
-### Postman <img src="https://www.getpostman.com/favicon-32x32.png" align="left"  height="32" width="32" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+<!-- ### Postman <img src="https://www.getpostman.com/favicon-32x32.png" align="left"  height="32" width="32" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> -->
+### ![Postman](img/postman1.png) Postman
 
 **Postman** is a collaboration platform for API development. Postman's features simplify each step of building an API and
 streamline collaboration, therefore you can create better APIs—faster. To install Postman, follow the instructions
 [here](https://www.postman.com/downloads).
 
-### http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+<!-- ### http <img src="https://httpie.io/static/img/favicon-32x32.png" align="left" height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> -->
+### ![http](img/http.png) http
 
 **http** is a command line HTTP client, similar to curl or wget, with JSON support, syntax highlighting, persistent
 sessions, and wget-like downloads with an expressive and intuitive syntax. `http` can be installed on each
 operating system. Follow the instructions described [here](https://httpie.io/docs#installation).
 
-### jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+<!-- ### jq <img src="https://stedolan.github.io/jq/jq.png" align="left" width="35" height="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> -->
+### ![jq](img/jq1.png) jq
 
 **jq** is a program to slice, filter and map the content of JSON data. This is a useful tool to extract certain
 information automatically from the HTTP responses. `jq` is written in C with no dependencies and can be use
