@@ -89,13 +89,13 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
     <li>
       <a href="#securing-cef-context-broker">Securing CEF Context Broker</a>
       <ul>
-        <li><a href="#pep-proxy---access-to-cef-context-broker-without-access-token">PEP Proxy - Access to CEF Context Broker without Access Token</a></li>
-        <li><a href="#keyrock---user-obtains-access-token">Keyrock - User obtains Access Token</a></li>
-        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---alice-user">PEP Proxy - Access CEF Context Broker with an Authorization token - Alice user</a></li>
-        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---managers-eg-bob">PEP Proxy - Access CEF Context Broker with an Authorization token - Managers (e.g. Bob)</a></li>
-        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---users-eg-charlie">PEP Proxy - Access CEF Context Broker with an Authorization token - Users (e.g. Charlie)</a></li>
-        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---data-owners-eg-ole">PEP Proxy - Access CEF Context Broker with an Authorization token - Data owners (e.g. Ole)</a></li>
-        <li><a href="#pep-proxy---access-cef-context-broker-with-an-authorization-token---other-users-eg-eve">PEP Proxy - Access CEF Context Broker with an Authorization token - Other users (e.g. Eve)</a></li>
+        <li><a href="#access-to-cef-context-broker-without-access-token">Access to CEF Context Broker without Access Token</a></li>
+        <li><a href="#how-to-obtain-access-token">How to obtain Access Token</a></li>
+        <li><a href="#access-cef-context-broker-with-an-authorization-token-alice-user">Access CEF Context Broker with an Authorization token: Alice user</a></li>
+        <li><a href="#access-cef-context-broker-with-an-authorization-token-managers-eg-bob">Access CEF Context Broker with an Authorization token: Managers (e.g. Bob)</a></li>
+        <li><a href="#access-cef-context-broker-with-an-authorization-token-users-eg-charlie">Access CEF Context Broker with an Authorization token: Users (e.g. Charlie)</a></li>
+        <li><a href="#access-cef-context-broker-with-an-authorization-token-data-owners-eg-ole">Access CEF Context Broker with an Authorization token: Data owners (e.g. Ole)</a></li>
+        <li><a href="#access-cef-context-broker-with-an-authorization-token-other-users-eg-eve">Access CEF Context Broker with an Authorization token: Other users (e.g. Eve)</a></li>
       </ul>
     </li>
     <li>
@@ -1407,7 +1407,7 @@ We have to do the same with the other users and roles how was described in the p
 
 ## Securing CEF Context Broker
 
-### PEP Proxy - Access to CEF Context Broker without Access Token
+### Access to CEF Context Broker without Access Token
 
 Secured Access can be ensured by requiring all requests to the secured service are made indirectly via a PEP Proxy (in
 this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure to
@@ -1444,7 +1444,7 @@ Auth-token not found in request header
 
 ```
 
-### Keyrock - User obtains Access Token
+### How to obtain Access Token
 
 To log in to the application using the user-credentials flow send a POST request to **Keyrock** using the `oauth2/token`
 endpoint with the `grant_type=password`. Additionally, the authorization filed is constructed as follows, for example 
@@ -1513,7 +1513,7 @@ to keep the information of the oAuth token.
 export TOKEN={{access_token}}
 ```
 
-### PEP Proxy - Access CEF Context Broker with an Authorization token - Alice user
+### Access CEF Context Broker with an Authorization token: Alice user
 
 The standard `Authorization: Bearer` header can also be used to identity the user, the request from an authorized user
 is permitted, and the service behind the PEP Proxy, in this case the CEF Context Broker, will return the data as
@@ -1550,7 +1550,7 @@ User access-token not authorized
 That is the expected response due to **Alice** is not included in any of the permissions to access the CEF Context Broker 
 instance.
 
-### PEP Proxy - Access CEF Context Broker with an Authorization token - Managers (e.g. Bob)
+### Access CEF Context Broker with an Authorization token: Managers (e.g. Bob)
 
 It is the moment to really test the proper access to our data. The process is to select a user from the **Managers**
 group, in this case Bob, and check the different operations that we can do with it. Remind that Managers users are
@@ -1778,7 +1778,7 @@ http GET http://localhost:1027/ngsi-ld/v1/entities/urn:ngsi-ld:Person:person010?
 Therefore, we have tested the operations that were granted to the organizations, **Managers**, in which the user
 **Bob** is registered.
 
-### PEP Proxy - Access CEF Context Broker with an Authorization token - Users (e.g. Charlie)
+### Access CEF Context Broker with an Authorization token: Users (e.g. Charlie)
 
 For reminding, this group includes users that can access to all the data but cannot neither create new data nor modify
 existing one.
@@ -1985,7 +1985,7 @@ HTTP/1.1 404 Not Found
 
 Therefore, we can confirm that the Personal Data was not created into the CEF Context Broker.
 
-### PEP Proxy - Access CEF Context Broker with an Authorization token - Data owners (e.g. Ole)
+### Access CEF Context Broker with an Authorization token: Data owners (e.g. Ole)
 
 The users under this organization only should have permissions to access and modify their own data.
 
@@ -2209,7 +2209,7 @@ User access-token not authorized
 
 We can see that the system responses with unauthorized access before not found data.
 
-### PEP Proxy - Access CEF Context Broker with an Authorization token - Other users (e.g. Eve)
+### Access CEF Context Broker with an Authorization token: Other users (e.g. Eve)
 
 Let’s see now the different operations launched by an external users. Remind that **Eve** is a user registered in
 the system, but she has no permissions to manage the personal data stored in the **CEF Context Broker**. Therefore, we
