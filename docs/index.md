@@ -23,8 +23,8 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
       <ul>
         <li><a href="#introduction-to-the-solution">Introduction to the solution</a></li>
         <li><a href="#standard-concepts-of-identity-management">Standard Concepts of Identity Management</a></li>
-        <li><a href="#arrow_forward-video-introduction-to-keyrock">Video: Introduction to Keyrock</a></li>
-        <li><a href="#arrow_forward-video-introduction-to-wilma-pep-proxy">Video: Introduction to Wilma PEP Proxy</a></li>
+        <li><a href="#video-introduction-to-keyrock">Video: Introduction to Keyrock</a></li>
+        <li><a href="#video-introduction-to-wilma-pep-proxy">Video: Introduction to Wilma PEP Proxy</a></li>
       </ul>
     </li>
     <li>
@@ -196,14 +196,14 @@ tutorial:
 
 ![Definition of entities](img/Definition_of_entities.png)
 
-### :arrow_forward: Video: Introduction to Keyrock
+### Video: Introduction to Keyrock
 
 Click on the image above to watch an introductory video.
 
 [![Introduction to Keyrock - Identity Management](img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
 
 
-### :arrow_forward: Video: Introduction to Wilma PEP Proxy
+### Video: Introduction to Wilma PEP Proxy
 
 Click on the image above to see an introductory video.
 

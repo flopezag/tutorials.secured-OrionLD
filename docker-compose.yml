@@ -11,10 +11,10 @@
 # and so on, purely so that a single docker-compose file can be read as an example to build on,
 # not use directly.
 #
-# When deploying to a production environment, please looking at the SmartSDK Recipes
-# in order to scale up to a proper architecture:
+# When deploying to a production environment, please refer to the Helm Repository
+# for FIWARE Components in order to scale up to a proper architecture:
 #
-# see: https://smartsdk.github.io/smartsdk-recipes/
+# see: https://github.com/FIWARE/helm-charts/
 #
 version: "3.5"
 services:
@@ -27,7 +27,7 @@ services:
       - mongo-db
     networks:
       default:
-        ipv4_address: 182.18.1.9
+        ipv4_address: ${ORION_LD_IP}
 
     ports:
       - "${ORION_LD_PORT}:${ORION_LD_PORT}" # localhost:1026
@@ -37,12 +37,12 @@ services:
 
   # Keyrock is an Identity Management Front-End
   idm:
-    image: ging/fiware-idm:${KEYROCK_VERSION}  # fiware/idm:${KEYROCK_VERSION}
+    image: fiware/idm:${KEYROCK_VERSION}
     container_name: fiware-idm
     hostname: idm
     networks:
       default:
-        ipv4_address: 182.18.1.5
+        ipv4_address: ${KEYROCK_IP}
     depends_on:
       - mysql-db
     ports:
@@ -75,7 +75,7 @@ services:
     hostname: orion-pep-proxy
     networks:
       default:
-        ipv4_address: 182.18.1.10
+        ipv4_address: ${ORION_PROXY_IP}
     depends_on:
       - idm
     deploy:
@@ -133,10 +133,10 @@ services:
       - "${MYSQL_DB_PORT}:${MYSQL_DB_PORT}" # localhost:3306
     networks:
       default:
-        ipv4_address: 182.18.1.6
+        ipv4_address: ${MYSQL_DB_IP}
     environment:
       - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/my_secret_data"
-      - "MYSQL_ROOT_HOST=182.18.1.5" # Allow Keyrock to access this database
+      - "MYSQL_ROOT_HOST=${KEYROCK_IP}" # Allow Keyrock to access this database
     volumes:
       - mysql-db:/var/lib/mysql
     secrets:
@@ -147,7 +147,7 @@ networks:
   default:
     ipam:
       config:
-        - subnet: 182.18.1.0/24
+        - subnet: ${SUBNET}
 
 volumes:
   mysql-db: ~
