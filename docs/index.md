@@ -452,7 +452,7 @@ One application, with appropriate roles and permissions has also been created:
 | URL           | `http://localhost:3000`                |
 | RedirectURL   | `http://localhost:3000/login`          |
 
-### Logging into Keyrock using the REST API - Getting admin token
+### Logging into Keyrock using the REST API: Getting admin token
 
 Enter a username and password to enter the application. The default user has the values `alice-the-admin@test.com`
 and `test`. The following example logs in using the Admin User, if you want to obtain the corresponding tokens for
