@@ -31,7 +31,7 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
 - [Architecture](#architecture)
   - [Start Up](#start-up)
   - [Dramatis Personae](#dramatis-personae)
-  - [Logging In to Keyrock using the REST API - Getting admin token](#logging-in-to-keyrock-using-the-rest-api---getting-admin-token)
+  - [Logging into Keyrock using the REST API - Getting admin token](#logging-into-keyrock-using-the-rest-api---getting-admin-token)
 - [Users management](#users-management)
   - [Creating Users](#creating-users)
   - [List all Users](#list-all-users)
@@ -53,14 +53,14 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
 - [Authorizing Application Access](#authorizing-application-access)
   - [Grant a Role to an Application](#grant-a-role-to-an-application)
   - [Grant a Role to a User](#grant-a-role-to-a-user)
-- [Securing Orion-LD](#securing-orion-ld)
-  - [PEP Proxy - No Access to Orion-LD without Access Token](#pep-proxy---no-access-to-orion-ld-without-access-token)
+- [Securing CEF Context Broker](#securing-cef-context-broker)
+  - [PEP Proxy - Access to CEF Context Broker without Access Token](#pep-proxy---access-to-cef-context-broker-without-access-token)
   - [Keyrock - User obtains Access Token](#keyrock---user-obtains-access-token)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Alice user](#pep-proxy---accessing-orion-ld-with-an-authorization---alice-user)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Managers (e.g. Bob)](#pep-proxy---accessing-orion-ld-with-an-authorization---managers-eg-bob)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Users (e.g. Charlie)](#pep-proxy---accessing-orion-ld-with-an-authorization---users-eg-charlie)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Data owners (e.g. Ole)](#pep-proxy---accessing-orion-ld-with-an-authorization---data-owners-eg-ole)
-  - [PEP Proxy - Accessing Orion-LD with an Authorization - Other users (e.g. Eve)](#pep-proxy---accessing-orion-ld-with-an-authorization---other-users-eg-eve)
+  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Alice user](#pep-proxy---access-cef-context-broker-with-an-authorization-token---alice-user)
+  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Managers (e.g. Bob)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---managers-eg-bob)
+  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Users (e.g. Charlie)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---users-eg-charlie)
+  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Data owners (e.g. Ole)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---data-owners-eg-ole)
+  - [PEP Proxy - Access CEF Context Broker with an Authorization token - Other users (e.g. Eve)](#pep-proxy---access-cef-context-broker-with-an-authorization-token---other-users-eg-eve)
 - [Integration with eIDAS](#integration-with-eidas)
   - [Architecture of the integration](#architecture-of-the-integration)
   - [IdM server configuration](#idm-server-configuration)
@@ -2340,7 +2340,7 @@ be sent to the Service. Finally, the Service requests the Access Token to allow 
 Once the service has the Access Token, it can use it as always to authorize requests to other services.
 Furthermore, as the user is created in the IdM, permissions and roles could be managed in the same way
 as a regular local user, how it was explained in the previous sections of this documentation.
-Next figures show the architecture and exchanged data flows between the entities.
+Next figures show the architecture and data flows between the entities.
 
 ![eIDAS integration in FIWARE IAM model](img/eIDAS_integration_in_FIWARE_IdM.png)
 
@@ -2351,7 +2351,7 @@ Next figures show the architecture and exchanged data flows between the entities
 For configuring IdM to allow users to login with their eID, the connection to an eIDAS node has to be
 enabled in the configuration file:
 
-```console
+```bash
 config.eidas = {
     enabled: true,
     gateway_host: 'localhost',
@@ -2373,10 +2373,10 @@ IDM_EIDAS_METADATA_LIFETIME=31536000                 # Lifetime of metadata of a
 
 The meaning of the attributes is the following:
 
-- *enabled*: set to true enables the connection to the eIDAS node.
-- *gateway_host*: indicates the DNS of the IdM service.
-- *node_host*: indicates the endpoint where the eIDAS node server is running.
-- *metadata_expiration*: expiration time for the service certificates.
+- ***enabled***: set to true enables the connection to the eIDAS node.
+- ***gateway_host***: indicates the DNS of the IdM service.
+- ***node_host***: indicates the endpoint where the eIDAS node server is running.
+- ***metadata_expiration***: expiration time for the service certificates.
 
 ### Registering an application as an eIDAS Service Provider
 
@@ -2413,7 +2413,7 @@ interface:
 
 ![Spanish_eIDAS_gateway 1](img/Spanish_eIDAS_gateway.png)
 
-If the users select the option for authenticating european citizens, they are redirected to a new view in which,
+If the users select the option for authenticating European citizens, they are redirected to a new view in which,
 selecting the specific country, they can authenticate using their national identifier:
 
 ![Spanish eIDAS gateway 2.png](img/Spanish_eIDAS_gateway_2.png)
