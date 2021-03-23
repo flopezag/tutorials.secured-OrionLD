@@ -30,7 +30,7 @@ enablers. Users (or other actors) must log-in and use a token to gain access to 
     <li>
       <a href="#prerequisites">Prerequisites</a>
       <ul>
-        <li><a href="#docker-and-docker-compose-">Docker and Docker Compose</a></li>
+        <li><a href="#-docker-and-docker-compose">Docker and Docker Compose</a></li>
         <li><a href="#cygwin-for-windows-">Cygwin (for Windows)</a></li>
         <li><a href="#postman-">Postman</a></li>
         <li><a href="#http-">http</a></li>
